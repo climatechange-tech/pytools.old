@@ -1,0 +1,3 @@
+#! /bin/zsh
+
+firefox https://pep8.org/#block-comments &
