@@ -46,7 +46,8 @@ def netCDF2raster(nc_file_list,
                   output_file_format,
                   raster_extension,
                   raster_resolution,
-                  nodata_value=None):
+                  nodata_value=None,
+                  crs="EPSG:4326"):
     
     if not isinstance(nc_file_list, list):
         nc_file_list = [nc_file_list]
@@ -72,6 +73,7 @@ def netCDF2raster(nc_file_list,
         if nodata_value:
             zsh_rasterization\
             = f"gdal_translate -a_nodata {nodata_value} "\
+              f"-a_srs {crs} "\
               f"-of {output_file_format} "\
               f"{ncf_name} {raster_file_name} "\
               f"--config GDAL_PDF_DPI {raster_resolution}"
@@ -79,6 +81,7 @@ def netCDF2raster(nc_file_list,
         else:
             zsh_rasterization\
             = f"gdal_translate -of {output_file_format} "\
+              f"-a_srs {crs} "\
               f"{ncf_name} {raster_file_name} "\
               f"--config GDAL_PDF_DPI {raster_resolution}"
                             

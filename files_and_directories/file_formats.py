@@ -51,6 +51,15 @@ spec3 = importlib.util.spec_from_file_location(module_imp3, module_imp3_path)
 file_and_directory_paths = importlib.util.module_from_spec(spec3)
 spec3.loader.exec_module(file_and_directory_paths)
 
+
+module_imp4 = "directory_handler.py"
+module_imp4_path = f"{fixed_dirpath}/"\
+                   f"files_and_directories/{module_imp4}"
+                   
+spec4 = importlib.util.spec_from_file_location(module_imp4, module_imp4_path)
+directory_handler = importlib.util.module_from_spec(spec4)
+spec4.loader.exec_module(directory_handler)
+
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
@@ -61,6 +70,8 @@ file_path_specs = string_handler.file_path_specs
 noneInString_filter = string_handler.noneInString_filter
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
+
+make_parent_directories = directory_handler.make_parent_directories
 
 #------------------#
 # Define functions #
@@ -234,7 +245,7 @@ def eml2pdf(delete_eml_files):
     extension = "eml"
     
     # Convert email to PDF #        
-    eml_files = find_ext_file_paths(extension, None, top_path_only=True)
+    eml_files = find_ext_file_paths(extension, cwd, top_path_only=True)
    
     converter_tool_path\
     = f"{alldoc_dirpath}/../email-to-pdf-converter/emailconverter-2.5.3-all.jar"
