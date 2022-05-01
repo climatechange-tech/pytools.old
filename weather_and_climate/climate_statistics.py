@@ -205,7 +205,6 @@ def climat_periodic_statistics(obj,
     # TODO: xarray.core.dataset.Dataset ta xarray.core.dataarray.DataArray
     # kasuak jorratu.
     
-    
     time_freqs = ["yearly", "seasonal", "monthly", "daily", "hourly"]
     freq_abbrs = ["Y", "S", "M", "D", "H"]
     
@@ -226,24 +225,7 @@ def climat_periodic_statistics(obj,
         
     elif isinstance(obj, xr.core.dataset.Dataset)\
     or isinstance(obj, xr.core.dataarray.DataArray):
-        
-        date_key = find_time_dimension(obj)
-    
-    # if "date_key" in locals().keys() and date_key != -1:
-    #     time_array_id = f"obj.{date_key}.dt.{time_freq}"
-    #     time_freq_array = np.unique(eval(time_array_id))
-    #     ltfa = len(time_freq_array)
-        
-    #     if time_freq == time_freqs[0]:
-    #         list_range = time_freq_array.copy()
-    #     elif time_freq in select_array_elements(time_freqs, [2,3]):
-    #         list_range = range(1, ltfa+1)
-    #     else:
-    #         list_range = range(ltfa)
-        
-    else:
-        raise ValueError(f"No ´time´ or similar key found on {type(obj)} object.")
-               
+        date_key = find_time_dimension(obj)               
     
     # Climatological statistic calculation, depends on the type of the object #
     #-------------------------------------------------------------------------#
@@ -271,8 +253,8 @@ def climat_periodic_statistics(obj,
             latest_year = years[leapyear_bool_arr][-1]
         else:
             latest_year = years[-1]
-        
-        
+
+
         if time_freq == "hourly":            
             if keep_std_dates:
                 climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
@@ -282,19 +264,21 @@ def climat_periodic_statistics(obj,
                 lcd = len(climat_dates)
                 climat_dates = list(range(lcd))
                 climat_obj_cols[0] = "hour_of_year"
+            
+            
+            climat_vals\
+            = [np.float64(eval("obj[(obj[date_key].dt.month==m)"\
+                                   "&(obj[date_key].dt.day==d)"\
+                                   "&(obj[date_key].dt.hour==h)]."\
+                               f"iloc[:,1:].{statistic}()"))
+               for m in months
+               for d in days
+               for h in hours
+                       
+               if len(obj[(obj[date_key].dt.month==m)
+                          &(obj[date_key].dt.day==d)
+                          &(obj[date_key].dt.hour==h)].iloc[:,1:]) > 0]
                 
-                
-            climat_vals = [np.float64(np.nanmean(obj[(obj[date_key].dt.month==m)
-                                                     &(obj[date_key].dt.day==d)
-                                                     &(obj[date_key].dt.hour==h)].
-                                                 iloc[:,1:],axis=0))
-                           for m in months
-                           for d in days
-                           for h in hours
-                           
-                           if len(obj[(obj[date_key].dt.month==m)
-                                      &(obj[date_key].dt.day==d)
-                                      &(obj[date_key].dt.hour==h)].iloc[:,1:]) > 0]
             
         elif time_freq == "daily":            
             if keep_std_dates:
@@ -306,15 +290,18 @@ def climat_periodic_statistics(obj,
                 climat_dates = list(range(lcd))
                 climat_obj_cols[0] = "day_of_year"
                 
-            climat_vals = [np.float64(np.nanmean(obj[(obj[date_key].dt.month==m)
-                                                     &(obj[date_key].dt.day==d)].
-                                                 iloc[:,1:],axis=0))
-                           for m in months
-                           for d in days
-                           
-                           if len(obj[(obj[date_key].dt.month==m)
-                                      &(obj[date_key].dt.day==d)].iloc[:,1:]) > 0]
+            climat_vals\
+            = [np.float64(eval("obj[(obj[date_key].dt.month==m)"\
+                                    "&(obj[date_key].dt.day==d)]."\
+                               f"iloc[:,1:].{statistic}()"))
+               
+               for m in months
+               for d in days
+               
+               if len(obj[(obj[date_key].dt.month==m)
+                          &(obj[date_key].dt.day==d)].iloc[:,1:]) > 0]
             
+                
         elif time_freq == "monthly":            
             if keep_std_dates:
                 climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
@@ -325,11 +312,12 @@ def climat_periodic_statistics(obj,
                 climat_dates = list(range(1,13))  
                 climat_obj_cols[0] = "month_of_year"
             
-            climat_vals = [np.float64(np.nanmean(obj[obj[date_key].dt.month==m]
-                                                 .iloc[:,1:],axis=0))
-                           for m in months]
-        
-        
+            climat_vals = [np.float64(eval("obj[obj[date_key].dt.month==m]."\
+                                            f"iloc[:,1:].{statistic}()"))
+                            for m in months
+                            if len(obj[obj[date_key].dt.month==m].iloc[:,1:]) > 0]
+                
+            
         elif time_freq == "seasonal":
             
             """Define a dictionary matching the month number 
@@ -353,16 +341,17 @@ def climat_periodic_statistics(obj,
                 
                     
             climat_vals\
-            = [np.float64(np.nanmean(obj[obj[date_key].dt.month.isin(season_months)]
-                                     .iloc[:,1:],axis=0))]
-        
+            = [np.float64(eval("obj[obj[date_key].dt.month.isin(season_months)]."\
+                               f"iloc[:,1:].{statistic}()"))]
+                
+            
         elif time_freq == "yearly":
             climat_df = periodic_statistics(obj, 
                                             statistic, 
                                             freq_abbr,
                                             drop_date_idx_col)
     
-            climat_vals = [np.float64(np.nanmean(climat_df.iloc[:,1:],axis=0))]
+            climat_vals = [np.float64(eval(f"climat_df.iloc[:,1:].{statistic}()"))]
             climat_dates = [climat_df.iloc[-1,0]]
             
             
@@ -381,14 +370,28 @@ def climat_periodic_statistics(obj,
         obj_climat = pd.DataFrame(climat_arr, columns=climat_obj_cols)
         
         
-    # TODO: jorratu kasu hau
     elif isinstance(obj, xr.core.dataset.Dataset)\
     or isinstance(obj, xr.core.dataarray.DataArray):
           
-        string="do sth"
-        
-        
-        
+        if time_freq == "hourly":
+            obj_climat\
+            = eval(f"obj.groupby(obj[date_key].dt.dayofyear).{statistic}(dim=date_key)")
+            
+        elif time_freq == "daily":
+            obj_climat\
+            = eval(f"obj.groupby(obj[date_key].dt.dayofyear).{statistic}(dim=date_key)")
+            
+        elif time_freq == "monthly":
+            obj_climat\
+            = eval(f"obj.groupby(obj[date_key].dt.month).{statistic}(dim=date_key)")
+            
+        elif time_freq == "seasonal":
+            obj_seas_sel = obj.sel({date_key: obj[date_key].dt.month.isin(season_months)})
+            obj_climat = eval(f"obj_seas_sel.{statistic}(dim=date_key)")          
+            
+        elif time_freq == "yearly":
+            obj_climat = eval(f"obj.{statistic}(dim=date_key)")
+            
     return obj_climat
         
 dates=pd.date_range("2015-1-1 0:00","2020-12-31 23:00",freq="H")
@@ -397,7 +400,7 @@ array2=np.array([dates,np.random.normal(25,5,len(dates)),np.random.weibull(5,len
 
 df=pd.DataFrame(array1.T, columns=["Date","temp"])
 df1=pd.DataFrame(array2.T, columns=["Date","temp","ws"])
-res=climat_periodic_statistics(df, "mean", "seasonal", False, False,season_months=[12,1,2])
+res=climat_periodic_statistics(df, "mean", "monthly", True, False)
 print(res)
 
               
