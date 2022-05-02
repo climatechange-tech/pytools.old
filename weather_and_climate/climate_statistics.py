@@ -163,8 +163,8 @@ def periodic_statistics(obj, statistic, freq, drop_date_idx_col):
 def climat_periodic_statistics(obj,
                                statistic,
                                time_freq,
-                               keep_std_dates, 
-                               drop_date_idx_col,
+                               keep_std_dates=False, 
+                               drop_date_idx_col=False,
                                season_months=None):
 
     # Function that calculates climatologic statistics for a time-frequency.
@@ -182,11 +182,18 @@ def climat_periodic_statistics(obj,
     #       except for yearly climatologics.
     #       Otherwise dates are shown as hour, day, or month indexes,
     #       and season achronyms if "seasonal" is selected as the time frequency.
+    #       Default value is False.
     # drop_date_idx_col : bool
+    #       Affects only if the passed object is a pandas data frame.
     #       Boolean used to whether drop the date columns in the new data frame.
     #       If it is False, then the columns of the dates will be kept.
     #       Otherwise, the dates themselves will be kept, but they will be
     #       treated as indexers, and not as a column.
+    #       Defaults to False.
+    # season_months : list of integers
+    #       List containing the month numbers to later refer to the time array,
+    #       whatever the object is among the mentioned three types.
+    #       Defaults to None.
     # 
     # Returns
     # -------
@@ -198,12 +205,6 @@ def climat_periodic_statistics(obj,
     # -----
     # For pandas data frames, since it is an 2D object,
     # it is interpreted that data holds for a specific geographical point.
-    
-    # TODO: batez besteko klimatikoak EZ DIRA NIK DEFINITUTAKO ERAN EGITEN,
-    # EGIN CDOak kalkulatzen duen moduan.
-    
-    # TODO: xarray.core.dataset.Dataset ta xarray.core.dataarray.DataArray
-    # kasuak jorratu.
     
     time_freqs = ["yearly", "seasonal", "monthly", "daily", "hourly"]
     freq_abbrs = ["Y", "S", "M", "D", "H"]
@@ -229,6 +230,23 @@ def climat_periodic_statistics(obj,
     
     # Climatological statistic calculation, depends on the type of the object #
     #-------------------------------------------------------------------------#
+    
+    # Get date array and parts of it #
+    dates = obj[date_key]
+    
+    years = np.unique(dates.dt.year)        
+    days = np.unique(dates.dt.day)
+    months = np.unique(dates.dt.month)
+    hours = np.unique(dates.dt.hour)
+    
+    # Check for the number of leap years #
+    leapyear_bool_arr = [calendar.isleap(year) for year in years]
+    llba = len(leapyear_bool_arr)
+    
+    if llba > 0:
+        latest_year = years[leapyear_bool_arr][-1]
+    else:
+        latest_year = years[-1]
 
     if isinstance(obj, pd.core.frame.DataFrame):
         
@@ -237,24 +255,6 @@ def climat_periodic_statistics(obj,
         climat_obj_cols = [date_key] + [obj.columns[i]+"_climat" 
                                         for i in range(1, ncols_obj)]
                 
-        # Get date array and parts of it #
-        dates = obj[date_key]
-        
-        years = np.unique(dates.dt.year)        
-        days = np.unique(dates.dt.day)
-        months = np.unique(dates.dt.month)
-        hours = np.unique(dates.dt.hour)
-        
-        # Check for the number of leap years #
-        leapyear_bool_arr = [calendar.isleap(year) for year in years]
-        llba = len(leapyear_bool_arr)
-        
-        if llba > 0:
-            latest_year = years[leapyear_bool_arr][-1]
-        else:
-            latest_year = years[-1]
-
-
         if time_freq == "hourly":            
             if keep_std_dates:
                 climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
@@ -262,7 +262,7 @@ def climat_periodic_statistics(obj,
                                              freq=freq_abbr)
             else:    
                 lcd = len(climat_dates)
-                climat_dates = list(range(lcd))
+                climat_dates = np.arange(lcd)
                 climat_obj_cols[0] = "hour_of_year"
             
             
@@ -287,7 +287,7 @@ def climat_periodic_statistics(obj,
                                              freq=freq_abbr)
             else:    
                 lcd = len(climat_dates)
-                climat_dates = list(range(lcd))
+                climat_dates = np.arange(1,lcd+1)
                 climat_obj_cols[0] = "day_of_year"
                 
             climat_vals\
@@ -309,7 +309,7 @@ def climat_periodic_statistics(obj,
                                              freq=freq_abbr)
                 
             else:
-                climat_dates = list(range(1,13))  
+                climat_dates = np.arange(1,13)
                 climat_obj_cols[0] = "month_of_year"
             
             climat_vals = [np.float64(eval("obj[obj[date_key].dt.month==m]."\
@@ -374,8 +374,51 @@ def climat_periodic_statistics(obj,
     or isinstance(obj, xr.core.dataarray.DataArray):
           
         if time_freq == "hourly":
+            
+            # Define the time array #
+            """Follow CDO's climatologic time array pattern,
+            it is a model hourly time array"""
+            
+            climat_dates = pd.date_range(f"{latest_year}-1-1 0:00",
+                                         f"{latest_year}-12-31 23:00",
+                                         freq="H")
+            lcd = len(climat_dates)
+            
+            # Define the hourly climatology pattern #
+            obj_climat_nonstd_times = obj['time.hour']/24 + obj['time.dayofyear']        
+            
+            # Compute the hourly climatology #
             obj_climat\
-            = eval(f"obj.groupby(obj[date_key].dt.dayofyear).{statistic}(dim=date_key)")
+            = eval(f"obj.groupby(obj_climat_nonstd_times).{statistic}(dim=date_key)")
+            
+            # if keep_std_dates:
+                
+            #     occ_time_name = date_key 
+            #     climat_dates = climat_dates
+                
+            #     # Rename the analogous dimension of 'time' on dimension list #
+            #     obj_climat_calc\
+            #     = obj_climat_calc.rename_dims({occ_time_name_temp : occ_time_name})
+                
+            #     # Rename the analogous dimension name of 'time' to standard #
+            #     obj_climat_calc\
+            #     = obj_climat_calc.rename({occ_time_name_temp : occ_time_name})
+                
+            # else:
+                
+            #     occ_time_name = "hourofyear" 
+            #     climat_dates = np.arange(lcd)
+                
+            #     # Rename the analogous dimension of 'time' on dimension list #
+            #     obj_climat_calc\
+            #     = obj_climat_calc.rename_dims({occ_time_name_temp : occ_time_name})
+                
+            #     # Rename the analogous dimension name of 'time' to standard #
+            #     obj_climat_calc\
+            #     = obj_climat_calc.rename({occ_time_name_temp : occ_time_name})
+                
+            
+            
             
         elif time_freq == "daily":
             obj_climat\
@@ -386,62 +429,67 @@ def climat_periodic_statistics(obj,
             = eval(f"obj.groupby(obj[date_key].dt.month).{statistic}(dim=date_key)")
             
         elif time_freq == "seasonal":
+            if not season_months:
+                raise ValueError("You must specify the season months in a list. "\
+                                 "For example: [12,1,2]")
+            
             obj_seas_sel = obj.sel({date_key: obj[date_key].dt.month.isin(season_months)})
             obj_climat = eval(f"obj_seas_sel.{statistic}(dim=date_key)")          
             
         elif time_freq == "yearly":
             obj_climat = eval(f"obj.{statistic}(dim=date_key)")
             
-    return obj_climat
+            
+        # Choose the climatological time format #
+        #---------------------------------------#
         
-dates=pd.date_range("2015-1-1 0:00","2020-12-31 23:00",freq="H")
-array1=np.array([dates,np.random.normal(25,5,len(dates))],'O')
-array2=np.array([dates,np.random.normal(25,5,len(dates)),np.random.weibull(5,len(dates))],'O')
+        if time_freq in time_freqs[2:]:
+            
+            # Get the analogous dimension of 'time', usually label 'group' #
+            occ_dimlist = netcdf_handler.get_file_dimensions(obj_climat)
+            occ_time_name_temp = occ_dimlist[-1]
 
-df=pd.DataFrame(array1.T, columns=["Date","temp"])
-df1=pd.DataFrame(array2.T, columns=["Date","temp","ws"])
-res=climat_periodic_statistics(df, "mean", "monthly", True, False)
-print(res)
-
+            if keep_std_dates:                          
+                climat_dates = pd.date_range(f"{latest_year}-1-1 0:00",
+                                             f"{latest_year}-12-31 23:00",
+                                             freq=freq_abbr)
+                occ_time_name = date_key 
               
-# TODO: behekoa ez da horrela, urte oso bateko 3 ordukako bloke guztiena baizik!
-
-def calculate_3h_climatology(df):
-
-    # Function that calculates the 3-hourly climatology of a pandas data frame.
-    #
-    # Parameters
-    # ----------
-    #
-    # df : pandas.core.frame.DataFrame
-    #       Pandas data frame that is arranged as follows:
-    #       - 1st column : contains the date times
-    #       - Rest of the columns : contain data of one or several variables.
-    #
-    # Returns
-    # -------
-    # climat_df : pandas.core.frame.DataFrame
-    #       Pandas data frame corresponding to the 3-hourly climatologic data,
-    #       structured as follows:
-    #       - 1st column : shows the nth third of the calendar hour.
-    #                      If the day is 24 hours long, then we have 8
-    #                      a total of 8 three-hourly blocks or 8 thirds.
-    #       - Rest of the columns : climatologic data of the variables.
-
-    hour_block_nums = np.int_(np.arange(24/3) + 1)
-
-    columns = df.columns
-    climat_cols = ["hour block"]+list(columns[1:])
-
-    climat_df = pd.DataFrame(columns=climat_cols)
-    climat_df.loc[:,climat_cols[0]] = hour_block_nums
-
-    for hbn in hour_block_nums:
-        df_slice = df[df[columns[0]].dt.hour//3+1==hbn].values[:,1:]
-        df_slice_avg = np.mean(df_slice,axis=0)
-        climat_df.loc[climat_df[climat_cols[0]]==hbn,columns[1:]] = df_slice_avg
-
-    return climat_df
+            else:
+                climat_dates = obj_climat[occ_time_name_temp].values
+                lcd = len(climat_dates)
+                
+                occ_time_name = occ_time_name_temp
+                
+                if time_freq in time_freqs[-2:]:
+                    occ_time_name = time_freq[:-2] + "ofyear"    
+                    climat_dates = np.arange(lcd) 
+                    
+            try:
+                
+                # Rename the analogous dimension of 'time' on dimension list #
+                obj_climat\
+                = obj_climat.rename_dims({occ_time_name_temp : occ_time_name})
+                   
+                # Rename the analogous dimension name of 'time' to standard #
+                obj_climat\
+                = obj_climat.rename({occ_time_name_temp : occ_time_name})
+                
+            except:
+                
+                # Rename the analogous dimension of 'time' on dimension list #
+                obj_climat\
+                = obj_climat.swap_dims({occ_time_name_temp : occ_time_name})
+                   
+                # Rename the analogous dimension name of 'time' to standard #
+                obj_climat\
+                = obj_climat.swap_dims({occ_time_name_temp : occ_time_name})
+                
+                    
+            # Update the time array #
+            obj_climat = obj_climat.assign_coords({occ_time_name : climat_dates})
+            
+    return obj_climat
 
 
 def windowSum(x, N):
