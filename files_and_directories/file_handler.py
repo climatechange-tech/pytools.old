@@ -2,7 +2,8 @@
 # Import modules #
 #----------------#
 
-import glob
+import importlib
+
 import os
 from pathlib import Path
 import shutil
@@ -17,6 +18,23 @@ main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 fixed_dirpath = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
+
+#-----------------------#
+# Import custom modules #
+#-----------------------#
+
+module_imp = "file_and_directory_paths.py"
+module_imp_path = f"{fixed_dirpath}/"\
+                   f"files_and_directories/{module_imp}"
+spec = importlib.util.spec_from_file_location(module_imp, module_imp_path)
+file_and_directory_paths = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(file_and_directory_paths)
+
+#----------------------------------------------------#
+# Define imported module(s)´ function call shortcuts #
+#----------------------------------------------------#
+
+posixpath_converter = file_and_directory_paths.posixpath_converter
 
 #------------------#
 # Define functions #
@@ -66,7 +84,7 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
                              "are not of the same length.")
         else:
             for ext, dd in zip(extensions, destination_directories):
-                extension_allfiles = glob.glob(f"{cwd}/*.{ext}")
+                extension_allfiles = cwd.glob(f"*.{ext}")
                 
                 for file in extension_allfiles:
                     file_name_nopath = file.name
@@ -76,7 +94,8 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
     and not isinstance(destination_directories, list):
         
         for ext in extensions:
-            extension_allfiles = glob.glob(f"{cwd}/*.{ext}") 
+            
+            extension_allfiles = cwd.glob(f"*.{ext}")
             
             for file in extension_allfiles:
                 file_name_nopath = file.name
@@ -85,7 +104,7 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
     elif not isinstance(extensions, list)\
     and isinstance(destination_directories, list):
         
-        extension_allfiles = glob.glob(f"{cwd}/*.{extensions}")
+        extension_allfiles = cwd.glob(f"*.{extensions}")
         
         for dd in destination_directories:
             for file in extension_allfiles:
@@ -93,7 +112,7 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
                 shutil.move(file, f"{dd}/{file_name_nopath}")           
                 
     else:
-        extension_allfiles = glob.glob(f"{cwd}/*.{extensions}") 
+        extension_allfiles = cwd.glob(f"*.{extensions}") 
         
         for file in extension_allfiles:
             file_name_nopath = file.name
@@ -105,7 +124,7 @@ def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
     # Function that moves files selected by part of the file name,
     # from the directory that this code is called
     # to the desired directory or directories.
-    # It uses name globbing (or main globbing, glob.glob attribute).
+    # It uses name globbing (or main globbing, Path(path).glob attribute).
     #
     # There are four cases of string globbing inside the main globbing:
     #   1. The string is fixed.
@@ -161,7 +180,7 @@ def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
-                                   for file in cwd.glob(f"{fs}")
+                                   for file in cwd.glob(fs)
                                    if file.is_file()]
                 
                 for file in string_allfiles:
@@ -173,7 +192,7 @@ def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
         
         for fs in file_strings:
             string_allfiles = [file
-                               for file in cwd.glob(f"{fs}")
+                               for file in cwd.glob(fs)
                                if file.is_file()]
             
             for file in string_allfiles:
@@ -311,7 +330,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
         
         for ext in extensions:
             for dd in destination_directories:
-                extension_allfiles = glob.glob(f"{cwd}/*.{ext}")   
+                extension_allfiles = cwd.glob(f"*.{ext}")   
                 
                 for file in extension_allfiles:
                     file_name_nopath = file.name
@@ -329,7 +348,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
                              "are not of the same length.")
         else:
             for ext, dd in zip(extensions, destination_directories):
-                extension_allfiles = glob.glob(f"{cwd}/*.{ext}")   
+                extension_allfiles = cwd.glob(f"*.{ext}")   
                 
                 for file in extension_allfiles:
                     file_name_nopath = file.name
@@ -340,7 +359,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
     and not isinstance(destination_directories, list):
         
         for ext in extensions:
-            extension_allfiles = glob.glob(f"{cwd}/*.{ext}") 
+            extension_allfiles = cwd.glob(f"*.{ext}")
             
             for file in extension_allfiles:
                 file_name_nopath = file.name
@@ -349,7 +368,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
     elif not isinstance(extensions, list)\
     and isinstance(destination_directories, list):
         
-        extension_allfiles = glob.glob(f"{cwd}/*.{extensions}")
+        extension_allfiles = cwd.glob(f"*.{extensions}")
         
         for dd in destination_directories:
             for file in extension_allfiles:
@@ -357,7 +376,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
                 shutil.copy(file, f"{dd}/{file_name_nopath}")           
                 
     else:
-        extension_allfiles = glob.glob(f"{cwd}/*.{extensions}") 
+        extension_allfiles = cwd.glob(f"*.{extensions}") 
         
         for file in extension_allfiles:
             file_name_nopath = file.name
@@ -414,7 +433,7 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
         for fs in file_strings:
             for dd in destination_directories:
                 string_allfiles = [file
-                                   for file in cwd.glob(f"{fs}")
+                                   for file in cwd.glob(fs)
                                    if file.is_file()]
                 
                 for file in string_allfiles:
@@ -434,7 +453,7 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
-                                   for file in cwd.glob(f"{fs}")
+                                   for file in cwd.glob(fs)
                                    if file.is_file()]
                 
                 for file in string_allfiles:
@@ -447,7 +466,7 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
         
         for fs in file_strings:
             string_allfiles = [file
-                               for file in cwd.glob(f"{fs}")
+                               for file in cwd.glob(fs)
                                if file.is_file()]
             
             for file in string_allfiles:
@@ -527,6 +546,13 @@ def remove_files_byExts(extensions,
     #   4. None of them are lists.
     #           Then the matching files will simply be removed from that directory.
                
+    if isinstance(destination_directories, list):
+        destination_directories = [posixpath_converter(dirc, False)
+                                   for dirc in str(destination_directories)]
+        
+    else:
+        destination_directories = [posixpath_converter(destination_directories, False)]
+    
     if isinstance(extensions, list)\
     and isinstance(destination_directories, list)\
     and recursive_in_depth:
@@ -535,10 +561,10 @@ def remove_files_byExts(extensions,
             for dd in destination_directories:
                 
                 if not find_hidden_files:
-                    string_allfiles = glob.glob(f"{dd}/*.{ext}")
+                    string_allfiles = dd.glob(f"*.{ext}")
                 else:
                     string_allfiles = [file
-                                       for file in Path(dd).glob(f"*.{ext}")]
+                                       for file in dd.glob(f"*.{ext}")]
                 
                 for file in string_allfiles:
                     os.remove(file)
@@ -557,10 +583,10 @@ def remove_files_byExts(extensions,
             for fs, dd in zip(extensions, destination_directories):
                 
                 if not find_hidden_files:
-                    string_allfiles = glob.glob(f"{dd}/*.{ext}")
+                    string_allfiles = dd.glob(f"*.{ext}")
                 else:
                     string_allfiles = [file
-                                       for file in Path(dd).glob(f"*.{ext}")]
+                                       for file in dd.glob(f"*.{ext}")]
                 
                 for file in string_allfiles:
                     os.remove(file)
@@ -568,14 +594,16 @@ def remove_files_byExts(extensions,
     elif isinstance(extensions, list)\
     and not isinstance(destination_directories, list):
         
+        destination_directories = destination_directories[0]
+      
         for ext in extensions:    
             
             if not find_hidden_files:
-                string_allfiles = glob.glob(f"{destination_directories}/*.{ext}")
+                string_allfiles = destination_directories.glob(f"*.{ext}")
             else:
                 string_allfiles\
                 = [file
-                   for file in Path(destination_directories).glob(f"*.{ext}")]
+                   for file in destination_directories.glob(f"*.{ext}")]
             
             for file in string_allfiles:
                 os.remove(file)
@@ -583,25 +611,26 @@ def remove_files_byExts(extensions,
     elif not isinstance(extensions, list)\
     and isinstance(destination_directories, list):
         
-        for dd in destination_directories:     
+        for dd in destination_directories:   
             
             if not find_hidden_files:
-                string_allfiles = glob.glob(f"{dd}/*.{extensions}")
+                string_allfiles = dd.glob(f"*.{extensions}")
             else:
                 string_allfiles = [file
-                                   for file in Path(dd).glob(f"*.{extensions}")]
+                                   for file in dd.glob(f"*.{extensions}")]
             
             for file in string_allfiles:
                 os.remove(file)
                 
     else:
+        destination_directories = destination_directories[0]
         
         if not find_hidden_files:
-            string_allfiles = glob.glob(f"{destination_directories}/*.{extensions}")
+            string_allfiles = destination_directories.glob(f"*.{extensions}")
         else:
             string_allfiles\
             = [file
-               for file in Path(destination_directories).glob(f"*.{extensions}")]
+               for file in destination_directories.glob(f"*.{extensions}")]
         
         for file in string_allfiles:
             os.remove(file)
@@ -610,7 +639,7 @@ def remove_files_byExts(extensions,
 def remove_files_byFS(file_strings,
                       destination_directories,
                       find_hidden_files=False,
-                              recursive_in_depth=True):
+                      recursive_in_depth=True):
     
     # Function that removes files selected by part of the file name
     # from the specified directory or directories.
@@ -657,6 +686,12 @@ def remove_files_byFS(file_strings,
     #           from each of the directories.
     #   4. None of them are lists.
     #           Then the matching files will simply be removed from that directory.
+    
+    if isinstance(destination_directories, str):
+        destination_directories = [destination_directories]
+        
+    destination_directories = [posixpath_converter(dirc, False)
+                               for dirc in str(destination_directories)]
 
     if isinstance(file_strings, list)\
     and isinstance(destination_directories, list)\
@@ -667,12 +702,12 @@ def remove_files_byFS(file_strings,
                 
                 if not find_hidden_files:
                     string_allfiles = [file
-                                       for file in Path(dd).glob(fs)
+                                       for file in dd.glob(fs)
                                        if file.is_file()]
                 else:
                     string_allfiles = [file
                                        for file in
-                                       [fileref for fileref in Path(dd).glob(fs)]
+                                       [fileref for fileref in dd.glob(fs)]
                                        if file.is_file()]
                     
                 for file in string_allfiles:
@@ -681,7 +716,7 @@ def remove_files_byFS(file_strings,
     elif isinstance(file_strings, list)\
     and isinstance(destination_directories, list)\
     and not recursive_in_depth:
-            
+       
         len_fs = len(file_strings)
         len_dds = len(destination_directories)
         
@@ -693,12 +728,12 @@ def remove_files_byFS(file_strings,
                 
                 if not find_hidden_files:
                     string_allfiles = [file
-                                       for file in Path(dd).glob(fs)
+                                       for file in dd.glob(fs)
                                        if file.is_file()]
                 else:
                     string_allfiles = [file
                                        for file in
-                                       [fileref for fileref in Path(dd).glob(fs)]
+                                       [fileref for fileref in dd.glob(fs)]
                                        if file.is_file()]
                 
                 for file in string_allfiles:
@@ -707,49 +742,51 @@ def remove_files_byFS(file_strings,
     elif isinstance(file_strings, list)\
     and not isinstance(destination_directories, list):
         
+        destination_directories = destination_directories[0]
+        
         for fs in file_strings:     
             
             if not find_hidden_files:
-                string_allfiles = glob.glob(f"{destination_directories}/{fs}")
+                string_allfiles = destination_directories.glob(fs)
             else:
                 string_allfiles\
                 = [file
-                   for file in Path(destination_directories).glob(fs)]
+                   for file in destination_directories.glob(fs)]
             
             for file in string_allfiles:
                 os.remove(file)
                 
     elif not isinstance(file_strings, list)\
     and isinstance(destination_directories, list):
-        
-        for dd in destination_directories:  
+    
+        for dd in destination_directories:
             
             if not find_hidden_files:
                 string_allfiles = [file
-                                   for file in Path(dd).glob(file_strings)
+                                   for file in dd.glob(file_strings)
                                    if file.is_file()]
             else:
                 string_allfiles\
                 = [file
                    for file in 
-                   [fileref for fileref in Path(dd).glob(file_strings)]
+                   [fileref for fileref in dd.glob(file_strings)]
                    if file.is_file()]
                 
             for file in string_allfiles:
                 os.remove(file)
                 
     else:
-        
+       
         if not find_hidden_files:
             string_allfiles\
             = [file
-               for file in Path(destination_directories).glob(file_strings)
+               for file in destination_directories.glob(file_strings)
                if file.is_file()]
         else:
             string_allfiles\
             = [file
                for file in 
-               [fileref for fileref in Path(destination_directories).glob(file_strings)]
+               [fileref for fileref in destination_directories.glob(file_strings)]
                if file.is_file()]
             
         for file in string_allfiles:

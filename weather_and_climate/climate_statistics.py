@@ -77,6 +77,7 @@ find_substring_index= string_handler.find_substring_index
 select_array_elements = array_handler.select_array_elements
 
 find_time_dimension = netcdf_handler.find_time_dimension
+get_file_dimensions = netcdf_handler.get_file_dimensions
 
 #------------------#
 # Define functions #
@@ -446,7 +447,7 @@ def climat_periodic_statistics(obj,
         if time_freq in time_freqs[2:]:
             
             # Get the analogous dimension of 'time', usually label 'group' #
-            occ_dimlist = netcdf_handler.get_file_dimensions(obj_climat)
+            occ_dimlist = get_file_dimensions(obj_climat)
             occ_time_name_temp = occ_dimlist[-1]
 
             if keep_std_dates:                          

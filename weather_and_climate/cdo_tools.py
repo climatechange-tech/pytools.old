@@ -114,15 +114,14 @@ def change_file_names_byvar(file_list,
         = get_standard_variable_name(file, varlist_original, varlist_standardized) 
                
         extension = file_path_ext
-        file_path_name_split[2] = var_std
+        file_path_name_split[0] = var_std
         
         varname_changed_file_path_name = join_file_path_specs(file_path_noname,
-                                                              file_path_name,
-                                                              extension)
+                                                              file_path_name_split,
+                                                              extension,
+                                                              name_splitchar1)
               
         rename_objects(file, varname_changed_file_path_name)
-  
-        return varname_changed_file_path_name
 
 # Miscellaneous operations #
 #--------------------------#
