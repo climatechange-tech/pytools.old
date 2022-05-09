@@ -5,6 +5,7 @@
 import importlib
 import os
 from pathlib import Path
+import warnings
 
 #---------------------------#
 # Get the fixed directories #
@@ -394,7 +395,7 @@ def cdo_time_mean(input_file,
     
 
 def cdo_remap(file_list,
-              coordinate_list,
+              remap_method_str,
               variable,
               time_freq,
               model,
@@ -422,58 +423,111 @@ def cdo_remap(file_list,
                          'conservative1_y']
     
     if remap_method == "ordinary":
-        remap_cdo = "remap"
+        remap_method_cdo = "remap"
     
     if remap_method == "bilinear":
-        remap_cdo = "remapbil"
+        remap_method_cdo = "remapbil"
                         
     elif remap_method == "nearest_neighbour":
-        remap_cdo = "remapnn"
+        remap_method_cdo = "remapnn"
                         
     elif remap_method == "bicubic":
-        remap_cdo = "remapbic"
+        remap_method_cdo = "remapbic"
                         
     elif remap_method == "conservative1":
-        remap_cdo = "remapcon"
+        remap_method_cdo = "remapcon"
                         
     elif remap_method == "conservative2":
-        remap_cdo = "remapcon2"
+        remap_method_cdo = "remapcon2"
         
     elif remap_method == "distance_weighted_average":
-        remap_cdo = "remapdis"
+        remap_method_cdo = "remapdis"
                         
     elif remap_method == "vertical_hybrid":
-        remap_cdo = "remapeta"
+        remap_method_cdo = "remapeta"
                         
     elif remap_method == "vertical_hybrid_sigma":
-        remap_cdo = "remapeta_s"
+        remap_method_cdo = "remapeta_s"
                         
     elif remap_method == "vertical_hybrid_z":
-        remap_cdo = "remapeta_z"
+        remap_method_cdo = "remapeta_z"
                         
     elif remap_method == "largest_area_fraction":
-        remap_cdo = "remaplaf"
+        remap_method_cdo = "remaplaf"
                         
     elif remap_method == "sum":
-        remap_cdo = "remapsum"
+        remap_method_cdo = "remapsum"
                         
     elif remap_method == "conservative1_y":
-        remap_cdo = "remapycon"
+        remap_method_cdo = "remapycon"
         
     else:
         raise ValueError("Wrong remapping option. Available options are:\n"
                          f"{cdo_remap_options}")
  
     for file in file_list:            
-        remap_command = f"cdo {remap_cdo},{coordinate_list} "\
+        remap_command = f"cdo {remap_method_cdo},{remap_method_str} "\
                         f"'{file}' {standardized_output_file_name}" 
         os.system(remap_command)
         
         
-def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq):
-    
-    # TODO: urtarokoa deneko kasuan, zehaztu ea urtaro guztiak ()
-    # edo bakarren bat hartu nahi denentz (-select,season="DJF"...)
+def create_grid_header_file(output_file, **kwargs):
+    """ Create grid header
+
+    Parameters
+    ----------
+    output_file: str or Path
+                 Path to the txt file where the reference grid will be stored.
+    kwargs:
+            Parameters that define the grid (e.g. xmin, ymax, total lines,
+            total columns, etc.).
+
+    Returns
+    -------
+    None
+
+    """
+
+    grid = (
+        'gridtype  = lonlat\n'
+        'xsize     = %d\n'
+        'ysize     = %d\n'
+        'xname     = longitude\n'
+        'xlongname = "Longitude values"\n'
+        'xunits    = "degrees_east"\n'
+        'yname     = latitude\n'
+        'ylongname = "Latitude values"\n'
+        'yunits    = "degrees_north"\n'
+        'xfirst    = %.20f\n'
+        'xinc      = %.20f\n'
+        'yfirst    = %.20f\n'
+        'yinc      = %.20f'
+        % (
+            kwargs['total_columns'],
+            kwargs['total_lines'],
+            kwargs['xmin'],
+            kwargs['xres'],
+            kwargs['ymin'],
+            kwargs['yres'],
+        )
+    )
+   
+    output_file_object = open(output_file, 'w')
+    output_file_object.write(grid)
+    output_file_object.close()
+
+# 'create_grid_header_file' funtzioa probatzeko parametroak
+create_grid_header_file(
+    "test.txt",
+    total_lines=147,
+    total_columns=155,
+    xmin=-107,
+    ymin=-59,
+    xres=0.44,
+    yres=0.44,
+)
+        
+def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_str=None):
     
     # Function to calculate basic statistics (included climatologies)
     # with netCDF files, without the need of opening them.
@@ -490,12 +544,13 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq):
                   "std", "std1"]
     
     time_freqs = ['hourly', 'daily', 'monthly', 'seasonal', 'yearly']
-    period_abbrs = ['hour', 'day', 'month', 'seas', 'year']
+    period_abbrs = ['hour', 'day', 'mon', 'seas', 'year']
     
-    
+    # Quality control #
     if statistic not in statistics:
         raise ValueError(f"Wrong statistic. Options are {statistics}.")
         
+    # Identify the abbreviature for the selected time frequency #
     period_abbr_idx = find_substring_index(time_freqs, freq)
   
     if period_abbr_idx == -1:
@@ -503,37 +558,55 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq):
     else:
         period_abbr = period_abbrs[period_abbr_idx]
         
-    
-    file_path_noname, file_path_name, file_path_name_split, file_ext\
-    = file_path_specs(nc_file_name, name_splitchar1)
-    
+    # Determine whether to calculate the climatological statistic #
     if not isclimatic:
-        statname = f"{period_abbr}{statistic}"
+        statname = f"{period_abbr}{statistic}"            
     else:
         statname = f"y{period_abbr}{statistic}"
+        
+    if period_abbr == period_abbrs[3]:
+        if season_str is not None:
+            statname += f" -select,season={season_str}"
+            
+    # Get the file name for string manipulation #
+    file_path_noname, file_path_name, file_ext\
+    = file_path_specs(nc_file_name, name_splitchar1)[0,1,-1]
     
-    file_path_name += statname
-    
+    """Special case for seasonal time frequency"""
+    if season_str is not None:
+        statname_seas = f"{statname.split()[0]}_{statname[-3:]}"
+        file_path_name += f"{name_splitchar1}{statname_seas}"
+    else:
+        file_path_name += f"{name_splitchar1}{statname}"
+        
+    # Define the output file name based on the configuration chosen #
     output_file_name = f"{file_path_noname}/{file_path_name}.{file_ext}"
     ofn_noneFiltered = noneInString_filter(output_file_name)
     
+    # Perform the computation #
     cdo_stat_command = f"cdo {statname} {nc_file_name} {ofn_noneFiltered}"
-    os.system(cdo_stat_command)    
+    os.system(cdo_stat_command)
 
-        
+    
 def calculate_periodic_deltas(projected_ncfile,
                               historical_ncfile,
                               operator="+",
-                              delta_period="monthly"):
+                              delta_period="monthly",
+                              proj_model=None):
     
     time_freqs = ['hourly', 'monthly', 'seasonal']
-    period_abbrs = ['hour', 'month', 'seas']
+    period_abbrs = ['hour', 'mon', 'seas']
     
     period_abbr_idx = find_substring_index(time_freqs, delta_period) 
-    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[2]
-    proj_model = file_path_specs(projected_ncfile, name_splitchar1)[2][2]
+    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[1]
     
-     
+    if proj_model is None:
+        raise ValueError("The model name's position contained on the file name "\
+                         f"{projected_ncfile} can vary significantly "\
+                         "from files belonging to one project from another. "\
+                         "It is safer to manually define the model used "\
+                         "for projections.")
+
     if period_abbr_idx == -1:
         raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
     else:
@@ -571,16 +644,22 @@ def calculate_periodic_deltas(projected_ncfile,
 def apply_periodic_deltas(projected_ncfile,
                           historical_ncfile,
                           operator="+",
-                          delta_period="monthly"):
+                          delta_period="monthly",
+                          proj_model=None):
     
     time_freqs = ['hourly', 'monthly', 'seasonal']
     period_abbrs = ['hour', 'month', 'seas']
     
     period_abbr_idx = find_substring_index(time_freqs, delta_period)  
     
-    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[2]
-    proj_model = file_path_specs(projected_ncfile, name_splitchar1)[2][2] 
+    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[1]
     
+    if proj_model is None:
+        raise ValueError("The model name's position contained on the file name "\
+                         f"{projected_ncfile} can vary significantly "\
+                         "from files belonging to one project from another. "\
+                         "It is safer to manually define the model used "\
+                         "for projections.")
 
     if period_abbr_idx == -1:
         raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
@@ -616,4 +695,3 @@ def apply_periodic_deltas(projected_ncfile,
                          "{'+', '-', '*', '/'}.")
                       
     os.system(deltaApply_command)
-    

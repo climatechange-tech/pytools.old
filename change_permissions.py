@@ -16,11 +16,11 @@ from pathlib import Path
 #---------------------------------------#
 
 cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
+main_path = Path("/".join(cwd.parts[:2])[1:]).glob("*/*")
 
 fixed_dirpath = str([path
                      for path in main_path
-                     if "pytools" in str(path).lower()][0])
+                     if "pytools" in str(path).lower()][0].parent)
 
 #-----------------------#
 # Import custom modules #
