@@ -487,7 +487,17 @@ def create_grid_header_file(output_file, **kwargs):
     None
 
     """
-
+    
+    keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
+    
+    kwargs_values = list(kwargs.values())
+    kwargs_keys = list(kwargs.keys())
+    kwargs_keys.sort()
+    
+    if kwargs_keys != keylist:
+        kwargs = {key : val 
+                  for key,val in zip(keylist,kwargs_values)}
+    
     grid = (
         'gridtype  = lonlat\n'
         'xsize     = %d\n'
@@ -503,12 +513,12 @@ def create_grid_header_file(output_file, **kwargs):
         'yfirst    = %.20f\n'
         'yinc      = %.20f'
         % (
-            kwargs['total_columns'],
-            kwargs['total_lines'],
-            kwargs['xmin'],
-            kwargs['xres'],
-            kwargs['ymin'],
-            kwargs['yres'],
+            kwargs[keylist[0]],
+            kwargs[keylist[1]],
+            kwargs[keylist[2]],
+            kwargs[keylist[3]],
+            kwargs[keylist[4]],
+            kwargs[keylist[5]]
         )
     )
    
@@ -516,16 +526,6 @@ def create_grid_header_file(output_file, **kwargs):
     output_file_object.write(grid)
     output_file_object.close()
 
-# 'create_grid_header_file' funtzioa probatzeko parametroak
-create_grid_header_file(
-    "test.txt",
-    total_lines=147,
-    total_columns=155,
-    xmin=-107,
-    ymin=-59,
-    xres=0.44,
-    yres=0.44,
-)
         
 def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_str=None):
     
