@@ -64,12 +64,29 @@ rename_objects = file_handler.rename_objects
 def reorder_files(nzeros_left,
                   extensions2skip,
                   file_name_splitchar,
-                  mode="by_existing_prefix"):
+                  distinguish_extensions=False):
     
     ext_list = find_allfile_extensions(extensions2skip, top_path_only=True)
     
-    for ext in ext_list:
-        filelist = find_ext_file_paths(ext, cwd, top_path_only=True)
+    if distinguish_extensions:
+    
+        for ext in ext_list:
+            filelist_byext = find_ext_file_paths(ext, cwd, top_path_only=True)
+            
+            for file in enumerate(filelist_byext):
+                
+                file_num = file[0]
+                file_name = file[-1]
+                            
+                file_path_noname, file_path_name, file_path_name_split, file_path_ext\
+                = file_path_specs(file_name, file_name_splitchar)
+        
+                num_format = f"{file_num+1:0{nzeros_left+1}d}"
+                num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
+                rename_objects(file_name, num_formatted_file)
+                
+    else:
+        filelist = find_ext_file_paths(ext_list, cwd, top_path_only=True)
         
         for file in enumerate(filelist):
             
@@ -78,20 +95,8 @@ def reorder_files(nzeros_left,
                         
             file_path_noname, file_path_name, file_path_name_split, file_path_ext\
             = file_path_specs(file_name, file_name_splitchar)
-            
-            file_name_noprefix_noext = file_path_name_split[-1]
     
             num_format = f"{file_num+1:0{nzeros_left+1}d}"
-            
-            if mode == "by_existing_prefix":            
-                num_formatted_file = f"{num_format}.{file_path_ext}" 
-                rename_objects(file_name, num_formatted_file)
-                
-            elif mode == "add_prefix":
-                formatted_file = f"{num_format}{file_name_splitchar}"\
-                                 f"{file_name_noprefix_noext}.{file_path_ext}" 
-                rename_objects(file_name, formatted_file)
-                
-            else:
-                raise ValueError("Wrong renaming option."
-                                 "Options are {'by_existing_prefix', 'add_prefix'}")
+            num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
+            rename_objects(file_name, num_formatted_file)
+
