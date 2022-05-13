@@ -81,14 +81,15 @@ extension_list = find_allfile_extensions(extensions2skip)
 
 table='''
 Extension list = {}
+Number of extensions = {}
+
 Extensions to exclude = {}
 
-Number of extensions = {}
 '''
 
 print(table.format(extension_list,
-                   extensions2skip,
-                   len(extension_list)))
+                   len(extension_list), 
+                   extensions2skip))
 
 # Perform tasks according to the control switches # 
 if remove_file_execb:

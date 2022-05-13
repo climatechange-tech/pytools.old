@@ -9,7 +9,7 @@ from pathlib import Path
 # Define functions #
 #------------------#
 
-def find_substring_index(string, substring):
+def find_substring_index(string, substring, find_whole_words=False):
     
     # Function that finds substrings in a given string.
     # 
@@ -25,6 +25,9 @@ def find_substring_index(string, substring):
     #       Then an attempt to find the substring along the string will be made.
     #   2. The string is a list of strings.
     #       Then the attempt will be made for each string on the list.
+    # 
+    # find_whole_words : bool
+    #       Determines whether to find only whole words. Defaults to False.
     # 
     # Returns
     # -------
@@ -52,10 +55,18 @@ def find_substring_index(string, substring):
         if isinstance(substring, str):
             substring = substring.split(" ")   
             
-        substr_idx_list = [var_idx
-                           for substr in substring
-                           if (var_idx := string.find(substr)) != -1]
-    
+        if not find_whole_words:
+            substr_idx_list = [var_idx
+                               for el in substring
+                               if (var_idx := string.find(el)) != -1]
+            
+        else:
+            substr_idx_list = [var_idx
+                               for el in substring
+                               if (var_idx := string.find(el)) != -1
+                               and "" in string.split(el)]
+            
+            
         # Assume that every substring must be found at the string #
         lsil = len(substr_idx_list)
         if lsil == 1:
@@ -74,18 +85,34 @@ def find_substring_index(string, substring):
         lstr = len(string)
         lsl = len(substring)
         
-        if lsl == 1:
-            substr_idx_list = [strng[0]
-                               for strng in enumerate(string)
-                               for substr in substring
-                               if (var_idx := strng[-1].find(substr)) != -1]
+        if not find_whole_words:
+            if lsl == 1:
+                substr_idx_list = [strng[0]
+                                   for strng in enumerate(string)
+                                   for el in substring
+                                   if (var_idx := strng[-1].find(el)) != -1]
+            else:
+                substr_idx_list = {i :
+                                   tuple(var_idx
+                                         for el in substring
+                                         if (var_idx := string[i].find(el)) != -1)
+                                   for i in range(lstr)}
+                    
         else:
-            substr_idx_list = {i :
-                               tuple(var_idx
-                                     for substr in substring
-                                     if (var_idx := string[i].find(substr)) != -1)
-                               for i in range(lstr)}
-                
+            if lsl == 1:
+                substr_idx_list = [strng[0]
+                                   for strng in enumerate(string)
+                                   for el in substring
+                                   if (var_idx := strng[-1].find(el)) != -1
+                                   and "" in strng[-1].split(el)]
+            else:
+                substr_idx_list = {i :
+                                   tuple(var_idx
+                                         for el in substring
+                                         if (var_idx := string[i].find(el)) != -1
+                                         and "" in string[i].split(el))
+                                   for i in range(lstr)}
+                    
         lsil = len(substr_idx_list)
         if lsil == 1:
             return substr_idx_list[0]

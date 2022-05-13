@@ -77,7 +77,7 @@ def reset_directory_permissions(source_directory):
     dirlist = directory_handler.find_allDirectories(source_directory)
     for dirc in dirlist:
         find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' -type d "\
-                            "-exec chmod 755 "\
+                            "-exec chmod 775 "\
                             r"'{}' "\
                             "\;"
         os.system(find_exec_command)
