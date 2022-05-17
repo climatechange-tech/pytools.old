@@ -364,8 +364,8 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                 ncf_num = ncf[0] + 1
                 
                 print("Extracting coordinate values "
-                      f" from file {ncf_num} out of {lncfs}"
-                      f" at directory {ncf_dir_num} out of {lncfd}...")
+                      f"from file {ncf_num} out of {lncfs} "
+                      f"at directory {ncf_dir_num} out of {lncfd}...")
                 
                 faulty_file_trial = binary_faulty_file_detector(ncf_name)
                 
@@ -462,8 +462,8 @@ def extract_and_store_period_bounds():
                 ncf_num = ncf[0] + 1
                     
                 print("Extracting time bounds "
-                      f"from file {ncf_num} out of {lncfs}"
-                      f" at directory {ncf_dir_num} out of {lncfd}...")
+                      f"from file {ncf_num} out of {lncfs} "
+                      f"at directory {ncf_dir_num} out of {lncfd}...")
                                 
                 faulty_file_trial = binary_faulty_file_detector(ncf_name)
                 
@@ -531,8 +531,8 @@ def extract_and_store_time_formats():
                 ncf_num = ncf[0] + 1
                 
                 print("Extracting time formats "
-                      f"from file {ncf_num} out of {lncfs}"
-                      f" at directory {ncf_dir_num} out of {lncfd}...")
+                      f"from file {ncf_num} out of {lncfs} "
+                      f"at directory {ncf_dir_num} out of {lncfd}...")
                 
                 faulty_file_trial = binary_faulty_file_detector(ncf_name)
                 
