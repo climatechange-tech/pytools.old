@@ -392,42 +392,16 @@ def climat_periodic_statistics(obj,
             obj_climat\
             = eval(f"obj.groupby(obj_climat_nonstd_times).{statistic}(dim=date_key)")
             
-            # if keep_std_dates:
-                
-            #     occ_time_name = date_key 
-            #     climat_dates = climat_dates
-                
-            #     # Rename the analogous dimension of 'time' on dimension list #
-            #     obj_climat_calc\
-            #     = obj_climat_calc.rename_dims({occ_time_name_temp : occ_time_name})
-                
-            #     # Rename the analogous dimension name of 'time' to standard #
-            #     obj_climat_calc\
-            #     = obj_climat_calc.rename({occ_time_name_temp : occ_time_name})
-                
-            # else:
-                
-            #     occ_time_name = "hourofyear" 
-            #     climat_dates = np.arange(lcd)
-                
-            #     # Rename the analogous dimension of 'time' on dimension list #
-            #     obj_climat_calc\
-            #     = obj_climat_calc.rename_dims({occ_time_name_temp : occ_time_name})
-                
-            #     # Rename the analogous dimension name of 'time' to standard #
-            #     obj_climat_calc\
-            #     = obj_climat_calc.rename({occ_time_name_temp : occ_time_name})
-                
-            
-            
             
         elif time_freq == "daily":
             obj_climat\
             = eval(f"obj.groupby(obj[date_key].dt.dayofyear).{statistic}(dim=date_key)")
             
+            
         elif time_freq == "monthly":
             obj_climat\
             = eval(f"obj.groupby(obj[date_key].dt.month).{statistic}(dim=date_key)")
+            
             
         elif time_freq == "seasonal":
             if not season_months:

@@ -17,6 +17,9 @@ import pandas as pd
 cwd = Path.cwd()
 main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 
+# Home directory #
+home_path = Path.home()
+
 # All-code containing directory #
 fixed_dirpath = str([path
                      for path in main_path
@@ -90,7 +93,7 @@ def save_previous_dirConfig():
     
     ofile_prev_dirConfig = open(prev_dirconfig_path, "w")
     
-    dirlist = find_allDirectories(alldoc_dirpath, True)
+    dirlist = find_allDirectories(home_path, True)
     
     for dirc in dirlist:
         ofile_prev_dirConfig.write(f"{dirpath_operations}/{dirc}\n")
