@@ -170,9 +170,9 @@ def remove_directories(directory_list):
 
 def rsync(source_paths,
           destination_paths,
-          mode="avrh",
-          source_allfiles_only=False,
-          delete_at_destination=True):
+          mode="arvh",
+          delete_at_destination=True,
+          source_allfiles_only=False):
     
     for sp, dp in zip(source_paths, destination_paths):
         

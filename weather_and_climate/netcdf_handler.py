@@ -215,7 +215,7 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
     return ds_out
     
 
-def saveNCDataAsCSV(nc_file_name,
+def saveNCdataAsCSV(nc_file_name,
                     columns_to_drop,
                     separator,
                     save_index_bool,

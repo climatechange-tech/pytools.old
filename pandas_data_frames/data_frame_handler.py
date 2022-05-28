@@ -356,7 +356,7 @@ def csv2df(file_name,
            engine=None,
            encoding=None,
            header='infer',
-           parse_dates_bool=False,
+           parse_dates=False,
            infer_dt_format_bool=False,
            index_col=None):
     
@@ -408,7 +408,7 @@ def csv2df(file_name,
     #       string name or column index. If a sequence of int / str is given, a
     #       MultiIndex is used.
         
-    if not parse_dates_bool:
+    if not parse_dates:
         df = pd.read_csv(file_name, 
                          sep=separator,
                          encoding=encoding,
@@ -416,7 +416,7 @@ def csv2df(file_name,
                          index_col=index_col,
                          engine=engine)
         
-    elif parse_dates_bool and not infer_dt_format_bool:
+    elif parse_dates and not infer_dt_format_bool:
         raise ValueError("Please set ´infer_datetime_format´ argument to True")
         
     else:
@@ -425,7 +425,7 @@ def csv2df(file_name,
                          encoding=encoding,
                          header=header,
                          engine=engine,
-                         parse_dates=parse_dates_bool,
+                         parse_dates=parse_dates,
                          index_col=index_col,
                          infer_datetime_format=infer_dt_format_bool)
     
