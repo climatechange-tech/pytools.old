@@ -31,6 +31,7 @@ def find_date_key(df):
                 if key.lower().startswith("da")
                 or key.lower().startswith("fe")
                 or key.lower().startswith("ti")
+                or key.lower().startswith("yy")
                 ]
                 
     if len(date_key) > 0:

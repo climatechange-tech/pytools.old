@@ -90,8 +90,8 @@ def periodic_statistics(obj, statistic, freq, drop_date_idx_col):
     # 
     # Parameters
     # ----------
-    # obj : pd.core.frame.DataFrame or xarray.core.dataset.Dataset
-    #       Object containing  data.
+    # obj : pandas.core.frame.DataFrame or xarray.core.dataset.Dataset
+    #       Object containing data.
     # statistic : {"max", "min", "mean", "std", "sum"}
     #       String that defines which statistic to compute.
     # freq : str

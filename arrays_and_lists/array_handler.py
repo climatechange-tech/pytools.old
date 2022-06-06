@@ -200,6 +200,31 @@ def sort_values_externally(array, wantarray=False):
     return sorted_values
 
 
+def count_unique_type_objects(list_of_objects):
+    
+    # Checks whether all objects contained in a given list are the same,
+    # for that iterating over the list, getting the type,
+    # make the list of types unique and checking its length.
+    # 
+    # Parameters
+    # ----------
+    # list_of_objects : list
+    #       List of whatever objects.
+    # 
+    # Returns
+    # -------
+    # unique_type_list : list of types
+    #       List containing the unique types of the objects in the list.
+    # lutl : int
+    #       Length of the unique object type list.
+    
+    unique_type_list = np.unique([type(element) for element in list_of_objects])
+    lutl = len(unique_type_list)
+    
+    return unique_type_list, lutl    
+        
+
+
 def select_array_elements(array, idx2access):
 
     # Function to select a slice of a 1D array or list.

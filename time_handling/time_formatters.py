@@ -3,6 +3,7 @@
 #----------------#
 
 import cftime as cft
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,28 @@ import pandas as pd
 #------------------#
 # Define functions #
 #------------------#
+
+def check_time_index_frequency(index):
+    
+    # Infer the most likely frequency given the input index. If the frequency is
+    # uncertain, a warning will be printed.
+    # 
+    # Parameters
+    # ----------
+    # index : DatetimeIndex or TimedeltaIndex or pd.core.series.Series
+    #        If passed a Series will use the values of the series (NOT THE INDEX).
+    # 
+    # Returns
+    # -------
+    # str or None
+    #     None if no discernible frequency.
+    
+    time_freq = pd.infer_freq(index)
+    
+    if time_freq is None:
+        raise ValueError("Could not determine the time frequency.")
+    else:
+        return time_freq
 
 def time_reformatter(time_array):
     
@@ -43,19 +66,17 @@ def time_reformatter(time_array):
     else:
         time_array_list = list(time_array.values)
         
-    time_array_list_strDtype = np.str_(time_array_list)
-    time_array_list_strDtype_split = time_array_list_strDtype.split("), ")
+    time_array_list_strDtype = np.str_(time_array_list)    
+    cftime_check = "cftime" in time_array_list_strDtype
     
-    cftime_check = any("cftime" in string
-                       for string in time_array_list_strDtype_split)
+    # TODO: is it possible to use the parameter below as global
+    # FOR ALL FUNCTIONS INSIDE 'pytools' directory ???
+    general_time_format = "%Y-%m-%d %H:%M:%S"
     
-    if cftime_check :
-        records = len(time_array)
-        time_format = "%Y-%m-%d %H:%M:%S"
-        
-        for i in range(records):
-            time_array[i] = cft.datetime.strftime(time_array[i], time_format)
-        time_array_reformatted = pd.to_datetime(time_array)
+    if cftime_check:            
+        time_array_reformatted\
+        = pd.to_datetime([cft.datetime.strftime(time_el, general_time_format)
+                          for time_el in time_array])
     
     else:
         time_array_reformatted = pd.to_datetime(time_array)
@@ -90,9 +111,10 @@ def time_rearranger(time_df, time_format_str):
 
     if records_true > 0:
         for i in twentyFourHour_df_true_idx:
+            
             time = time_df.loc[i].replace("24:00","00:00")
-            time = dt.datetime.strptime(time, time_format_str)
-            time += dt.timedelta(days=1)
+            time = datetime.datetime.strptime(time, time_format_str)
+            time += datetime.timedelta(days=1)
             time_df.loc[i] = time
 
         no24hour_idx = np.delete(twentyFourHour_df.index,
