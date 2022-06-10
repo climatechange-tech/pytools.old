@@ -181,11 +181,15 @@ def join_file_path_specs(file_path_parent,
                          file_path_name, 
                          file_path_ext,
                          file_path_name_joiner=None):
-        
-    if file_path_name_joiner is not None:
-        file_path_name = file_path_name_joiner.join(file_path_name)
     
-    new_file_path = f"{file_path_parent}/{file_path_name}.{file_path_ext}"
+    if isinstance(file_path_name, list) and file_path_name_joiner is not None:
+        file_path_name = file_path_name_joiner.join(file_path_name)
+        
+    if file_path_ext is None:
+        new_file_path = f"{file_path_parent}/{file_path_name}"
+    else:       
+        new_file_path = f"{file_path_parent}/{file_path_name}.{file_path_ext}"
+        
     new_file_path_noneFiltered = noneInString_filter(new_file_path)
     
     return new_file_path_noneFiltered

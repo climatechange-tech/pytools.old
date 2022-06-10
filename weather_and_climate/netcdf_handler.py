@@ -134,7 +134,7 @@ def saveDataAsNETCDF_standard(file_name,
         
     ds.attrs = global_attrs_dict
     
-    file_name += ".nc"
+    file_name += ".{extensions[0]}"
     
     ds.to_netcdf(file_name, "w", format="NETCDF4")
     print(f"{file_name} file successfully created")
@@ -215,12 +215,16 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
     return ds_out
     
 
-def saveNCdataAsCSV(nc_file_name,
+def saveNCdataAsCSV(nc_file, 
                     columns_to_drop,
                     separator,
-                    save_index_bool,
-                    save_header_bool,
-                    date_format=None):
+                    save_index,
+                    save_header,
+                    csv_file_name="default",
+                    date_format=None,
+                    approximate_coords=False,
+                    latitude_point=None,
+                    longitude_point=None):
     
     # Function that saves netCDF data into a CSV file AS IT IS, where data variables
     # are originally 3D, dependent on (time, latitude, longitude).
@@ -237,22 +241,40 @@ def saveNCdataAsCSV(nc_file_name,
     # 
     # Parameters
     # ----------
-    # nc_file_name : str
-    #       String of the xarray data set containing file.
+    # nc_file : str or xarray.core.dataset.Dataset or 
+    #                xarray.core.dataarray.DataArray
+    #       String of the xarray data set containing file or
+    #       the already opened data array or set.
     # columns_to_drop : str or list of str
     #       Names of the columns to drop, if desired, from the
     #       resultant data frame of xarray.to_pandas() method.
+    #       If None, then the function will not drop any column.
+    #       To drop only coordinate labels, select "coords".
+    #       Else, the function will drop the custom labels passed.
     # separator : str
     #       String used to separate data columns.
-    # save_index_bool : bool
+    # save_index : bool
     #       Boolean to choose whether to include a column into the excel document
     #       that identifies row numbers. Default value is False.
-    # save_header_bool : bool
+    # save_header : bool
     #       Boolean to choose whether to include a row into the excel document
     #       that identifies column numbers. Default value is False.
+    # csv_file_name : str, optional
+    #       If nc_file is a string and "default" option is chosen,
+    #       then the function will attempt to extract a location name.
+    #       If nc_file is a xarray object, a custom name must be provided.    #       
     # date_format : str
     #       In case the data frame contains a time column,
     #       use to give format thereof when storing the data frame.
+    # approximate_coords : str
+    #       If both latitude and longitude arrays are length higher than 1,
+    #       determines whether to select a coordinate point and then
+    #       perform the saving. If true and both lengths are 1,
+    #       throws and error telling that data is already located at a point.
+    # latitude_point : float
+    #       Valid only if approximate_coords is True.
+    # longitude_point : float
+    #       Valid only if approximate_coords is True.
     # 
     # Returns
     # -------
@@ -267,42 +289,88 @@ def saveNCdataAsCSV(nc_file_name,
     # or several grid points' data for a specific time position.
     # Data frame column names will be the same as those on netCDF data file.
     
-    # Open netCDF data file #
-    print(f"Opening {nc_file_name}...")
-    ds = xr.open_dataset(nc_file_name)
-    
-    if isinstance(columns_to_drop, str):
-        columns_to_drop = [columns_to_drop]
+    # Open netCDF data file if passed a string #
+    if isinstance(nc_file, str):
+        print(f"Opening {nc_file}...")
+        ds = xr.open_dataset(nc_file)
         
-    data_frame\
-    = ds.to_pandas().reset_index(drop=False).drop(columns=columns_to_drop)
+    else:
+        ds = nc_file.copy()
         
-    # Define file format saver parameters #
-    #-------------------------------------#
+    if approximate_coords\
+    and (latitude_point is not None or longitude_point is not None):
+        
+        coord_varlist = find_coordinate_variables(ds)
+        lats = ds[coord_varlist[0]]
+        lons = ds[coord_varlist[1]]
+        
+        llats, llons = len(lats), len(lons)
+        
+        if llats == llons == 1:
+            raise ValueError("Object is already located at a point data")
+        else:
+            if latitude_point is None:
+                raise ValueError("Latitude point coordinate not given")
+            
+            elif longitude_point is None:
+                raise ValueError("Longitude point coordinate not given")
+            
+            elif latitude_point is None and longitude_point is None:
+                raise ValueError("Both latitude and longitude "
+                                 "point coordinates not given.")
+                
+            else:
+                lat_idx = abs(lats - latitude_point).argmin()
+                lon_idx = abs(lons - longitude_point).argmin()
+                
+                coord_idx_kw = {
+                    coord_varlist[0] : lat_idx,
+                    coord_varlist[1] : lon_idx
+                    }
+                
+                ds = ds.isel(**coord_idx_kw)
+
+    # Drop columns if desired #
+    if columns_to_drop is None:
+        data_frame\
+        = ds.to_pandas().reset_index(drop=False)
     
-    extension = "csv"
+    elif columns_to_drop == "coords": 
+        columns_to_drop = coord_varlist.copy()
+        data_frame\
+        = ds.to_pandas().reset_index(drop=False).drop(columns=columns_to_drop)
+        
+    else:
+        data_frame\
+        = ds.to_pandas().reset_index(drop=False).drop(columns=columns_to_drop)
+       
+    # Create the saving file's name or maintain the user-defined name #
+    #-----------------------------------------------------------------#
     
-    file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-    = file_path_specs(nc_file_name, file_path_splitchar)
+    if isinstance(nc_file, str) and csv_file_name == "default":
+            
+        file_path_noname, file_path_name, file_path_name_split, file_path_ext\
+        = file_path_specs(nc_file, file_path_splitchar)
+        
+        # Change the extension to that of the desired one #
+        file_path_ext = extensions[1]
+        
+        csv_file_name = join_file_path_specs(file_path_noname,
+                                             file_path_name,
+                                             file_path_ext)
     
-    # Change the extension to that of the desired one #
-    file_path_ext = extension
-    
-    csv_file_name = join_file_path_specs(file_path_noname,
-                                         file_path_name,
-                                         file_path_ext)
-    
+    elif not isinstance(nc_file, str) and csv_file_name == "default":
+        raise ValueError("You must provide a CSV file name")
+        
     # Save data as desired format file #   
     #----------------------------------#
     
     save2csv(csv_file_name,
              data_frame,
              separator,
-             save_index_bool,
-             save_header_bool,
+             save_index,
+             save_header,
              date_format)
-    
-    print(f"{csv_file_name} successfully created.")
         
 #-----------------------#
 # Basic data extractors #
@@ -310,7 +378,7 @@ def saveNCdataAsCSV(nc_file_name,
 
 def get_netcdf_fileList(path_to_walk_in):
     
-    netcdf_files = find_ext_file_paths(extension, 
+    netcdf_files = find_ext_file_paths(extensions[0], 
                                        path_to_walk_in, 
                                        top_path_only=True)
     
@@ -319,7 +387,7 @@ def get_netcdf_fileList(path_to_walk_in):
 
 def get_netcdf_file_dirList(path_to_walk_in):
     
-    netcdf_files_dirs = find_ext_file_directories(extension, path_to_walk_in)
+    netcdf_files_dirs = find_ext_file_directories(extensions[0], path_to_walk_in)
     
     return netcdf_files_dirs
 
@@ -1055,5 +1123,5 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
 repeatedly inside functions above.
 """
 
-extension = "nc"
+extensions = ["nc", "csv"]
 file_path_splitchar = "_"

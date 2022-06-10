@@ -218,7 +218,7 @@ def count_unique_type_objects(list_of_objects):
     # lutl : int
     #       Length of the unique object type list.
     
-    unique_type_list = np.unique([type(element) for element in list_of_objects])
+    unique_type_list = np.unique([str(type(element)) for element in list_of_objects])
     lutl = len(unique_type_list)
     
     return unique_type_list, lutl    

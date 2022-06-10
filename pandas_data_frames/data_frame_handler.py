@@ -2,9 +2,45 @@
 # Import modules #
 #----------------#
 
-import json
+import datetime
 
+import importlib
+import json
+from pathlib import Path
+
+import numpy as np
 import pandas as pd
+
+
+#---------------------------#
+# Get the fixed directories #
+#---------------------------#
+
+cwd = Path.cwd()
+main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
+
+# All-code containing directory #
+fixed_dirpath = str([path
+                     for path in main_path
+                     if "pytools" in str(path).lower()][0])
+
+#-----------------------#
+# Import custom modules #
+#-----------------------#
+
+module_imp1 = "global_parameters.py"
+module_imp1_path = f"{fixed_dirpath}/"\
+                   f"global_parameters/{module_imp1}"
+
+spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+global_parameters = importlib.util.module_from_spec(spec1)
+spec1.loader.exec_module(global_parameters)
+
+#----------------------------------------------------#
+# Define imported module(s)´ function call shortcuts #
+#----------------------------------------------------#
+
+basic_time_format_strs = global_parameters.basic_time_format_strs
 
 #------------------#
 # Define functions #
@@ -251,8 +287,8 @@ def excel2df(file_name):
 
 def save2excel(file_name,
                frame_obj,
-               save_index_bool=False,
-               save_header_bool=False):
+               save_index=False,
+               save_header=False):
     
     # Function that saves a data frame or set of data frames
     # into separate excel tabs.
@@ -267,12 +303,14 @@ def save2excel(file_name,
     #       Keys are tab or sheet names and values are pandas data frames.
     #       A pandas data frame is used to introduce
     #       single default name tab data.
-    # save_index_bool : bool
+    # save_index : bool
     #       Boolean to choose whether to include a column into the excel document
     #       that identifies row numbers. Default value is False.
-    # save_header_bool : bool
+    # save_header : bool
     #       Boolean to choose whether to include a row into the excel document
     #       that identifies column numbers. Default value is False.
+    
+    file_name += f".{extensions[1]}"
     
     if isinstance(frame_obj, dict):
     
@@ -281,12 +319,12 @@ def save2excel(file_name,
         for sheet, frame in frame_obj.items():
             frame.to_excel(writer,
                            sheet_name=sheet,
-                           index=save_index_bool,
-                           header=save_header_bool)
+                           index=save_index,
+                           header=save_header)
         writer.save()
 
     elif isinstance(frame_obj, pd.core.frame.DataFrame):
-        frame_obj.to_excel(file_name, save_index_bool, save_header_bool)
+        frame_obj.to_excel(file_name, save_index, save_header)
         
     else:
         raise ValueError("Wrong type of frame. "
@@ -310,8 +348,8 @@ def json2df(json_file_list):
 def save2csv(file_name,
              data_frame,
              separator,
-             save_index_bool,
-             save_header_bool,
+             save_index,
+             save_header,
              date_format=None):
     
     # Function that saves a data frame into a CSV file.
@@ -324,10 +362,10 @@ def save2csv(file_name,
     #       Data frame where data is stored.
     # separator : str
     #       String used to separate data columns.
-    # save_index_bool : bool
+    # save_index : bool
     #       Boolean to choose whether to include a column into the excel document
     #       that identifies row numbers. Default value is False.
-    # save_header_bool : bool
+    # save_header : bool
     #       Boolean to choose whether to include a row into the excel document
     #       that identifies column numbers. Default value is False.
     # date_format : str
@@ -336,17 +374,19 @@ def save2csv(file_name,
     
     if isinstance(data_frame, pd.core.frame.DataFrame):
         
+        file_name += f".{extensions[0]}"
+        
         if not date_format:
             data_frame.to_csv(file_name,
-                              separator,
-                              index=save_index_bool,
-                              header=save_header_bool)
+                              sep=separator,
+                              index=save_index,
+                              header=save_header)
         else:
             data_frame.to_csv(file_name,
-                              separator,
+                              sep=separator,
                               date_format=date_format,
-                              index=save_index_bool,
-                              header=save_header_bool)
+                              index=save_index,
+                              header=save_header)
         
     else:        
         raise TypeError("Wrong type of data. "
@@ -435,8 +475,8 @@ def csv2df(file_name,
 
 def insert_column_in_df(df, index_col, column_name, values):
     
-    # Function that inserts a column on a pandas data frame,
-    # specified by an index column.
+    # Function that inserts a column on a simple, non multi-index
+    # pandas data frame, specified by an index column.
     # 
     # Parameters
     # ----------
@@ -444,15 +484,91 @@ def insert_column_in_df(df, index_col, column_name, values):
     #       Data frame containing data.
     # index_col : int
     #       Denotes the column position to insert new data.
-    #       It is the same as introducing a column at which
-    #       would be the left of that index column.
-    #       Once inserted on that position, the rest of the
-    #       data will be displaced rightwards.
+    #       It is considered that data is desired to introduced
+    #       at the LEFT of that index, so that once inserted data on that position, 
+    #       the rest of the data will be displaced rightwards.
     # column_name : str
     #       Name of the column to be inserted.
     # values : list, numpy.array or pandas.core.series.Series
 
     df.insert(index_col, column_name, values)
+    
+    
+def insert_row_in_df(df, index_row, values=np.nan, reset_indexes=False):
+    
+    # Function that inserts a row on a simple, non multi-index
+    # pandas data frame, in a specified index column.
+    # That row can be introduced at the begginning, ending,
+    # or in any position between them.
+    # This function works either with integer or DatetimeIndex arrays.
+    # 
+    # Parameters
+    # ----------
+    # df : pandas.core.frame.DataFrame
+    #       Data frame containing data.
+    # index_row : int, str, datetime.datetime
+    #             or pandas._libs.tslibs.timestamps.Timestamp
+    #       Denotes the row position to insert new data.
+    #       It is considered that data is desired to introduced
+    #       ABOVE that index, so that once inserted data on that position, 
+    #       the rest of the data will be displaced downwards.
+    #       
+    #       Strictly speaking, this function distinguishes between four cases:
+    #       1. The index is an integer:
+    #           If index_row == 0 then the row will be introduced
+    #           at the begginning, ending if index_row == -1,
+    #           else at any other position.
+    #       2. The index is a datetime.datetime tuple:
+    #           The index will be introduced at the end of the data frame,
+    #           and then the indexes will be sorted.
+    #           Note this means that the new time array spacing is NOT even.
+    #           
+    # values : single value or list or numpy.array or pandas.core.series.Series
+    #       The type of the value(s) is considered as irrelevant.
+    #       Default value is a row of NaNs.
+    
+    idx = df.index
+    
+    if isinstance(idx, pd.core.indexes.range.RangeIndex)\
+    or isinstance(idx, pd.core.indexes.numeric.Float64Index):
+    
+        if index_row == 0:
+            df_shift = df.shift()
+            df_shift.loc[idx[-1]+1] = df.loc[idx[-1]] 
+            df_shift.loc[idx[0], :] = values
+            df = df_shift
+            
+        elif index_row == -1:
+            df.loc[idx[-1]+1, :] = values
+            
+        else:
+            index_between = index_row - 0.5
+            df.loc[index_between, :] = values
+            
+            if reset_indexes:
+                df = df.reset_index(drop=True)
+    
+    else:
+        try:
+            time_freq = pd.infer_freq(idx)
+        except:
+            time_freq = pd.infer_freq(idx[100])
+            
+        time_abbrs = basic_time_format_strs
+        
+        if isinstance(index_row, str):
+            if time_freq not in time_abbrs:
+                time_format = basic_time_format_strs["H"]
+            else:
+                time_format = basic_time_format_strs[time_freq]
+                
+            index_row = datetime.datetime.strptime(index_row, time_format)
+        
+        df.loc[index_row, :] = values
+        df.sort_index()
+        
+    return df
+        
     
     
 def sort_df_indexes(df,
@@ -545,3 +661,14 @@ def sort_df_values(df,
                         key=key)
 
     return df
+
+
+#-----------------------------------------------#
+# Define global parameters below every function #
+#-----------------------------------------------#
+
+"""Declare those global so as not to use them
+repeatedly inside functions above.
+"""
+
+extensions = ["csv", "xlsx"]

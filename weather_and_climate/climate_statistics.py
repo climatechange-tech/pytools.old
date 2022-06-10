@@ -65,9 +65,20 @@ spec4 = importlib.util.spec_from_file_location(module_imp4, module_imp4_path)
 netcdf_handler = importlib.util.module_from_spec(spec4)
 spec4.loader.exec_module(netcdf_handler)
 
+
+module_imp5 = "global_parameters.py"
+module_imp5_path = f"{fixed_dirpath}/"\
+                   f"global_parameters/{module_imp5}"
+
+spec5 = importlib.util.spec_from_file_location(module_imp5, module_imp5_path)
+global_parameters = importlib.util.module_from_spec(spec5)
+spec5.loader.exec_module(global_parameters)
+
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
+
+basic_time_format_strs = global_parameters.basic_time_format_strs
 
 find_date_key = data_frame_handler.find_date_key
 insert_column_in_df = data_frame_handler.insert_column_in_df
@@ -78,6 +89,8 @@ select_array_elements = array_handler.select_array_elements
 
 find_time_dimension = netcdf_handler.find_time_dimension
 get_file_dimensions = netcdf_handler.get_file_dimensions
+
+month_number_dict = global_parameters.month_number_dict
 
 #------------------#
 # Define functions #
@@ -324,10 +337,6 @@ def climat_periodic_statistics(obj,
             """Define a dictionary matching the month number 
             with the corresponding names first letter
             """
-            mlnd = {1:"J",2:"F",3:"M",
-                    4:"A",5:"M",6:"J",
-                    7:"J",8:"A",9:"S",
-                    10:"O",11:"N",12:"D"}
             
             if season_months is None:
                 raise ValueError("You must specify the season months in a list. "\
@@ -335,9 +344,9 @@ def climat_periodic_statistics(obj,
                     
             if keep_std_dates:
                 climat_dates = [obj[obj[date_key].dt.month==season_months[-1]].
-                                iloc[-1][date_key].strftime("%Y-%m-%d")]
+                                iloc[-1][date_key].strftime(basic_time_format_strs["D"])]
             else:
-                climat_dates = "".join([mlnd[m] for m in season_months]).split()
+                climat_dates = "".join([month_number_dict[m] for m in season_months]).split()
                 climat_obj_cols[0] = "season"
                 
                     
