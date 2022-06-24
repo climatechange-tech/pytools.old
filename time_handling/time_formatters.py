@@ -210,7 +210,8 @@ def standardize_calendar(obj,
                          file_path,
                          interpolation_method=None,
                          order=None,
-                         save_as_new_obj=False, extension=None, 
+                         save_as_new_obj=False, 
+                         extension=None, 
                          separator=",",
                          save_index=False,
                          save_header=False):
@@ -297,9 +298,9 @@ def standardize_calendar(obj,
                 time_freq = check_time_index_frequency(obj.loc[:10,time_col])
                 
                 # Get the time array with possible missing datetimes #
-                time_miss = obj.loc[:,time_col]
-                time_miss_arr = time_reformatter(time_miss.values)
-                ltm = len(time_miss)
+                time_shorter = obj.loc[:,time_col]
+                time_shorter_arr = time_reformatter(time_shorter.values)
+                ltm = len(time_shorter)
                
                 # Construct full time array to compare with the previous array #
                 first_datetime = obj.iloc[0, 0]
@@ -315,23 +316,26 @@ def standardize_calendar(obj,
                 
                 # Compare both time arrays, even if they have the same length #
                 if ltm != lft:
-                    for ft in enumerate(full_times):
-                        
-                        ft_num = ft[0]
-                        ft_str = ft[-1]
-                         
-                        # lines_remaining = lft - (ft_num+1)
-                        
-                        if ft_str not in time_miss_arr:
-                            index_before = ft_num - 1
+                    for ft in full_times:
+                        if ft not in time_shorter_arr:
+                            
+                            """Previous day of the missing date-time (indexing)"""
+                            missing_date_yesterday\
+                            = ft - datetime.timedelta(days=1)
+                            index_yesterday\
+                            = obj[obj[time_col]==missing_date_yesterday].index
+                            
+                            """Actual missing time"""
+                            index_missing_time = int((index_yesterday + 1).to_numpy())
                             
                             missing_datetime\
-                            = obj.iloc[index_before, 0] + datetime.timedelta(days=1)
+                            = missing_date_yesterday + datetime.timedelta(days=1)
                             
-                            values = np.append(missing_datetime, 
+                            """Define values to insert"""
+                            values = np.append(missing_datetime,
                                                np.repeat(np.nan, len(obj.columns[1:])))
                             
-                            insert_row_in_df(obj, ft_num, values=values)
+                            insert_row_in_df(obj, index_missing_time, values=values)
                 
                     # Reorder the data frame indexes #
                     obj = obj.sort_index().reset_index(drop=True)
@@ -364,7 +368,7 @@ def standardize_calendar(obj,
                     
                     saving_file_name = join_file_path_specs(file_path_parent, 
                                                             file_path_name, 
-                                                            None) + "stdCalendar" 
+                                                            None) + "_stdCalendar" 
                     
                     if extension == "csv":        
                         
@@ -396,7 +400,7 @@ def standardize_calendar(obj,
                         raise ValueError("Wrong extension choice. "
                                          "Options for a Pandas data frame are {'csv', 'xlsx'}")
                         
-                return obj_stdCalendar
+    return obj_stdCalendar
             
         # TODO: develop the case for xarray.core.dataset.Dataset objects #
         # elif isinstance(obj[0], xr.core.dataset.Dataset)\

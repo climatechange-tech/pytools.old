@@ -226,11 +226,15 @@ def climat_periodic_statistics(obj,
     tf_idx = find_substring_index(time_freqs, time_freq)
     
     if tf_idx == -1:
-        raise ValueError(f"Wrong time-frequency. Options are {time_freqs}.")
+        tf_idx = find_substring_index(freq_abbrs, time_freq)
+        time_freq = time_freqs[tf_idx]
+        freq_abbr = freq_abbrs[tf_idx]
+        
+        if tf_idx == -1:
+            raise ValueError(f"Wrong time-frequency. Options are {time_freqs}.")
     else:
         freq_abbr = freq_abbrs[tf_idx]
     
-        
     # Time dimension name identification #
     #------------------------------------#
     
@@ -269,17 +273,7 @@ def climat_periodic_statistics(obj,
         climat_obj_cols = [date_key] + [obj.columns[i]+"_climat" 
                                         for i in range(1, ncols_obj)]
                 
-        if time_freq == "hourly":            
-            if keep_std_dates:
-                climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
-                                             f"{latest_year}-12-31 23:00",
-                                             freq=freq_abbr)
-            else:    
-                lcd = len(climat_dates)
-                climat_dates = np.arange(lcd)
-                climat_obj_cols[0] = "hour_of_year"
-            
-            
+        if time_freq == "hourly":  
             climat_vals\
             = [np.float64(eval("obj[(obj[date_key].dt.month==m)"\
                                    "&(obj[date_key].dt.day==d)"\
@@ -293,17 +287,17 @@ def climat_periodic_statistics(obj,
                           &(obj[date_key].dt.day==d)
                           &(obj[date_key].dt.hour==h)].iloc[:,1:]) > 0]
                 
-            
-        elif time_freq == "daily":            
             if keep_std_dates:
                 climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
                                              f"{latest_year}-12-31 23:00",
                                              freq=freq_abbr)
             else:    
-                lcd = len(climat_dates)
-                climat_dates = np.arange(1,lcd+1)
-                climat_obj_cols[0] = "day_of_year"
-                
+                lcv = len(climat_vals)
+                climat_dates = np.arange(lcv)
+                climat_obj_cols[0] = "hour_of_year"
+            
+            
+        elif time_freq == "daily":   
             climat_vals\
             = [np.float64(eval("obj[(obj[date_key].dt.month==m)"\
                                     "&(obj[date_key].dt.day==d)]."\
@@ -314,7 +308,16 @@ def climat_periodic_statistics(obj,
                
                if len(obj[(obj[date_key].dt.month==m)
                           &(obj[date_key].dt.day==d)].iloc[:,1:]) > 0]
-            
+                
+            if keep_std_dates:
+                climat_dates = pd.date_range(f"{latest_year}-01-01 0:00",
+                                             f"{latest_year}-12-31 23:00",
+                                             freq=freq_abbr)
+            else:    
+                lcv = len(climat_vals)
+                climat_dates = np.arange(1,lcv+1)
+                climat_obj_cols[0] = "day_of_year"
+                
                 
         elif time_freq == "monthly":            
             if keep_std_dates:
@@ -363,8 +366,7 @@ def climat_periodic_statistics(obj,
     
             climat_vals = [np.float64(eval(f"climat_df.iloc[:,1:].{statistic}()"))]
             climat_dates = [climat_df.iloc[-1,0]]
-            
-            
+              
         # Check climatological value array's shape to later fit into the df #
         climat_vals = np.array(climat_vals)
         climat_vals_shape = climat_vals.shape
@@ -476,6 +478,8 @@ def climat_periodic_statistics(obj,
     return obj_climat
 
 
+# def calculate_climat_deltas_and_apply()
+
 def windowSum(x, N):
 
     # Function that computes the sum of the elements
@@ -552,4 +556,3 @@ def moving_average(x, N):
     #       The moving average of the array.
     
     moving_average = windowSum(x, N) / N
-    return moving_average

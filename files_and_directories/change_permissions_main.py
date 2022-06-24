@@ -64,6 +64,7 @@ def remove_file_executability(source_directory, extensions2skip):
     file_extension_list = find_allfile_extensions(extensions2skip)
     for extension in file_extension_list:
         find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
+                            "-type f "\
                             "-exec chmod ugo-x "\
                             r"'{}' "\
                             "\;"
@@ -76,7 +77,8 @@ def reset_directory_permissions(source_directory):
     
     dirlist = directory_handler.find_allDirectories(source_directory)
     for dirc in dirlist:
-        find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' -type d "\
+        find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
+                            "-type d "\
                             "-exec chmod 775 "\
                             r"'{}' "\
                             "\;"
@@ -97,6 +99,7 @@ def change_file_owner_group(source_directory,
 
         for extension in file_extension_list:
             find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
+                                "-type f "\
                                 f"-exec chown {whoami} "\
                                 r"'{}' "\
                                 "\; "\
@@ -111,6 +114,7 @@ def change_file_owner_group(source_directory,
 
         for extension in file_extension_list:
             find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
+                                "-type f "\
                                 f"-exec chown {whoami} "\
                                 r"'{}' "\
                                 "\;"
@@ -122,6 +126,7 @@ def change_file_owner_group(source_directory,
         
         for extension in file_extension_list:
             find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
+                                "-type f "\
                                 f"-exec chgrp {whoami} "\
                                 r"'{}' "\
                                 "\;"
@@ -137,7 +142,8 @@ def change_directory_owner_group(source_directory,
         print("Changing all directories' owner and group...")
 
         for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' -type d "\
+            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
+                                "-type d "\
                                 f"-exec chown {whoami} "\
                                 r"'{}' "\
                                 "\; "\
@@ -150,7 +156,8 @@ def change_directory_owner_group(source_directory,
         print("Changing all directories' owner...")
         
         for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' -type d "\
+            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
+                                "-type d "\
                                 f"-exec chown {whoami} "\
                                 r"'{}' "\
                                 "\;"                               
@@ -160,7 +167,8 @@ def change_directory_owner_group(source_directory,
         print("Changing all directories' group...")
         
         for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' -type d "\
+            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
+                                "-type d "\
                                 f"-exec chgrp {whoami} "\
                                 r"'{}' "\
                                 "\;"                                

@@ -2,8 +2,9 @@
 # Import modules # 
 #----------------#
 
-import os
 from pathlib import Path
+
+import numpy as np
 
 #------------------#
 # Define functions #
@@ -83,10 +84,10 @@ def find_substring_index(string, substring, find_whole_words=False):
         
         # Assume that every substring must be found at the string #
         lstr = len(string)
-        lsl = len(substring)
+        lsbtr = len(substring)
         
         if not find_whole_words:
-            if lsl == 1:
+            if lsbtr == 1:
                 substr_idx_list = [strng[0]
                                    for strng in enumerate(string)
                                    for el in substring
@@ -99,18 +100,18 @@ def find_substring_index(string, substring, find_whole_words=False):
                                    for i in range(lstr)}
                     
         else:
-            if lsl == 1:
+            if lsbtr == 1:
                 substr_idx_list = [strng[0]
                                    for strng in enumerate(string)
                                    for el in substring
                                    if (var_idx := strng[-1].find(el)) != -1
-                                   and "" in strng[-1].split(el)]
+                                   and len(np.unique(strng[-1].split(el))) == 1]
             else:
                 substr_idx_list = {i :
                                    tuple(var_idx
                                          for el in substring
                                          if (var_idx := string[i].find(el)) != -1
-                                         and "" in string[i].split(el))
+                                         and len(np.unique(string[i].split(el))) == 1)
                                    for i in range(lstr)}
                     
         lsil = len(substr_idx_list)
