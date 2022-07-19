@@ -123,7 +123,7 @@ def find_substring_index(string, substring, find_whole_words=False):
             return -1
 
 
-def file_path_specs(file_path, splitchar):
+def file_path_specs(file_path, splitchar="_"):
     
     file_PATH = Path(file_path)
     
@@ -139,7 +139,7 @@ def file_path_specs(file_path, splitchar):
     
 
 
-def get_file_name_noRelPath(file_path, splitchar):
+def get_file_name_noRelPath(file_path, splitchar="_"):
     
     file_path_parent, file_path_name, file_path_name_split, file_path_ext\
     = file_path_specs(file_path, splitchar)
@@ -149,7 +149,7 @@ def get_file_name_noRelPath(file_path, splitchar):
     return file_name_noRelPath
 
     
-def create_temporal_file_name(file_path, splitchar):
+def create_temporal_file_name(file_path, splitchar="_"):
     
     file_path_parent, file_path_name, file_path_name_split, file_path_ext\
     = file_path_specs(file_path, splitchar)

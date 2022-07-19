@@ -46,6 +46,13 @@ basic_time_format_strs = global_parameters.basic_time_format_strs
 # Define functions #
 #------------------#
 
+def infer_time_frequency(df):
+    
+    date_key = find_date_key(df)
+    time_freq = pd.infer_freq(df[date_key])
+    
+    return time_freq
+
 def find_date_key(df):
     
     # Function that searches for date key in the columns of a pandas data frame.
@@ -334,14 +341,18 @@ def save2excel(file_name,
         
 def json2df(json_file_list):
     
+    if isinstance(json_file_list, str):
+        json_file_list = [json_file_list]
+    
     df = pd.DataFrame()
+
     for json_file in json_file_list:
         
         with open(json_file, 'r', encoding='latin1') as jsf:
             data = json.load(jsf)
-            next_df = pd.DataFrame(data)
+            next_df = pd.json_normalize(data)
             df = pd.concat([df, next_df],ignore_index=True)
-            
+ 
     return df
 
 

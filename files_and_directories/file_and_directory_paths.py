@@ -239,7 +239,7 @@ def find_fileString_directories(file_string, path_to_walk_in):
     dirlist = [path.parent
                for path in ptwi_path
                for fs in file_string
-               if len(path.glob(f"{fs}")) > 0]
+               if len(list(path.glob(f"{fs}"))) > 0]
     
     unique_dirlist = list(np.unique(dirlist))
     return unique_dirlist

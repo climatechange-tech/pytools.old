@@ -63,7 +63,7 @@ rename_objects = file_handler.rename_objects
 
 def reorder_files(nzeros_left,
                   extensions2skip,
-                  file_name_splitchar,
+                  file_name_splitchar="_",
                   distinguish_extensions=False):
     
     ext_list = find_allfile_extensions(extensions2skip, top_path_only=True)

@@ -65,13 +65,6 @@ get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
 get_times = netcdf_handler.get_times
 
-#------------------------------------------------------#
-# Define global variable used in many custom functions #
-#------------------------------------------------------#
-
-name_splitchar1 = "_"
-name_splitchar2 = "-"
-
 #-------------------------#
 # Define custom functions #
 #-------------------------#
@@ -694,3 +687,10 @@ def apply_periodic_deltas(projected_ncfile,
                          "{'+', '-', '*', '/'}.")
                       
     os.system(deltaApply_command)
+    
+#------------------------------------------------------#
+# Define global variable used in many custom functions #
+#------------------------------------------------------#
+
+name_splitchar1 = "_"
+name_splitchar2 = "-"

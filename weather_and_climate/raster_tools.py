@@ -99,8 +99,6 @@ def merge_independent_rasters(raster_files_dict,
     
     list_lengths_set = set([len(raster_files_dict[key]) for key in keys])
     lls_length = len(list_lengths_set)
-    
-    splitchar = "_"
 
     if lls_length > 1:
         raise ValueError("Not every key list is of the same length!")
@@ -117,7 +115,7 @@ def merge_independent_rasters(raster_files_dict,
                                 for key in keys]
             
             file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-            = file_path_specs(raster_file_list[0], splitchar)
+            = file_path_specs(raster_file_list[0])
             
             file_path_name_split[-2] = joint_region_name
 
@@ -146,3 +144,10 @@ def merge_independent_rasters(raster_files_dict,
                                    f"{zsh_allfile_string}"  
                                    
             os.system(zsh_raster_merge)
+
+
+#-------------------------#
+# Define global variables #
+#-------------------------#
+    
+splitchar = "_"

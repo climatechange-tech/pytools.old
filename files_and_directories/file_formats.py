@@ -159,8 +159,7 @@ def select_pages_from_pdf_file(files,
         
     file_name_splitchar = "."
     
-    if\
-    isinstance(files, list)\
+    if isinstance(files, list)\
     and isinstance(page_strings, list)\
     and cut_recursively:
         
@@ -168,8 +167,7 @@ def select_pages_from_pdf_file(files,
             for pgs in page_strings:
                 cut_pages(file, file_name_splitchar, pgs)
                 
-    elif\
-    isinstance(files, list)\
+    elif isinstance(files, list)\
     and isinstance(page_strings, list)\
     and not cut_recursively: 
         

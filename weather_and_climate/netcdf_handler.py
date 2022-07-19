@@ -297,8 +297,7 @@ def saveNCdataAsCSV(nc_file,
     else:
         ds = nc_file.copy()
         
-    if approximate_coords\
-    and (latitude_point is not None or longitude_point is not None):
+    if latitude_point is not None or longitude_point is not None:
         
         coord_varlist = find_coordinate_variables(ds)
         lats = ds[coord_varlist[0]]
@@ -320,15 +319,43 @@ def saveNCdataAsCSV(nc_file,
                                  "point coordinates not given.")
                 
             else:
-                lat_idx = abs(lats - latitude_point).argmin()
-                lon_idx = abs(lons - longitude_point).argmin()
                 
-                coord_idx_kw = {
-                    coord_varlist[0] : lat_idx,
-                    coord_varlist[1] : lon_idx
-                    }
+                if approximate_coords:
+                    
+                    lat_idx = abs(lats - latitude_point).argmin()
+                    lon_idx = abs(lons - longitude_point).argmin()
+                    
+                    coord_idx_kw = {
+                        coord_varlist[0] : lat_idx,
+                        coord_varlist[1] : lon_idx
+                        }
+                    
+                    ds = ds.isel(**coord_idx_kw)
+                    
+                else:
+                    
+                    coord_idx_kw = {
+                        coord_varlist[0] : latitude_point,
+                        coord_varlist[1] : longitude_point
+                        }
+                    
+                    ds = ds.sel(**coord_idx_kw)
+                    
+    elif latitude_point is not None\
+    and isinstance(approximate_coords, str):
                 
-                ds = ds.isel(**coord_idx_kw)
+        print(f"Coordinate label is {approximate_coords}")
+        
+        coord_idx_kw = {
+            approximate_coords : latitude_point,
+            }
+        
+        ds = ds.isel(**coord_idx_kw)
+        
+    elif latitude_point is None\
+    and isinstance(approximate_coords, str):
+        
+        raise ValueError("You must provide a coordinate or ID")
 
     # Drop columns if desired #
     if columns_to_drop is None:
@@ -350,7 +377,7 @@ def saveNCdataAsCSV(nc_file,
     if isinstance(nc_file, str) and csv_file_name == "default":
             
         file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-        = file_path_specs(nc_file, file_path_splitchar)
+        = file_path_specs(nc_file)
         
         # Change the extension to that of the desired one #
         file_path_ext = extensions[1]
@@ -360,7 +387,7 @@ def saveNCdataAsCSV(nc_file,
                                              file_path_ext)
     
     elif not isinstance(nc_file, str) and csv_file_name == "default":
-        raise ValueError("You must provide a CSV file name")
+        raise ValueError("You must provide a CSV file name.")
         
     # Save data as desired format file #   
     #----------------------------------#
@@ -375,6 +402,21 @@ def saveNCdataAsCSV(nc_file,
 #-----------------------#
 # Basic data extractors #
 #-----------------------#
+
+def infer_time_frequency(nc_file):
+    
+    if isinstance(nc_file, str):
+        print(f"Opening {nc_file}...")
+        ds = xr.open_dataset(nc_file)
+        
+    else:
+        ds = nc_file.copy()
+        
+    date_key = find_time_dimension(ds)
+    time_freq = xr.infer_freq(ds[date_key])
+    
+    return time_freq
+
 
 def get_netcdf_fileList(path_to_walk_in):
     

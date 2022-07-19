@@ -46,12 +46,6 @@ spec2.loader.exec_module(file_handler)
 create_temporal_file_name = string_handler.create_temporal_file_name
 rename_objects = file_handler.rename_objects
 
-#------------------------#
-# Define global variable # 
-#------------------------#
-
-file_name_splitchar = "_"
-
 #-------------------------#
 # Define custom functions #
 #-------------------------#
@@ -71,8 +65,7 @@ def modify_variable_units_and_values(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
                 
-        temp_file = string_handler.create_temporal_file_name(file_name,
-                                                             file_name_splitchar)
+        temp_file = create_temporal_file_name(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         
@@ -186,8 +179,7 @@ def modify_coordinate_values_byThreshold(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = string_handler.create_temporal_file_name(file_name,
-                                                             file_name_splitchar)
+        temp_file = create_temporal_file_name(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 
@@ -340,7 +332,8 @@ def modify_coordinate_allValues(file_list,
                                 dimension_name,
                                 threshold,
                                 operator,
-                                value):
+                                value,
+                                threshold_mode="max"):
     
     if not isinstance(file_list, list):
         file_list = [file_list]
@@ -351,8 +344,7 @@ def modify_coordinate_allValues(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = string_handler.create_temporal_file_name(file_name,
-                                                             file_name_splitchar)
+        temp_file = create_temporal_file_name(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 

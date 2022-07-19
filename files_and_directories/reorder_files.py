@@ -48,4 +48,4 @@ nzeros_left = 1
 extensions2skip = ["swp"]
 file_name_splitchar = "-"
 
-reorder_files(nzeros_left, extensions2skip, file_name_splitchar)
+reorder_files(nzeros_left, extensions2skip)
