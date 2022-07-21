@@ -227,7 +227,7 @@ def saveNCdataAsCSV(nc_file,
                     longitude_point=None):
     
     # Function that saves netCDF data into a CSV file AS IT IS, where data variables
-    # are originally 3D, dependent on (time, latitude, longitude).
+    # may originally be 3D, usually dependent on (time, latitude, longitude).
     # It is intended to speed up further data processes,
     # especially when opening very large netCDF files with xarray,
     # which can take a long time.
@@ -398,6 +398,69 @@ def saveNCdataAsCSV(nc_file,
              save_index,
              save_header,
              date_format)
+    
+    
+def saveDataArrayAsCSV(data_array, 
+                       separator,
+                       save_index,
+                       save_header,
+                       csv_file_name=None,
+                       new_columns="default",
+                       date_format=None):
+    
+    # Function that saves a xr.DataArray object into a CSV file AS IT IS,
+    # where data variables may originally be 3D, 
+    # usually dependent on (time, latitude, longitude).
+    # This function works exactly as 'saveNCdataAsCSV' function does,
+    # so the docstrings also apply.
+    # Parameters
+    # ----------
+    # data_array : xarray.core.dataarray.DataArray
+    # new_columns : str or list of str
+    #       Names of the columns for the data frame created from the object.
+    #       Default ones include 'time' and variable name label.
+    # separator : str
+    #       String used to separate data columns.
+    # save_index : bool
+    #       Boolean to choose whether to include a column into the excel document
+    #       that identifies row numbers. Default value is False.
+    # save_header : bool
+    #       Boolean to choose whether to include a row into the excel document
+    #       that identifies column numbers. Default value is False.
+    # csv_file_name : str, optional
+    #       If nc_file is a string and "default" option is chosen,
+    #       then the function will attempt to extract a location name.
+    #       If nc_file is a xarray object, a custom name must be provided.    #       
+    # date_format : str
+    # 
+    # Returns
+    # -------
+    # CSV file containing data as arranged on the data frame.
+    
+    # Drop information to a data frame #
+    data_frame = data_array.to_pandas().reset_index(drop=False)        
+        
+    # Define the 'time' dimension name #
+    date_key = find_time_dimension(data_array)
+    
+    # Rename the resulting data frame columns #
+    if new_columns == "default":
+        da_varname = data_array.name
+        new_columns = [date_key, da_varname]
+
+    data_frame.columns = new_columns
+       
+    # Create the saving file's name or maintain the user-defined name #
+    if csv_file_name is None:
+        raise ValueError("You must provide a CSV file name.")
+        
+    # Save data as desired format file #     
+    save2csv(csv_file_name,
+             data_frame,
+             separator,
+             save_index,
+             save_header,
+             date_format)
         
 #-----------------------#
 # Basic data extractors #
@@ -416,6 +479,23 @@ def infer_time_frequency(nc_file):
     time_freq = xr.infer_freq(ds[date_key])
     
     return time_freq
+
+
+def infer_full_period_of_time(nc_file):
+    
+    if isinstance(nc_file, str):
+        print(f"Opening {nc_file}...")
+        ds = xr.open_dataset(nc_file)
+        
+    else:
+        ds = nc_file.copy()
+        
+    date_key = find_time_dimension(ds)
+    
+    years = np.unique(ds[date_key].dt.year)
+    full_period = f"{years[0]-years[-1]}"
+    
+    return full_period
 
 
 def get_netcdf_fileList(path_to_walk_in):

@@ -53,6 +53,14 @@ def infer_time_frequency(df):
     
     return time_freq
 
+def infer_full_period_of_time(df):
+    
+    date_key = find_date_key(df)
+    years = np.unique(df[date_key].dt.year)
+    full_period = f"{years[0]-years[-1]}"
+    
+    return full_period
+
 def find_date_key(df):
     
     # Function that searches for date key in the columns of a pandas data frame.

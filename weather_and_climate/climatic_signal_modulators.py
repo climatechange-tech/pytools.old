@@ -20,10 +20,6 @@ fixed_dirpath = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
 
-#-----------------------#
-# Import custom modules #
-#-----------------------#
-#TODO: NO MODULES TO IMPORT YET
 #------------------#
 # Define functions #
 #------------------#
@@ -112,6 +108,106 @@ def autocorrelate(x, twosided=False):
         x_autocorr_onesided = x_autocorr_norm[x_autocorr_norm.size//2:] 
         return x_autocorr_onesided
     
+    
+def polynomial_fitting(y, poly_ord, fix_edges=False, 
+                       poly_func=None, poly_params=None):
+    
+    # Performs the polynomial fitting over a 1D array,
+    # using the least squares fit method.
+    # 
+    # This fitting method tries to fit a curve with a polynomial
+    # p(x) = p[0] * x**deg + ... + p[deg] of degree 'deg' to points (x, y).
+    # 
+    # For that, returns a vector of coefficients p that minimises
+    # the squared error in the order deg, deg-1, ... 0,
+    # 
+    # A lot of examples include pre-selected x-points that are passed into
+    # function numpy.polyfit, but as far as I am concerned,
+    # it is more practical to simply construct a linear space,
+    # between the edges of the array to be fitted.
+    # 
+    # Having this vector of coefficients, it then emulates the
+    # mentioned polynomial to encapsulate "natural" operations on polynomials.
+    # In simpler words, it constructs the polynomial as in written form, 
+    # that is, including the unknown variable.
+    # In this way, the array is fitted by evaluating it over the
+    # best fitting polynomial.
+    # 
+    # Parameters
+    # ----------
+    # y : list or np.ndarray
+    #       y-coordinates of the sample points. It must be 1D, otherwise
+    #       the function flattens the object to 1D.
+    # poly_ord : int 
+    #       The order of the array-fitting polynomial
+    # fix_edges : bool
+    #       If True, after performing the interpolation, the original
+    #       edges of array 'y' will be maintained,
+    #       for that making the following substitution:
+    #           ·new_y[0] = y[0]      
+    #           ·new_y[-1] = y[-1] 
+    # 
+    # poly_func : function
+    #       An alternative that consists of a function
+    #       with a predefined polynomial.
+    #       If is not None, then  the'scipy.optimize' module's 'curve_fit' 
+    #       function is used.
+    #       An example of this function would be, 
+    #       for the case of a 4th order polynomial:
+    # 
+    #           ·def func(x, a, b, c, d, e):
+    #                return a*x**3 + b*x**2 + c*x + d,
+    #       
+    #       where 'x' is a vector.
+    # 
+    # poly_params : list of integers or dictionary of integers
+    #       Used to pass the parameters into the latter.
+    #       An example linked with the mentioned 'func' function would be:
+    # 
+    #       ·params = dict(a=0.6, b=0.15, c=0.2, d=0.7)
+    # 
+    # Returns
+    # -------
+    # new_y : np.ndarray
+    #        Polynomial fitted value containing array.
+    # 
+    # Note
+    # ----
+    # The inconvenience of choosing the 'curve_fit' method it that the user
+    # has to define the function manually and adjust the parameters
+    # depending on the quality of the curve fitting.
+    
+    y_shape = y.shape
+    if len(y_shape) > 1:
+        y = y.flatten()
+    
+    ly = len(y)
+    x = np.arange(ly)
+    
+    if poly_func is None:
+        x_linspace = np.linspace(x[0], x[-1])
+
+        coefficients = np.polyfit(x, y, poly_ord)
+        polynomial = np.poly1d(coefficients)
+        new_y = polynomial(x_linspace)
+        
+    else:
+        from scipy.optimize import curve_fit
+        
+        y_polynomial = poly_func(y, **poly_params)
+        popt, pcov = curve_fit(poly_func, x, y_polynomial)
+        new_y = poly_func(x,*popt)
+        
+    if fix_edges:
+        new_y_fixedEdges = new_y.copy()
+        new_y_fixedEdges[0] = y[0]
+        new_y_fixedEdges[-1] = y[-1]
+        
+        return new_y_fixedEdges
+    
+    else:
+        return new_y
+    
 # TODO: definitu seinalea zuritzeko funtzioak
 # def signal_whitening(data, method="classic"):
     
@@ -120,11 +216,3 @@ def autocorrelate(x, twosided=False):
 #     elif method=="sklearn":
         
 #     elif method=="zca":
-                
-def polynomial_fitting_coefficients(x, y, poly_ord):
-    polyCoeff_array = np.polyfit(x, y, poly_ord)
-    return polyCoeff_array
-    
-def evaluate_polynomial(polynomial_coefficients, value2eval):
-    evaluated_poly_value = np.polyval(polynomial_coefficients, value2eval)
-    return evaluated_poly_value
