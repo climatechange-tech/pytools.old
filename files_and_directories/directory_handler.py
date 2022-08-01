@@ -76,33 +76,32 @@ rename_objects = file_handler.rename_objects
 # Recovery operations #
 #---------------------#
 
-def create_previous_dirConfig_specs():
+def create_dirList_file():
     
-    dirpath_operations = Path.cwd()
     prev_dirconfig_file = "prev_dirconfig.txt"
-    prev_dirconfig_path = f"{dirpath_operations}/{prev_dirconfig_file}"
+    prev_dirconfig_path = f"{alldoc_dirpath}/{prev_dirconfig_file}"
     
-    return prev_dirconfig_path, dirpath_operations
+    return prev_dirconfig_path
     
 
-def save_previous_dirConfig():
+def save_dirConfig():
     
-    prev_dirconfig_path, dirpath_operations = create_previous_dirConfig_specs()
+    prev_dirconfig_path = create_dirList_file()
     
     print("Saving previous directory configuration into a text file...")
     
     ofile_prev_dirConfig = open(prev_dirconfig_path, "w")
     
-    dirlist = find_allDirectories(home_path, True)
+    dirlist = find_allDirectories(alldoc_dirpath, True, include_root=False)
     
     for dirc in dirlist:
-        ofile_prev_dirConfig.write(f"{dirpath_operations}/{dirc}\n")
+        ofile_prev_dirConfig.write(f"{alldoc_dirpath}/{dirc}\n")
     ofile_prev_dirConfig.close()
 
 
 def make_parent_directories_from_savelist():
     
-    prev_dirconfig_path = create_previous_dirConfig_specs()[0]
+    prev_dirconfig_path = create_dirList_file()[0]
     
     print("Parent directories will be created, "
           f"using temporary text file {prev_dirconfig_path}.")
@@ -121,19 +120,54 @@ def make_parent_directories_from_savelist():
 # Miscellaneous functions that work with directories #
 #----------------------------------------------------#
 
-def reorder_directories(nzeros_left):
+def reorder_directories(path_to_walk_in, nzeros_left):
         
     print("Reordering directories by numbers...")
     
     dir_name_splitchar = "-"
     
-    dirlist = find_allDirectories(alldoc_dirpath, top_path_only=True)
-    for dirc in enumerate(dirlist):
+    dirlist_uneven = find_allDirectories(path_to_walk_in, top_path_only=True)
+    highest_dirNum\
+    = int(file_path_specs(str(dirlist_uneven[-1]), dir_name_splitchar)[-2][0]) + 1
+    
+    """1st step:
+    Rename directories starting from the highest number,
+    to prevent overwriting and directory deletion because of
+    unevenly spaced numbering.
+    This operation guarantees monotonous and unity-increasing numbering.
+    """
+    
+    for dirc in enumerate(dirlist_uneven, start=highest_dirNum):
         
         num = dirc[0]
         dir_name = dirc[-1]
         
-        dir_new_number = f"{num+1:0{nzeros_left+1}d}"        
+        dir_new_number = f"{num:0{nzeros_left+1}d}"        
+        dir_path_parent, dirName, dir_name_split\
+        = file_path_specs(str(dir_name), dir_name_splitchar)[:3]
+        
+        dir_name_split[0] = dir_new_number
+        dirName_new = dir_name_splitchar.join(dir_name_split)
+        
+        dir_new_name = join_file_path_specs(dir_path_parent,
+                                            dirName_new,
+                                            "")[:-1]
+        
+        rename_objects(dir_name, dir_new_name)
+        
+    """2nd step:
+    Rename directories starting from 1, now that directory numbering
+    is evenly spaced.
+    """
+    
+    dirlist_even = find_allDirectories(path_to_walk_in, top_path_only=True)
+    
+    for dirc in enumerate(dirlist_even, start=1):
+        
+        num = dirc[0]
+        dir_name = dirc[-1]
+        
+        dir_new_number = f"{num:0{nzeros_left+1}d}"        
         dir_path_parent, dirName, dir_name_split\
         = file_path_specs(str(dir_name), dir_name_splitchar)[:3]
         

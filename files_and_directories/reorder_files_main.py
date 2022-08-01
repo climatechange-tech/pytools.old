@@ -71,9 +71,21 @@ def reorder_files(nzeros_left,
     if distinguish_extensions:
     
         for ext in ext_list:
-            filelist_byext = find_ext_file_paths(ext, cwd, top_path_only=True)
             
-            for file in enumerate(filelist_byext):
+            """1st step:
+            Rename directories starting from the highest number,
+            to prevent overwriting and file deletion because of
+            unevenly spaced numbering.
+            This operation guarantees monotonous and unity-increasing numbering.
+            """
+            
+            filelist_uneven = find_ext_file_paths(ext, cwd, top_path_only=True)
+            
+            highest_fileNum\
+            = int(file_path_specs(str(filelist_uneven[-1]), 
+                                  file_name_splitchar)[-2][0]) + 1
+            
+            for file in enumerate(filelist_uneven, start=highest_fileNum):
                 
                 file_num = file[0]
                 file_name = file[-1]
@@ -81,14 +93,47 @@ def reorder_files(nzeros_left,
                 file_path_noname, file_path_name, file_path_name_split, file_path_ext\
                 = file_path_specs(file_name, file_name_splitchar)
         
-                num_format = f"{file_num+1:0{nzeros_left+1}d}"
+                num_format = f"{file_num:0{nzeros_left+1}d}"
                 num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
                 rename_objects(file_name, num_formatted_file)
                 
-    else:
-        filelist = find_ext_file_paths(ext_list, cwd, top_path_only=True)
         
-        for file in enumerate(filelist):
+            """2nd step:
+            Rename directories starting from 1, now that file numbering
+            is evenly spaced.
+            """
+            
+            filelist_even = find_ext_file_paths(ext, cwd, top_path_only=True)
+            
+            for file in enumerate(filelist_even, start=1):
+                
+                file_num = file[0]
+                file_name = file[-1]
+                            
+                file_path_noname, file_path_name, file_path_name_split, file_path_ext\
+                = file_path_specs(file_name, file_name_splitchar)
+        
+                num_format = f"{file_num:0{nzeros_left+1}d}"
+                num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
+                rename_objects(file_name, num_formatted_file)
+                
+                
+    else:
+        
+        """1st step:
+        Rename directories starting from the highest number,
+        to prevent overwriting and file deletion because of
+        unevenly spaced numbering.
+        This operation guarantees monotonous and unity-increasing numbering.
+        """
+        
+        filelist_uneven = find_ext_file_paths(ext_list, cwd, top_path_only=True)
+        
+        highest_fileNum\
+        = int(file_path_specs(str(filelist_uneven[-1]), 
+                              file_name_splitchar)[-2][0]) + 1
+        
+        for file in enumerate(filelist_uneven, start=highest_fileNum):
             
             file_num = file[0]
             file_name = file[-1]
@@ -96,7 +141,26 @@ def reorder_files(nzeros_left,
             file_path_noname, file_path_name, file_path_name_split, file_path_ext\
             = file_path_specs(file_name, file_name_splitchar)
     
-            num_format = f"{file_num+1:0{nzeros_left+1}d}"
+            num_format = f"{file_num:0{nzeros_left+1}d}"
             num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
             rename_objects(file_name, num_formatted_file)
-
+            
+            
+        """2nd step:
+        Rename directories starting from 1, now that file numbering
+        is evenly spaced.
+        """
+        
+        filelist_even = find_ext_file_paths(ext, cwd, top_path_only=True)
+        
+        for file in enumerate(filelist_even, start=1):
+            
+            file_num = file[0]
+            file_name = file[-1]
+                        
+            file_path_noname, file_path_name, file_path_name_split, file_path_ext\
+            = file_path_specs(file_name, file_name_splitchar)
+    
+            num_format = f"{file_num:0{nzeros_left+1}d}"
+            num_formatted_file = f"{str(file_path_noname)}/{num_format}.{file_path_ext}" 
+            rename_objects(file_name, num_formatted_file)
