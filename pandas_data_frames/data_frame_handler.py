@@ -682,6 +682,61 @@ def sort_df_values(df,
     return df
 
 
+def reindex_df(df, col_to_replace=None, vals_to_replace=None):
+    
+    # Further function than df.reset_index method,
+    # for resetting the index of the given pandas data frame,
+    # using any specified column and then resetting the latter.
+    # This method applies only for one-leveled objects
+    # (i.e, cannot have a MultiIndex) and can contain any tipe of index.
+    # It can also be applied for simple reindexing.
+    # 
+    # Parameters
+    # ----------
+    # df : pandas.core.frame.DataFrame or pandas.core.series.Series.
+    # vals_to_replace : list, np.ndarray or pandas.core.series.Series
+    #       New labels / index to conform to.
+    # col_to_replace : str or int
+    #       If further reindexing is required,
+    #       an it is a string, then it selects the columns to put as index.
+    #       Otherwise it selects the number column.
+    #       Defaults to None, that is, to simple reindexing.
+    
+    if col_to_replace is None and vals_to_replace is None:
+        raise ValueError("You must provide an object containing values to"
+                         "put as index.")
+        
+    elif col_to_replace is None and vals_to_replace is not None:
+        df = df.reindex(vals_to_replace)
+        
+    else:
+        
+        if isinstance(col_to_replace, str):
+
+            # Substitute the index as desired #  
+            df_reidx_dropCol\
+            = df.reindex(df[col_to_replace]).drop(columns=col_to_replace)
+            
+            # Assign the remaining values to the new data frame #
+            df_reidx_dropCol.loc[:,:]\
+            = df.drop(columns=col_to_replace).values
+            
+        elif isinstance(col_to_replace, int):
+            
+            columns = df.columns
+            colname_to_drop = columns[col_to_replace]
+            
+            # Substitute the index as desired #              
+            df_reidx_dropCol\
+            = df.reindex(df.iloc[:, col_to_replace]).drop(columns=colname_to_drop)
+        
+            # Assign the remaining values to the new data frame #
+            df_reidx_dropCol.loc[:,:]\
+            = df.drop(columns=colname_to_drop).values
+        
+    return df_reidx_dropCol
+
+
 #-----------------------------------------------#
 # Define global parameters below every function #
 #-----------------------------------------------#

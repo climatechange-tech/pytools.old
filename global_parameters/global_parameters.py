@@ -35,4 +35,20 @@ month_number_dict = {
     12 : "D"
     }
 
+season_timeFreq_dict = {
+    1  : "Q-JAN",
+    2  : "Q-FEB",
+    3  : "Q-MAR",
+    4  : "Q-APR",
+    5  : "Q-MAY",
+    6  : "Q-JUN",
+    7  : "Q-JUL",
+    8  : "Q-AUG",
+    9  : "Q-SEP",
+    10 : "Q-OCT",
+    11 : "Q-NOV",
+    12 : "Q-DEC"
+    }
+
+
 emission_rcp_scenarios = ["historical", "rcp26", "rcp45", "rcp85"]
