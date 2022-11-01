@@ -80,10 +80,7 @@ def reorder_files(nzeros_left,
             """
             
             filelist_uneven = find_ext_file_paths(ext, cwd, top_path_only=True)
-            
-            highest_fileNum\
-            = int(file_path_specs(str(filelist_uneven[-1]), 
-                                  file_name_splitchar)[-2][0]) + 1
+            highest_fileNum = len(filelist_uneven)
             
             for file in enumerate(filelist_uneven, start=highest_fileNum):
                 
@@ -128,10 +125,7 @@ def reorder_files(nzeros_left,
         """
         
         filelist_uneven = find_ext_file_paths(ext_list, cwd, top_path_only=True)
-        
-        highest_fileNum\
-        = int(file_path_specs(str(filelist_uneven[-1]), 
-                              file_name_splitchar)[-2][0]) + 1
+        highest_fileNum = len(filelist_uneven)
         
         for file in enumerate(filelist_uneven, start=highest_fileNum):
             
@@ -151,7 +145,7 @@ def reorder_files(nzeros_left,
         is evenly spaced.
         """
         
-        filelist_even = find_ext_file_paths(ext, cwd, top_path_only=True)
+        filelist_even = find_ext_file_paths(ext_list, cwd, top_path_only=True)
         
         for file in enumerate(filelist_even, start=1):
             

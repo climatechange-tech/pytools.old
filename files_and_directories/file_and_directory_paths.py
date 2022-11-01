@@ -140,6 +140,9 @@ def find_fileString_paths(file_string, path_to_walk_in, top_path_only=False):
 
 def find_allfile_extensions(extensions2skip, top_path_only=False):
     
+    if isinstance(extensions2skip, str):
+        extensions2skip = [extensions2skip]
+    
     if top_path_only:
         path_to_walk_in = posixpath_converter(Path.cwd(), glob_bool=False)
         

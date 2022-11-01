@@ -55,17 +55,21 @@ whoami = os.popen("whoami").read()[:-1]
 # Define custom functions #
 #-------------------------#
 
-def remove_file_executability(source_directory, extensions2skip):
+def modify_file_permissions(source_directory, 
+                              extensions2skip,
+                              attrs_str="ugo-x"):
     
     print("Removing executability permission of all files "
           "except the following extensioned ones:\n"
           f"{extensions2skip}")
     
+    
+    
     file_extension_list = find_allfile_extensions(extensions2skip)
     for extension in file_extension_list:
         find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
                             "-type f "\
-                            "-exec chmod ugo-x "\
+                            f"-exec chmod {attrs_str} "\
                             r"'{}' "\
                             "\;"
         os.system(find_exec_command)
@@ -100,10 +104,7 @@ def change_file_owner_group(source_directory,
         for extension in file_extension_list:
             find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
                                 "-type f "\
-                                f"-exec chown {whoami} "\
-                                r"'{}' "\
-                                "\; "\
-                                f"-exec chgrp {whoami} "\
+                                f"-exec chown {whoami}:{whoami} "\
                                 r"'{}' "\
                                 "\;"
             os.system(find_exec_command)

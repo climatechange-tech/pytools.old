@@ -49,7 +49,7 @@ spec2.loader.exec_module(file_and_directory_paths)
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
 
-remove_file_executability = change_permissions_main.remove_file_executability
+modify_file_permissions = change_permissions_main.modify_file_permissions
 reset_directory_permissions = change_permissions_main.reset_directory_permissions
 change_directory_owner_group = change_permissions_main.change_directory_owner_group
 change_file_owner_group = change_permissions_main.change_file_owner_group
@@ -93,7 +93,7 @@ print(table.format(extension_list,
 
 # Perform tasks according to the control switches # 
 if remove_file_execb:
-    remove_file_executability(cwd, extensions2skip)
+    modify_file_permissions(cwd, extensions2skip)
 
 if reset_dir_permissions:
     reset_directory_permissions(cwd)   
