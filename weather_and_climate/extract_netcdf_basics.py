@@ -25,13 +25,13 @@ fixed_dirpath = str([path
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "readable_time.py"
+module_imp1 = "readable_time_displayers.py"
 module_imp1_path = f"{fixed_dirpath}/"\
                    f"time_handling/{module_imp1}"
 
 spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-readable_time = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(readable_time)
+readable_time_displayers = importlib.util.module_from_spec(spec1)
+spec1.loader.exec_module(readable_time_displayers)
 
 
 module_imp2 = "netcdf_handler.py"
@@ -46,7 +46,7 @@ spec2.loader.exec_module(netcdf_handler)
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-count_time = readable_time.count_time
+count_time = readable_time_displayers.count_time
 
 extract_and_store_latlon_bounds = netcdf_handler.extract_and_store_latlon_bounds 
 extract_and_store_period_bounds = netcdf_handler.extract_and_store_period_bounds

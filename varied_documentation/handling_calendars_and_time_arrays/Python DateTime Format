@@ -1,0 +1,8 @@
+#! /bin/zsh
+
+# This document is intended to serve as a helping tool,
+# but because the content could not be printed as a readable format
+# taking account of the whole content, 
+# I decided to write a hyperlink to the webpage
+
+firefox https://pynative.com/python-datetime-format-strftime/ &

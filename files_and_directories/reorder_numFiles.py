@@ -46,6 +46,5 @@ reorder_files = reorder_files_main.reorder_files
 
 nzeros_left = 1
 extensions2skip = "swp"
-file_name_splitchar = "-"
 
 reorder_files(nzeros_left, extensions2skip)
