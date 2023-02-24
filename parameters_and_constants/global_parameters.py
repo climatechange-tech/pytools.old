@@ -14,10 +14,11 @@ the directories inside "pytools" directory.
 """
 
 basic_time_format_strs = dict(
-    H="%Y-%m-%d %H:%M:%S",
-    D="%Y-%m-%d",
-    M="%Y-%m",
-    Y="%Y"
+    CFT = "%a %b %d %H:%M:%S %Y",
+    H   = "%Y-%m-%d %H:%M:%S",
+    D   = "%Y-%m-%d",
+    M   = "%Y-%m",
+    Y   = "%Y"
     )
 
 month_number_dict = {
@@ -52,3 +53,5 @@ season_timeFreq_dict = {
 
 
 emission_rcp_scenarios = ["historical", "rcp26", "rcp45", "rcp85"]
+
+basic_object_types = ["file", "directory"]

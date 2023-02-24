@@ -28,64 +28,64 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "climate_statistics.py"
-module_imp1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_dirpath}/"\
                    f"weather_and_climate/{module_imp1}"
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
 climate_statistics = importlib.util.module_from_spec(spec1)
 spec1.loader.exec_module(climate_statistics)
 
 
 module_imp2 = "array_numerical_operations.py"
-module_imp2_path = f"{fixed_dirpath}/"\
+custom_mod2_path = f"{fixed_dirpath}/"\
                    f"arrays_and_lists/{module_imp2}"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
+spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
 array_numerical_operations = importlib.util.module_from_spec(spec2)
 spec2.loader.exec_module(array_numerical_operations)
 
 
 module_imp3 = "array_handler.py"
-module_imp3_path = f"{fixed_dirpath}/"\
+custom_mod3_path = f"{fixed_dirpath}/"\
                    f"arrays_and_lists/{module_imp3}"
 
-spec3 = importlib.util.spec_from_file_location(module_imp3, module_imp3_path)
+spec3 = importlib.util.spec_from_file_location(module_imp3, custom_mod3_path)
 array_handler = importlib.util.module_from_spec(spec3)
 spec3.loader.exec_module(array_handler)
 
 
 module_imp4 = "string_handler.py"
-module_imp4_path = f"{fixed_dirpath}/"\
+custom_mod4_path = f"{fixed_dirpath}/"\
                    f"strings/{module_imp4}"
 
-spec4 = importlib.util.spec_from_file_location(module_imp4, module_imp4_path)
+spec4 = importlib.util.spec_from_file_location(module_imp4, custom_mod4_path)
 string_handler = importlib.util.module_from_spec(spec4)
 spec4.loader.exec_module(string_handler)
 
 
 module_imp5 = "consecutive_idx_statistics.py"
-module_imp5_path = f"{fixed_dirpath}/"\
+custom_mod5_path = f"{fixed_dirpath}/"\
                    f"weather_and_climate/{module_imp5}"
 
-spec5 = importlib.util.spec_from_file_location(module_imp5, module_imp5_path)
+spec5 = importlib.util.spec_from_file_location(module_imp5, custom_mod5_path)
 consecutive_idx_statistics = importlib.util.module_from_spec(spec5)
 spec5.loader.exec_module(consecutive_idx_statistics)
 
 
 module_imp6 = "climatic_signal_modulators.py"
-module_imp6_path = f"{fixed_dirpath}/"\
+custom_mod6_path = f"{fixed_dirpath}/"\
                    f"weather_and_climate/{module_imp6}"
 
-spec6 = importlib.util.spec_from_file_location(module_imp6, module_imp6_path)
+spec6 = importlib.util.spec_from_file_location(module_imp6, custom_mod6_path)
 climatic_signal_modulators = importlib.util.module_from_spec(spec6)
 spec6.loader.exec_module(climatic_signal_modulators)
 
 
 module_imp7 = "meteorological_variables.py"
-module_imp7_path = f"{fixed_dirpath}/"\
+custom_mod7_path = f"{fixed_dirpath}/"\
                    f"weather_and_climate/{module_imp7}"
 
-spec7 = importlib.util.spec_from_file_location(module_imp7, module_imp7_path)
+spec7 = importlib.util.spec_from_file_location(module_imp7, custom_mod7_path)
 meteorological_variables = importlib.util.module_from_spec(spec7)
 spec7.loader.exec_module(meteorological_variables)
 
@@ -237,7 +237,7 @@ def calculate_WSDI(season_daily_tmax, tmax_threshold, min_consec_days):
     # 
     # Input data
     # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.core.series.Series
+    # season_daily_tmax : numpy.ndarray or pandas.Series
     #       Daily maximum temperature data of the corresponding season in units ºC.
     # tmax_threshold : float
     #       Upper limit of the maximum temperature.
@@ -263,7 +263,7 @@ def calculate_SU(season_daily_tmax, tmax_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.core.series.Series
+    # season_daily_tmax : numpy.ndarray or pandas.Series
     #       Daily maximum temperature data of the corresponding season in units ºC.
     # 
     # tmax_threshold : float
@@ -286,7 +286,7 @@ def calculate_CSU(season_daily_tmax, tmax_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.core.series.Series
+    # season_daily_tmax : numpy.ndarray or pandas.Series
     #       Daily maximum temperature data of the season in units ºC.
     # 
     # tmax_threshold : float
@@ -312,7 +312,7 @@ def calculate_FD(season_daily_tmin, tmin_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_tmin : numpy.ndarray or pandas.core.series.Series
+    # season_daily_tmin : numpy.ndarray or pandas.Series
     #       Daily minimum temperature data of the corresponding season in units ºC.
     # 
     # tmin_threshold : float
@@ -335,7 +335,7 @@ def calculate_TN(season_daily_tmin, tmin_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_tmin : numpy.ndarray or pandas.core.series.Series
+    # season_daily_tmin : numpy.ndarray or pandas.Series
     #       Daily minimum temperature data of the corresponding season in units ºC.
     # 
     # tmin_threshold : float
@@ -361,7 +361,7 @@ def calculate_RR(season_daily_precip, precip_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_precip : numpy.ndarray or pandas.core.series.Series
+    # season_daily_precip : numpy.ndarray or pandas.Series
     #       Daily precipitation data of the corresponding season in units mm.
     # 
     # precip_threshold : float
@@ -386,7 +386,7 @@ def calculate_CWD(season_daily_precip, precip_threshold):
     # 
     # Parameters
     # ----------
-    # season_daily_precip : numpy.ndarray or pandas.core.series.Series
+    # season_daily_precip : numpy.ndarray or pandas.Series
     #       Daily precipitation data of the season in units mm.
     # 
     # precip_threshold : float
@@ -427,15 +427,15 @@ def calculate_HWD(tmax_array, tmin_array,
     # 
     # Parameters
     # ----------
-    # tmax_array : numpy.ndarray or pandas.core.series.Series
+    # tmax_array : numpy.ndarray or pandas.Series
     #       An array which contains the daily maximum temperature data.
-    # tmin_array : numpy.ndarray or pandas.core.series.Series
+    # tmin_array : numpy.ndarray or pandas.Series
     #       An array which contains the daily minimum temperature data.
     # max_threshold : float
     #       Upper limit.
     # min_threshold : float
     #       Lower limit.
-    # date_array : pandas.core.indexes.datetimes.DatetimeIndex
+    # date_array : pandas.DatetimeIndex
     #       Array containing dates, in this case of the corresponding season.
     # min_consec_days : int
     #       Minimum consecutive days number.

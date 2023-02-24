@@ -15,7 +15,7 @@ def week_range(date):
     
     # Finds the week day-range, i.e, the first and last day of the week
     # where a given calendar day lies on.
-    # Weeks start on Monday and end on Sunday.
+    # In Europe weeks start on Monday and end on Sunday.
     # 
     # Parameters
     # ----------
@@ -43,7 +43,8 @@ def week_range(date):
             # Since we want to start with Monday, let's test for that condition.
             start_date = date
         else:
-            # Otherwise, subtract the `dow` number days that have passed from Monday to get the first day
+            # Otherwise, subtract the `dow` number days 
+            # that have passed from Monday to get the first day.
             start_date = date - (dt.timedelta(dow) - dt.timedelta(1))
 
         # Now, add 6 for the last day of the week (i.e., count up to Sunday) #
@@ -58,12 +59,29 @@ def week_range(date):
         
         
 def nearest_leap_year(year):
-    year_list = list(range(year-4, year+4))
-    lyl = len(year_list)
     
-    nearest_leap_year_idx = [i
-                             for i in range(lyl) 
-                             if calendar.isleap(year_list[i])][0]
-    
-    nearest_lp_year = year_list[nearest_leap_year_idx]
+    if not calendar.isleap(year):
+        year_list = list(range(year-4, year+4))
+        lyl = len(year_list)
+        
+        nearest_leap_year_idx = [i
+                                 for i in range(lyl) 
+                                 if calendar.isleap(year_list[i])]
+        
+        min_idx = nearest_leap_year_idx[0]
+        max_idx = nearest_leap_year_idx[1]
+        
+        min_idx_year_diff = abs(year_list[min_idx] - year)
+        max_idx_year_diff = abs(year_list[max_idx] - year)
+        
+        if min_idx_year_diff > 1 and min_idx_year_diff != 2:
+            nearest_lp_year = year_list[max_idx]
+        elif max_idx_year_diff > 1 and max_idx_year_diff != 2:
+            nearest_lp_year = year_list[min_idx]
+        elif min_idx_year_diff == max_idx_year_diff:
+            nearest_lp_year = f"{year_list[max_idx]} or {year_list[min_idx]}"
+        
+    else:
+        nearest_lp_year = year
+        
     return nearest_lp_year

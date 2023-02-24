@@ -2,80 +2,53 @@
 # Import modules #
 #----------------#
 
-import importlib
 from pathlib import Path
+import sys
 
 import numpy as np
 import xarray as xr
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "data_frame_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"pandas_data_frames/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-data_frame_handler = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(data_frame_handler)
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "file_handler.py"
-module_imp2_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp2}"
+custom_mod1_path = f"{fixed_dirpath}/files_and_directories"      
+custom_mod2_path = f"{fixed_dirpath}/pandas_data_frames"
+custom_mod3_path = f"{fixed_dirpath}/strings"
+custom_mod4_path = f"{fixed_dirpath}/weather_and_climate"
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-file_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(file_handler)
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
+sys.path.append(custom_mod4_path)
 
+# Perform the module importations #
+#---------------------------------#
 
-module_imp3 = "string_handler.py"
-module_imp3_path = f"{fixed_dirpath}/"\
-                   f"strings/{module_imp3}"
-
-spec3 = importlib.util.spec_from_file_location(module_imp3, module_imp3_path)
-string_handler = importlib.util.module_from_spec(spec3)
-spec3.loader.exec_module(string_handler)
-
-
-module_imp4 = "file_and_directory_paths.py"
-module_imp4_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp4}"
-
-spec4 = importlib.util.spec_from_file_location(module_imp4, module_imp4_path)
-file_and_directory_paths = importlib.util.module_from_spec(spec4)
-spec4.loader.exec_module(file_and_directory_paths)
-
-
-module_imp5 = "faulty_ncfile_detector.py"
-module_imp5_path = f"{fixed_dirpath}/"\
-                   f"weather_and_climate/{module_imp5}"
-
-spec5 = importlib.util.spec_from_file_location(module_imp5, module_imp5_path)
-faulty_ncfile_detector = importlib.util.module_from_spec(spec5)
-spec5.loader.exec_module(faulty_ncfile_detector)
+import data_frame_handler
+import faulty_ncfile_detector
+import file_and_directory_paths
+import file_and_directory_handler
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-file_path_specs = string_handler.file_path_specs
-join_file_path_specs = string_handler.join_file_path_specs
-
-move_files_byFS_fromCodeCallDir = file_handler.move_files_byFS_fromCodeCallDir
+move_files_byFS_fromCodeCallDir = file_and_directory_handler.move_files_byFS_fromCodeCallDir
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
@@ -83,6 +56,8 @@ find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
 binary_faulty_file_detector = faulty_ncfile_detector.binary_faulty_file_detector
 
 save2csv = data_frame_handler.save2csv
+
+modify_obj_specs = string_handler.modify_obj_specs
 
 #-------------------------#
 # Define custom functions #
@@ -149,7 +124,7 @@ def saveXarrayDSAsNetCDF(xarray_ds,
     # 
     # Parameters
     # ----------
-    # xarray_ds : xarray.core.dataset.Dataset
+    # xarray_ds : xarray.Dataset
     #       OPENED xarray data set.
     # file_name : str
     #       String for the resulting netCDF file name.
@@ -182,16 +157,16 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
     # 
     # Parameters
     # ----------
-    # ds_in : xarray.core.dataset.Dataset
+    # ds_in : xarray.Dataset
     #       Input xarray data set
-    # ds_image : xarray.core.dataset.Dataset
+    # ds_image : xarray.Dataset
     #       Xarray data set with grid specifications to which apply on ds_in.
     # method : {'bilinear', 'conservative', 'nearest_s2d', 'nearest_d2s', 'patch'}
     #       Regridding method. Defaults 'bilinear'.
     # 
     # Returns
     # -------
-    # ds_out : xarray.core.dataset.Dataset
+    # ds_out : xarray.Dataset
     #       Output data set regridded according to the grid specs of ds_in.
     
     method_list = [
@@ -241,8 +216,8 @@ def saveNCdataAsCSV(nc_file,
     # 
     # Parameters
     # ----------
-    # nc_file : str or xarray.core.dataset.Dataset or 
-    #                xarray.core.dataarray.DataArray
+    # nc_file : str or xarray.Dataset or 
+    #                xarray.DataArray
     #       String of the xarray data set containing file or
     #       the already opened data array or set.
     # columns_to_drop : str or list of str
@@ -376,15 +351,8 @@ def saveNCdataAsCSV(nc_file,
     
     if isinstance(nc_file, str) and csv_file_name == "default":
             
-        file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-        = file_path_specs(nc_file)
-        
-        # Change the extension to that of the desired one #
-        file_path_ext = extensions[1]
-        
-        csv_file_name = join_file_path_specs(file_path_noname,
-                                             file_path_name,
-                                             file_path_ext)
+        obj2change = "ext"
+        csv_file_name = modify_obj_specs(nc_file, obj2change, extensions[1])
     
     elif not isinstance(nc_file, str) and csv_file_name == "default":
         raise ValueError("You must provide a CSV file name.")
@@ -415,7 +383,7 @@ def saveDataArrayAsCSV(data_array,
     # so the docstrings also apply.
     # Parameters
     # ----------
-    # data_array : xarray.core.dataarray.DataArray
+    # data_array : xarray.DataArray
     # new_columns : str or list of str
     #       Names of the columns for the data frame created from the object.
     #       Default ones include 'time' and variable name label.
@@ -767,7 +735,7 @@ def find_time_dimension(nc_file_name):
     # 
     # Parameters
     # ----------
-    # nc_file_name : str or xarray.core.dataset.Dataset
+    # nc_file_name : str or xarray.Dataset
     #       String of the data file or the data set itself.
     # 
     # Returns
@@ -831,7 +799,7 @@ def find_time_dimension_raiseNone(nc_file_name):
     # 
     # Parameters
     # ----------
-    # nc_file_name : str or xarray.core.dataset.Dataset
+    # nc_file_name : str or xarray.Dataset
     #       String of the data file or the data set itself.
     # 
     # Returns
@@ -894,7 +862,7 @@ def find_coordinate_variables(nc_file_name):
     # 
     # Parameters
     # ----------
-    # nc_file_name : str or xarray.core.dataset.Dataset
+    # nc_file_name : str or xarray.Dataset
     #       String of the data file or the data set itself.
     # 
     # Returns
@@ -959,7 +927,7 @@ def find_coordinate_variables_raiseNone(nc_file_name):
     # 
     # Parameters
     # ----------
-    # nc_file_name : str or xarray.core.dataset.Dataset
+    # nc_file_name : str or xarray.Dataset
     #       String of the data file or the data set itself.
     # 
     # Returns
@@ -1026,7 +994,7 @@ def get_model_list(path_list, split_pos):
     # Parameters
     # ----------
     # path_list : list
-    #       List of absolute/relative paths or file names.
+    #       List of relative/absolute paths or file names.
     # split_pos : int
     #       Integer that defines which position 
     #
@@ -1060,7 +1028,7 @@ def get_file_dimensions(nc_file):
     # 
     # Parameters
     # ----------
-    # nc_file : str or xarray.core.dataset.Dataset, throws an error otherwise.
+    # nc_file : str or xarray.Dataset, throws an error otherwise.
     #       String or already opened file
     #       that identifies the netCDF file to work with.
     # 
@@ -1089,7 +1057,7 @@ def get_file_dimensions(nc_file):
         
         ds.close()
         
-    elif isinstance(nc_file, xr.core.dataset.Dataset):
+    elif isinstance(nc_file, xr.Dataset):
         
         varlist = list(nc_file.variables)
         dimlist = list(nc_file.dims)
@@ -1117,7 +1085,7 @@ def get_file_variables(nc_file):
     # 
     # Parameters
     # ----------
-    # nc_file : str or xarray.core.dataset.Dataset, throws an error otherwise.
+    # nc_file : str or xarray.Dataset, throws an error otherwise.
     #       String or already opened file
     #       that identifies the netCDF file to work with.
     # 
@@ -1145,7 +1113,7 @@ def get_file_variables(nc_file):
         
         ds.close()
         
-    elif isinstance(nc_file, xr.core.dataset.Dataset):
+    elif isinstance(nc_file, xr.Dataset):
         
         varlist = list(nc_file.variables)
         dimlist = list(nc_file.dims)
@@ -1237,13 +1205,14 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
 #def grib2netcdf(file_list):
     # import eccodes as ecs
     
-#-----------------------------------------------#
-# Define global parameters below every function #
-#-----------------------------------------------#
-
-"""Declare those global so as not to use them
-repeatedly inside functions above.
-"""
+#------------------#
+# Local parameters #
+#------------------#
 
 extensions = ["nc", "csv"]
 file_path_splitchar = "_"
+
+# Directory from where this code is being called #
+#------------------------------------------------#
+
+cwd = Path.cwd()

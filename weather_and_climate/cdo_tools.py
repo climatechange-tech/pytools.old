@@ -2,64 +2,53 @@
 # Import modules #
 #----------------#
 
-import importlib
 import os
 from pathlib import Path
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "string_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"strings/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-string_handler = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(string_handler)
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "file_handler.py"
-module_imp2_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp2}"
+custom_mod1_path = f"{fixed_dirpath}/files_and_directories"      
+custom_mod2_path = f"{fixed_dirpath}/strings"
+custom_mod3_path = f"{fixed_dirpath}/weather_and_climate"
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-file_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(file_handler)
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
+# Perform the module importations #
+#---------------------------------#
 
-module_imp3 = "netcdf_handler.py"
-module_imp3_path = f"{fixed_dirpath}/"\
-                   f"weather_and_climate/{module_imp3}"
-
-spec3 = importlib.util.spec_from_file_location(module_imp3, module_imp3_path)
-netcdf_handler = importlib.util.module_from_spec(spec3)
-spec3.loader.exec_module(netcdf_handler)
+import file_and_directory_handler
+import netcdf_handler
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-file_path_specs = string_handler.file_path_specs
+addExtraName2File = string_handler.addExtraName2File
 find_substring_index = string_handler.find_substring_index
-join_file_path_specs = string_handler.join_file_path_specs
-file_list_2_string = string_handler.file_list_2_string
-create_temporal_file_name = string_handler.create_temporal_file_name
-noneInString_filter = string_handler.noneInString_filter
+fileList2String = string_handler.fileList2String
+obj_path_specs = string_handler.get_file_spec
+modify_obj_specs = string_handler.modify_obj_specs
 
-rename_objects = file_handler.rename_objects
+rename_objects = file_and_directory_handler.rename_objects
 
 get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
@@ -72,47 +61,57 @@ get_times = netcdf_handler.get_times
 # Character string processing #
 #-----------------------------#
                     
-def get_standard_variable_name(file,
-                               varlist_original,
-                               varlist_standardized):
-    
-    file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-    = file_path_specs(file, name_splitchar1)
+def get_variable_name_inFileStr(file,
+                                return_std_varname=False,
+                                varlist_original=None,
+                                varlist_standardized=None):
         
-    var_file = file_path_name_split[0]
+    fsk = "name_noext_parts"
+    file_path_name_noext_parts = obj_path_specs(file,
+                                               file_spec_key=fsk,
+                                               splitchar=splitchar1)
+                                
+    # Usually the first part of the file name is precisely the variable name #
+    var_file = file_path_name_noext_parts[0]
     
-    # Find the variable in the provided original variable list #
-    var_pos = find_substring_index(varlist_original, var_file)
-    if var_pos != -1:
-        var_std = varlist_standardized[var_pos]
+    if return_std_varname:
         
-        return\
-            var_std, \
-            file_path_noname, \
-            file_path_name, \
-            file_path_name_split, \
-            file_path_ext
+        # Find the variable in the provided original variable list #
+        var_pos = find_substring_index(varlist_original, var_file)
+        
+        if var_pos != -1:
+            var_std = varlist_standardized[var_pos]
+            return var_std
+        
+        else:
+            raise ValueError(f"Variable '{var_file}' found at file '{file}' "
+                             f"not present at original variable list {varlist_original}.")
+            
     else:
-        raise ValueError(f"Variable '{var_file}' found at file '{file}' "
-                         f"not present at original variable list {varlist_original}")
-        
+        return var_file
+            
 
 def change_file_names_byvar(file_list,
                             varlist_original,
                             varlist_standardized):
 
+    obj2change = "name_noext_parts"
+    
     for file in file_list:
         
-        var_std, file_path_noname, file_path_name, file_path_name_split, file_path_ext \
-        = get_standard_variable_name(file, varlist_original, varlist_standardized) 
-               
-        extension = file_path_ext
-        file_path_name_split[0] = var_std
+        var_std = get_variable_name_inFileStr(file,
+                                              True,
+                                              varlist_original, 
+                                              varlist_standardized)
         
-        varname_changed_file_path_name = join_file_path_specs(file_path_noname,
-                                                              file_path_name_split,
-                                                              extension,
-                                                              name_splitchar1)
+        file_path_name_parts = obj_path_specs(file, 
+                                             file_spec_key=obj2change,
+                                             splitchar=splitchar1)
+        
+        fpnp_changes_tuple = (file_path_name_parts[0], var_std)
+        varname_changed_file_path_name = modify_obj_specs(file, 
+                                                           obj2change,
+                                                           fpnp_changes_tuple)
               
         rename_objects(file, varname_changed_file_path_name)
 
@@ -148,12 +147,8 @@ def cdo_sellonlatbox(file_list,
                      region,
                      extension):
 
-    for file in file_list:
-        
-        file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-        = file_path_specs(file, name_splitchar1)
-                    
-        variable = file_path_name_split[0]
+    for file in file_list:                 
+        variable = get_variable_name_inFileStr(file)
             
         time_var = find_time_dimension_raiseNone(file)
         times = get_times(file, time_var)
@@ -196,18 +191,22 @@ def cdo_mergetime(file_list,
                                                           region,
                                                           extension)
     
-    start_year = f"{period.split(name_splitchar2)[0]}"
-    end_year = f"{period.split(name_splitchar2)[-1]}"
+    start_year = f"{period.split(splitchar2)[0]}"
+    end_year = f"{period.split(splitchar2)[-1]}"
+    
+    fsk = "name_noext_parts"
     
     file_list_selyear\
     = [file
        for file in file_list
-       if (year := file_path_specs(file, name_splitchar1)[-2][-1])
+       if (year := obj_path_specs(file, fsk, splitchar1)[-1])
        >= start_year
        and year
        <= end_year]
     
-    allfiles_string = file_list_2_string(file_list_selyear)
+    
+    
+    allfiles_string = fileList2String(file_list_selyear)
     mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                         f"{standardized_output_file_name}"
     os.system(mergetime_command)
@@ -217,13 +216,13 @@ def custom_cdo_mergetime(file_list,
                          custom_output_file_name,
                          create_temporal_file=False):
     
-    allfiles_string = file_list_2_string(file_list)
+    allfiles_string = fileList2String(file_list)
     
     if not create_temporal_file:
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{custom_output_file_name}"
     else:
-        temp_file = create_temporal_file_name(file_list[0])
+        temp_file = addExtraName2File(file_list[0])
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{temp_file}"
                      
@@ -239,7 +238,11 @@ def cdo_selyear(file_list,
                 region,
                 extension):
     
-    selyear_string_split = file_path_specs(selyear_string, name_splitchar2)[-2]
+    
+    fsk = "name_noext_parts"
+    selyear_string_split = obj_path_specs(selyear_string, 
+                                         file_spec_key=fsk,
+                                         splitchar=splitchar2)
     
     start_year = f"{selyear_string_split[0]}"
     end_year = f"{selyear_string_split[-1]}"
@@ -248,11 +251,7 @@ def cdo_selyear(file_list,
     period_selyear = f"{start_year}-{end_year}"    
     
     for file in file_list:
-        
-        file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-        = file_path_specs(file, name_splitchar1)
-            
-        variable = file_path_name_split[0]
+        variable = get_variable_name_inFileStr(file)
         
         standardized_output_file_name = standardize_file_name(variable,
                                                               time_freq,
@@ -298,7 +297,7 @@ def cdo_shifttime(file_list,
                        
     for file in file_list:
         
-        temp_file = create_temporal_file_name(file)
+        temp_file = addExtraName2File(file)
         
         shifttime_command = f"cdo shifttime,{shift_value} '{file}' '{temp_file}'"
         os.system(shifttime_command)
@@ -317,7 +316,7 @@ def cdo_inttime(file_list,
     
     for file in file_list:
         
-        temp_file = create_temporal_file_name(file)
+        temp_file = addExtraName2File(file)
         star_date_format = f"{year0}-{month0}-{day0} "\
                            f"{hour0:2d}:{minute0:2d}:{second0:2d}"
         
@@ -343,15 +342,16 @@ def cdo_rename(file_list,
         var_file = get_file_variables(file_name)
         
         # Find the standardized variable, provided the std variable list #        
-        var_std = get_standard_variable_name(file_name,
-                                             varlist_original,
-                                             varlist_standardized)[0]
+        var_std = get_variable_name_inFileStr(file_name,
+                                              True,
+                                              varlist_original,
+                                              varlist_standardized)
             
         print(f"Renaming original variable '{var_file}' to '{var_std}' "
               f"on file {file_num} out of {lfl}...")
     
-        file_name_chname = create_temporal_file_name(file_name, 
-                                                     name_splitchar1)
+        file_name_chname = addExtraName2File(file_name, 
+                                                     splitchar1)
         chname_command = f"cdo chname,{var_file},{var_std} "\
                          f"'{file_name}' '{file_name_chname}'"
         os.system(chname_command)
@@ -561,22 +561,26 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
             statname += f" -select,season={season_str}"
             
     # Get the file name for string manipulation #
-    file_path_noname, file_path_name, file_ext\
-    = file_path_specs(nc_file_name, name_splitchar1)[0,1,-1]
+    file_path_name\
+    = addExtraName2File(nc_file_name, return_file_name_noext=True)
     
     """Special case for seasonal time frequency"""
     if season_str is not None:
         statname_seas = f"{statname.split()[0]}_{statname[-3:]}"
-        file_path_name += f"{name_splitchar1}{statname_seas}"
+        string2add = f"{splitchar1}{statname_seas}"
+        file_path_name_longer = addExtraName2File(file_path_name, string2add)
+        
     else:
-        file_path_name += f"{name_splitchar1}{statname}"
+        string2add = f"{splitchar1}{statname}"
+        file_path_name_longer = addExtraName2File(file_path_name, string2add)
         
     # Define the output file name based on the configuration chosen #
-    output_file_name = f"{file_path_noname}/{file_path_name}.{file_ext}"
-    ofn_noneFiltered = noneInString_filter(output_file_name)
-    
+    obj2change = "name_noext"
+    output_file_name\
+    = modify_obj_specs(nc_file_name, obj2change, file_path_name_longer)
+        
     # Perform the computation #
-    cdo_stat_command = f"cdo {statname} {nc_file_name} {ofn_noneFiltered}"
+    cdo_stat_command = f"cdo {statname} {nc_file_name} {output_file_name}"
     os.system(cdo_stat_command)
 
     
@@ -590,8 +594,9 @@ def calculate_periodic_deltas(projected_ncfile,
     period_abbrs = ['hour', 'mon', 'seas']
     
     period_abbr_idx = find_substring_index(time_freqs, delta_period) 
-    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[1]
-    
+    deltaApply_fn = addExtraName2File(historical_ncfile, 
+                                      return_file_name_noext=True)
+
     if proj_model is None:
         raise ValueError("The model name's position contained on the file name "\
                          f"{projected_ncfile} can vary significantly "\
@@ -608,23 +613,24 @@ def calculate_periodic_deltas(projected_ncfile,
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     proj_mean_command = f"-y{period_abbr}mean {projected_ncfile}"
 
-    deltaApply_fn += f"{period_abbr}Deltas_{proj_model}.nc"
+    string2add = f"{period_abbr}Deltas_{proj_model}.nc"
+    deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
     
     if operator == "+":
         deltaCalc_command = f"cdo add {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn}"
+                            f"{deltaApply_fn_longer}"
    
     elif operator == "-":
         deltaCalc_command = f"cdo sub {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn}"
+                            f"{deltaApply_fn_longer}"
                              
     elif operator == "*":
         deltaCalc_command = f"cdo mul {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn}"
+                            f"{deltaApply_fn_longer}"
                              
     elif operator == "/":
         deltaCalc_command = f"cdo div {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn}"
+                            f"{deltaApply_fn_longer}"
                              
     else:
         raise ValueError("Wrong basic operator. Options are "
@@ -642,9 +648,9 @@ def apply_periodic_deltas(projected_ncfile,
     time_freqs = ['hourly', 'monthly', 'seasonal']
     period_abbrs = ['hour', 'month', 'seas']
     
-    period_abbr_idx = find_substring_index(time_freqs, delta_period)  
-    
-    deltaApply_fn = file_path_specs(historical_ncfile, name_splitchar1)[1]
+    period_abbr_idx = find_substring_index(time_freqs, delta_period)
+    deltaApply_fn = addExtraName2File(historical_ncfile, 
+                                      return_file_name_noext=True)
     
     if proj_model is None:
         raise ValueError("The model name's position contained on the file name "\
@@ -659,28 +665,30 @@ def apply_periodic_deltas(projected_ncfile,
         period_abbr = period_abbrs[period_abbr_idx]
 
         
-    deltaApply_fn += f"{period_abbr}DeltaApplied_{proj_model}.nc"
+    string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
+    deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
+    
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
         
     if operator == "+":
         deltaApply_command = f"cdo y{period_abbr}add {projected_ncfile} "\
                              f"{hist_mean_command} " \
-                             f"{deltaApply_fn}"
+                             f"{deltaApply_fn_longer}"
    
     elif operator == "-":
         deltaApply_command = f"cdo y{period_abbr}sub {projected_ncfile} "\
                              f"{hist_mean_command} " \
-                             f"{deltaApply_fn}"
+                             f"{deltaApply_fn_longer}"
                              
     elif operator == "*":
         deltaApply_command = f"cdo y{period_abbr}mul {projected_ncfile} "\
                              f"{hist_mean_command} " \
-                             f"{deltaApply_fn}"
+                             f"{deltaApply_fn_longer}"
                              
     elif operator == "/":
         deltaApply_command = f"cdo y{period_abbr}div {projected_ncfile} "\
                              f"{hist_mean_command} " \
-                             f"{deltaApply_fn}"
+                             f"{deltaApply_fn_longer}"
                              
     else:
         raise ValueError("Wrong basic operator. Options are "
@@ -688,9 +696,9 @@ def apply_periodic_deltas(projected_ncfile,
                       
     os.system(deltaApply_command)
     
-#------------------------------------------------------#
-# Define global variable used in many custom functions #
-#------------------------------------------------------#
+#------------------#
+# Local parameters #
+#------------------#
 
-name_splitchar1 = "_"
-name_splitchar2 = "-"
+splitchar1 = "_"
+splitchar2 = "-"

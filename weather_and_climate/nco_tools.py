@@ -23,28 +23,28 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "string_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_dirpath}/"\
                    f"strings/{module_imp1}"
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
 string_handler = importlib.util.module_from_spec(spec1)
 spec1.loader.exec_module(string_handler)
 
 
-module_imp2 = "file_handler.py"
-module_imp2_path = f"{fixed_dirpath}/"\
+module_imp2 = "file_and_directory_handler.py"
+custom_mod2_path = f"{fixed_dirpath}/"\
                    f"files_and_directories/{module_imp2}"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-file_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(file_handler)
+spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
+file_and_directory_handler = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(file_and_directory_handler)
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-create_temporal_file_name = string_handler.create_temporal_file_name
-rename_objects = file_handler.rename_objects
+addExtraName2File = string_handler.addExtraName2File
+rename_objects = file_and_directory_handler.rename_objects
 
 #-------------------------#
 # Define custom functions #
@@ -65,7 +65,7 @@ def modify_variable_units_and_values(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
                 
-        temp_file = create_temporal_file_name(file_name)
+        temp_file = addExtraName2File(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         
@@ -179,7 +179,7 @@ def modify_coordinate_values_byThreshold(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = create_temporal_file_name(file_name)
+        temp_file = addExtraName2File(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 
@@ -344,7 +344,7 @@ def modify_coordinate_allValues(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = create_temporal_file_name(file_name)
+        temp_file = addExtraName2File(file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 

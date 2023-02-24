@@ -2,33 +2,36 @@
 # Import modules #
 #----------------#
 
-import importlib
-
 import os
 from pathlib import Path
 import shutil
-
-#---------------------------------------#
-# Get the all-code containing directory #
-#---------------------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp = "file_and_directory_paths.py"
-module_imp_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp}"
-spec = importlib.util.spec_from_file_location(module_imp, module_imp_path)
-file_and_directory_paths = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(file_and_directory_paths)
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
+
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod_path = f"{fixed_dirpath}/files_and_directories"      
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import file_and_directory_paths
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
@@ -39,6 +42,9 @@ posixpath_converter = file_and_directory_paths.posixpath_converter
 #------------------#
 # Define functions #
 #------------------#
+
+# Operations involving files #
+#----------------------------#
 
 def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
     
@@ -223,6 +229,9 @@ def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
 
 def move_files(source_files, destination_directories):
     
+    source_files = [posixpath_converter(sf, glob_bool=False)
+                    for sf in source_files]
+    
     if isinstance(source_files, list)\
     and isinstance(destination_directories, list):
         
@@ -252,6 +261,9 @@ def move_files(source_files, destination_directories):
         
         
 def copy_files(source_files, destination_directories):
+    
+    source_files = [posixpath_converter(sf, glob_bool=False)
+                    for sf in source_files]
     
     if isinstance(source_files, list)\
     and isinstance(destination_directories, list):
@@ -686,63 +698,63 @@ def remove_files_byFS(file_strings,
     #           from each of the directories.
     #   4. None of them are lists.
     #           Then the matching files will simply be removed from that directory.
-    
-    if isinstance(destination_directories, str):
-        destination_directories = [destination_directories]
         
-    destination_directories = [posixpath_converter(dirc, False)
-                               for dirc in str(destination_directories)]
+    if isinstance(destination_directories, list):
+        destination_directories = [posixpath_converter(dirc, False)
+                                   for dirc in str(destination_directories)]
+        
+    else:
+        destination_directories\
+        = posixpath_converter(destination_directories, False)
+
 
     if isinstance(file_strings, list)\
-    and isinstance(destination_directories, list)\
-    and recursive_in_depth:
+    and isinstance(destination_directories, list):
         
-        for fs in file_strings:
-            for dd in destination_directories:   
-                
-                if not find_hidden_files:
-                    string_allfiles = [file
-                                       for file in dd.glob(fs)
-                                       if file.is_file()]
-                else:
-                    string_allfiles = [file
-                                       for file in
-                                       [fileref for fileref in dd.glob(fs)]
-                                       if file.is_file()]
+        if recursive_in_depth:
+        
+            for fs in file_strings:
+                for dd in destination_directories:   
                     
-                for file in string_allfiles:
-                    os.remove(file)
-
-    elif isinstance(file_strings, list)\
-    and isinstance(destination_directories, list)\
-    and not recursive_in_depth:
-       
-        len_fs = len(file_strings)
-        len_dds = len(destination_directories)
-        
-        if len_fs != len_dds:
-            raise ValueError("File string and destination directory lists "
-                             "are not of the same length.")
+                    if not find_hidden_files:
+                        string_allfiles = [file
+                                           for file in dd.glob(fs)
+                                           if file.is_file()]
+                    else:
+                        string_allfiles = [file
+                                           for file in
+                                           [fileref for fileref in dd.glob(fs)]
+                                           if file.is_file()]
+                        
+                    for file in string_allfiles:
+                        os.remove(file)
+                        
         else:
-            for fs, dd in zip(file_strings, destination_directories):
-                
-                if not find_hidden_files:
-                    string_allfiles = [file
-                                       for file in dd.glob(fs)
-                                       if file.is_file()]
-                else:
-                    string_allfiles = [file
-                                       for file in
-                                       [fileref for fileref in dd.glob(fs)]
-                                       if file.is_file()]
-                
-                for file in string_allfiles:
-                    os.remove(file)
+            len_fs = len(file_strings)
+            len_dds = len(destination_directories)
+            
+            if len_fs != len_dds:
+                raise ValueError("File string and destination directory lists "
+                                 "are not of the same length.")
+            else:
+                for fs, dd in zip(file_strings, destination_directories):
+                    
+                    if not find_hidden_files:
+                        string_allfiles = [file
+                                           for file in dd.glob(fs)
+                                           if file.is_file()]
+                    else:
+                        string_allfiles = [file
+                                           for file in
+                                           [fileref for fileref in dd.glob(fs)]
+                                           if file.is_file()]
+                    
+                    for file in string_allfiles:
+                        os.remove(file)
+
 
     elif isinstance(file_strings, list)\
     and not isinstance(destination_directories, list):
-        
-        destination_directories = destination_directories[0]
         
         for fs in file_strings:     
             
@@ -793,31 +805,214 @@ def remove_files_byFS(file_strings,
             os.remove(file)
 
 
+# Operations involving directories #
+#----------------------------------#
+
+def make_parent_directories(directory_list):
+   
+    if isinstance(directory_list, str):
+        directory_list = [directory_list]
+
+    dirPathList = [posixpath_converter(dirc, False)
+                   for dirc in directory_list]
+    
+    for pathDir in dirPathList:
+        pathDir.mkdir(parents=True, exist_ok=True)
+        
+        
+def remove_entire_directories(directory_list):
+
+    if isinstance(directory_list, str):
+        directory_list = [directory_list]
+
+    for dirc in directory_list:
+        shutil.rmtree(dirc, ignore_errors=True)
+
+
+def rsync(source_paths,
+          destination_paths,
+          mode="arvh",
+          delete_at_destination=True,
+          source_allfiles_only=False):
+    
+    for sp, dp in zip(source_paths, destination_paths):
+        
+        if delete_at_destination and not source_allfiles_only:
+            
+            zsh_command = f"rsync -{mode} --delete '{sp}' '{dp}'"
+            os.system(zsh_command)
+            
+        elif not delete_at_destination and not source_allfiles_only:
+            zsh_command = f"rsync -{mode} '{sp}' '{dp}'"
+            os.system(zsh_command)
+            
+        elif delete_at_destination and source_allfiles_only:
+            zsh_command = f"rsync -{mode} --delete '{sp}'/* '{dp}'"
+            os.system(zsh_command)
+            
+        elif not delete_at_destination and source_allfiles_only:
+            zsh_command = f"rsync -{mode} '{sp}'/* '{dp}'"
+            os.system(zsh_command)
+    
+
+def move_entire_directories(directories, destination_directories):
+    
+    if isinstance(directories, list)\
+    and isinstance(destination_directories, list):
+        
+        for dirc in directories:
+            for dd in destination_directories:
+                shutil.move(dirc, 
+                            dd,
+                            copy_function=shutil.copytree)
+                    
+    elif isinstance(directories, list)\
+    and isinstance(destination_directories, list):
+            
+        len_exts = len(directories)
+        len_dds = len(destination_directories)
+        
+        if len_exts != len_dds:
+            raise ValueError("Extension and destination directory lists "
+                             "are not of the same length.")
+        else:
+            for dirc, dd in zip(directories, destination_directories):
+                shutil.move(dirc,
+                            dd,
+                            copy_function=shutil.copytree)
+                
+    elif isinstance(directories, list)\
+    and not isinstance(destination_directories, list):
+        for dirc in directories:
+            shutil.move(dirc, 
+                        destination_directories, 
+                        copy_function=shutil.copytree)
+                
+    elif not isinstance(directories, list)\
+    and isinstance(destination_directories, list):        
+        for dd in destination_directories:
+            shutil.move(directories,
+                        dd, 
+                        copy_function=shutil.copytree)
+                
+    else:
+        shutil.move(directories, 
+                    destination_directories, 
+                    copy_function=shutil.copytree)
+            
+        
+def copy_entire_directories(directories,
+                            destination_directories,
+                            copy_directories_themselves=True,
+                            recursive_in_depth=True):
+    
+    if copy_directories_themselves:
+        
+        if isinstance(directories, list)\
+        and isinstance(destination_directories, list)\
+        and recursive_in_depth:
+            
+            for dirc in directories:
+                for dd in destination_directories:
+                    shutil.copytree(dirc, dd, dirs_exist_ok=True)
+                        
+        elif isinstance(directories, list)\
+        and isinstance(destination_directories, list)\
+        and not recursive_in_depth:
+                
+            len_exts = len(directories)
+            len_dds = len(destination_directories)
+            
+            if len_exts != len_dds:
+                raise ValueError("Extension and destination directory lists "
+                                 "are not of the same length.")
+            else:
+                for dirc, dd in zip(directories, destination_directories):
+                    shutil.copytree(dirc, dd, dirs_exist_ok=True)
+                    
+        elif isinstance(directories, list)\
+        and not isinstance(destination_directories, list):
+            for dirc in directories:
+                shutil.copytree(dirc, destination_directories, dirs_exist_ok=True)
+                    
+        elif not isinstance(directories, list)\
+        and isinstance(destination_directories, list):        
+            for dd in destination_directories:
+                shutil.copytree(directories, dd, dirs_exist_ok=True)
+                    
+        else:
+            shutil.copytree(directories, destination_directories, dirs_exist_ok=True)
+            
+    else:
+        
+        if isinstance(directories, list)\
+        and isinstance(destination_directories, list)\
+        and recursive_in_depth:
+            
+            for dirc in directories:
+                for dd in destination_directories:
+                    cp_command = f"cp -rv '{dirc}'/* '{dd}'"
+                    os.system(cp_command)
+                        
+        elif isinstance(directories, list)\
+        and isinstance(destination_directories, list)\
+        and not recursive_in_depth:
+                
+            len_exts = len(directories)
+            len_dds = len(destination_directories)
+            
+            if len_exts != len_dds:
+                raise ValueError("Extension and destination directory lists "
+                                 "are not of the same length.")
+            else:
+                for dirc, dd in zip(directories, destination_directories):
+                    cp_command = f"cp -rv '{dirc}'/* '{dd}'"
+                    os.system(cp_command)
+                    
+        elif isinstance(directories, list)\
+        and not isinstance(destination_directories, list):
+            for dirc in directories:
+                cp_command = f"cp -rv '{dirc}'/* '{destination_directories}'"
+                os.system(cp_command)
+                    
+        elif not isinstance(directories, list)\
+        and isinstance(destination_directories, list):        
+            for dd in destination_directories:
+                cp_command = f"cp -rv '{directories}'/* '{dd}'"
+                os.system(cp_command)
+                    
+        else:
+            cp_command = f"cp -rv '{directories}'/* '{destination_directories}'"
+            os.system(cp_command)     
+
+# Operations involving both files and directories #
+#-------------------------------------------------#
+
 def rename_objects(relative_paths,
                    renaming_relative_paths):
 
-    # Function that renames files specified by their relative paths.
+    # Function that renames files specified by their absolute paths.
     # 
     # In fact, os.rename can also perform the same tasks as shutil.move does,
     # therefore functions 'move_files_byExts_fromCodeCallDir' and
     # 'move_files_byFS_fromCodeCallDir', including the fact that,
     # besides moving a directory or file, it includes the option to
     # rename thereof at the destination directory, i.e. altering the
-    # ultimate part of the relative path.
+    # ultimate part of the absolute path.
     # 
     # However, as a matter of distinguishing among the main usages of the modules,
     # and to invoke simple operations, this function will be used
     # such that each file or directory will be given another name,
-    # without altering the relative path.
+    # without altering the absolute path.
     # 
     # Parameters
     # ----------
     # relative_paths: str or list
     #       String or list of strings that identify the desired files/directories,
-    #       i.e. the relative path.
+    #       i.e. the absolute path.
     # renaming_relative_paths : str or list
     #       A string of the file/directory name or a list containing
-    #       several files/directories, i.e the renamed BUT UNALTERED relative path.
+    #       several files/directories, i.e the renamed BUT UNALTERED absolute path.
     # 
     # This function distinguishes two cases:
     # 
@@ -850,4 +1045,11 @@ def rename_objects(relative_paths,
                 
     else:
         raise ValueError("Both input arguments must either be "
-                        "strings or lists simultaneously.")
+                         "strings or lists simultaneously.")
+
+#--------------------------------------------------------#
+# Get the directory from where this code is being called #
+#--------------------------------------------------------#
+
+cwd = Path.cwd()
+alldoc_dirpath = Path(fixed_dirpath).parent

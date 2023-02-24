@@ -29,19 +29,19 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "netcdf_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_dirpath}/"\
                    f"weather_and_climate/{module_imp1}"
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
 netcdf_handler = importlib.util.module_from_spec(spec1)
 spec1.loader.exec_module(netcdf_handler)
 
 
 module_imp2 = "array_numerical_operations.py"
-module_imp2_path = f"{fixed_dirpath}/"\
+custom_mod2_path = f"{fixed_dirpath}/"\
                    f"arrays_and_lists/{module_imp2}"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
+spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
 array_numerical_operations = importlib.util.module_from_spec(spec2)
 spec2.loader.exec_module(array_numerical_operations)
 
@@ -49,10 +49,10 @@ spec2.loader.exec_module(array_numerical_operations)
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-# file_path_specs = string_handler.file_path_specs
-# join_file_path_specs = string_handler.join_file_path_specs
+# obj_path_specs = string_handler.obj_path_specs
+# join_obj_path_specs = string_handler.join_obj_path_specs
 
-# move_files_byFS_fromCodeCallDir = file_handler.move_files_byFS_fromCodeCallDir
+# move_files_byFS_fromCodeCallDir = file_and_directory_handler.move_files_byFS_fromCodeCallDir
 
 # find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 # find_ext_file_directories = file_and_directory_paths.find_ext_file_directories

@@ -75,9 +75,9 @@ def insert_values(x, index, values, axis=None):
     #       Object containing whatever type of data
     # index : int
     #       Position where to introduce new data.
-    #       Same behavior as introducing a blank space at the left
+    #       Same behaviour as introducing a blank space at the left
     #       and then filling it with new data.
-    # values : list, numpy.array or pandas.core.series.Series
+    # values : list, numpy.array or pandas.Series
     #       If values are part of a data frame, they equally can be introduced
     #       into a list, to then call its data in the appropriate manner.
     # axis : int or NoneType

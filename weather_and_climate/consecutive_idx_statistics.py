@@ -24,10 +24,10 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "array_numerical_operations.py"
-module_imp1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_dirpath}/"\
                    f"arrays_and_lists/{module_imp1}"
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
 array_numerical_operations = importlib.util.module_from_spec(spec1)
 spec1.loader.exec_module(array_numerical_operations)
 
@@ -101,7 +101,7 @@ def count_consecutive_days_maxdata(
     # 
     # Parameters
     # ----------
-    # array : numpy.ndarray or pandas.core.series.Series
+    # array : numpy.ndarray or pandas.Series
     #       An array which contains the daily maximum value data.
     # max_threshold : int
     #       Upper limit.
@@ -122,11 +122,11 @@ def count_consecutive_days_maxdata(
     
     above_thres_idx = array > max_threshold
     
-    if min_consec_days == None and not calculate_max_consecutive_days:
+    if min_consec_days is None and not calculate_max_consecutive_days:
         consec_num_days = np.count_nonzero(above_thres_idx)        
         return consec_num_days
     
-    elif min_consec_days == None and calculate_max_consecutive_days:
+    elif min_consec_days is None and calculate_max_consecutive_days:
         max_consec_num_days = count_consecutive(above_thres_idx, True)
         
         if max_consec_num_days:
@@ -164,7 +164,7 @@ def count_consecutive_days_mindata(
     # 
     # Parameters
     # ----------
-    # array : numpy.ndarray or pandas.core.series.Series
+    # array : numpy.ndarray or pandas.Series
     #       An array which contains the daily minimum value data.
     # min_threshold : int
     #       Integer that defines an upper or lower limit of the minimum value.

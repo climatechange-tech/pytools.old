@@ -25,28 +25,28 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "array_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_dirpath}/"\
                    f"arrays_and_lists/{module_imp1}"
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
+spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
 array_handler = importlib.util.module_from_spec(spec1)
 spec1.loader.exec_module(array_handler)
 
 
-module_imp2 = "time_ranges.py"
-module_imp2_path = f"{fixed_dirpath}/"\
+module_imp2 = "calendar_operators.py"
+custom_mod2_path = f"{fixed_dirpath}/"\
                     f"time_handling/{module_imp2}"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-time_ranges = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(time_ranges)
+spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
+calendar_operators = importlib.util.module_from_spec(spec2)
+spec2.loader.exec_module(calendar_operators)
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
 approach_value_in_array = array_handler.approach_value_in_array
-week_range = time_ranges.week_range
+week_range = calendar_operators.week_range
 
 #-------------------------#
 # Define custom functions #

@@ -5,72 +5,252 @@
 import numpy as np
 import pandas as pd
 
-import inspect
-import types
-from typing import cast
-
 #------------------#
 # Define functions # 
 #------------------#
 
-def sort_array_rows_by_column(array, ncol):
+def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     
-    # Function that sorts the values contained in a specific column of
-    # an array. Then the values of the rest of the columns are
-    # sorted out the same way they are on the first column.
+    # Function that sorts the values in a 2D dimension array
+    # against a specific column in an ASCENDING order.
+    # 
+    # The result is an array with every row sorted out,
+    # such that the values in the selected column are the actual sorted values,
+    # i.e. only one value of every row is sorted out,
+    # with respect of the rest of that column, and the rest remains ummovable.
+    # 
+    # This tool is useful when the array contains parameters with
+    # different semantics and only one column is needed to sort.
     # 
     # Parameters
     # ----------
     # array : numpy.ndarray
-    #       Array containing the values.
+    #       Array to be sorted.
     # ncol : int
-    #       Integer indicating which column values are going to be sorted.
+    #       Number of the column which values are going to be sorted against to.
+    # sort_order : {"ascending", "descending"}
+    #       Default order is "ascending".
     # 
     # Returns
     # -------
     # sorted_array : numpy.ndarray
-    #       Array containing the sorted values along the specified column.
+    #       Array containing the sorted values as explained.
     # 
     # Example
     # -------
     # 
-    # >>> array=np.random.randint(1,10,size=(10,4))
+    # >>> array=np.random.randint(1,10,size=(3,4))
     # >>> array
-    # array([[4, 6, 6, 1],
-    #        [4, 6, 4, 1],
-    #        [1, 4, 2, 8],
-    #        [5, 6, 1, 8],
-    #        [4, 2, 4, 2],
-    #        [2, 9, 7, 2],
-    #        [5, 7, 6, 2],
-    #        [7, 2, 7, 1],
-    #        [7, 4, 4, 6],
-    #        [2, 7, 5, 4]])
+    # array([[6, 4, 2, 3],
+    #        [3, 9, 7, 1],
+    #        [4, 6, 4, 5]])
     # 
-    # sort_array_rows_by_column(array, 0)
-    # array([[1, 4, 2, 8],
-    #        [2, 9, 7, 2],
-    #        [2, 7, 5, 4],
-    #        [4, 6, 6, 1],
-    #        [4, 6, 4, 1],
-    #        [4, 2, 4, 2],
-    #        [5, 6, 1, 8],
-    #        [5, 7, 6, 2],
-    #        [7, 2, 7, 1],
-    #        [7, 4, 4, 6]])
+    # Suppose that we want to sort the values of the first column (ncol=0),
+    # but when it is done so, we want the rest of the values of each row to
+    # be fixed, instead of being sorted out.
+    # 
+    # That is to say, the lowest value of the mentioned column is 3
+    # and the rest of the values of that row that it is defined are 9, 7 and 1.
+    # If we sort the column, the first number will be 3, but 9,7 and 1
+    # are required to follow number 3 and stay in the same row.
+    # The rest of the values of that first column are ordered
+    # following the same mechanism, and the result is the following:
+    # 
+    # sort_array_rows_by_column(array, ncol=0)
+    # array([[3, 9, 7, 1],
+    #        [4, 6, 4, 5],
+    #        [6, 4, 2, 3]])
+    # 
+    # Another example, more intuitive,
+    # where several files are needed to be sorted out
+    # with respect to the modification time, i.e. the second column:
+    # 
+    # array([['VID-20221230_110.jpg', '2022-12-30 15:10:34'],
+    #        ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
+    #        ['VID-20221230_162.jpg', '2022-12-30 15:10:28'],
+    #        ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
+    #        ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
+    #        ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
+    # 
+    # sort_array_rows_by_column(array, ncol=1)
+    # array([['VID-20221230_162.jpg', '2022-12-30 15:10:28'],
+    #        ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
+    #        ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
+    #        ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
+    #        ['VID-20221230_110.jpg', '2022-12-30 15:10:34'],
+    #        ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
+    # 
+    # This example could be extended by adding the creation
+    # and last time access columns, but the mechanism remains exactly the same.
     
-    sorted_array = array[np.argsort(array[:,ncol])]
-    return sorted_array
+    sort_order_ops = ["ascending", "descending"]
+    default = sort_array_rows_by_column.__defaults__[0]
+    
+    if sort_order not in sort_order_ops:
+        raise ValueError("Wrong sort order option. "
+                         f"Options are {sort_order_ops}.")
+    
+    if sort_order == default:
+        sorted_array_rbc = array[np.argsort(array[:,ncol])]
+    else:
+        sorted_array_rbc = array[np.fliplr([np.argsort(array[:,ncol])])[0]]
+        
+    return sorted_array_rbc
 
-def approach_value_in_array(array, given_value):
+
+def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     
-    # Finds the index of the nearest value compared to the original one
-    # in an array.
+    # Function that sorts the values in a 2D dimension array
+    # against a specific row in an ASCENDING order.
+    #
+    # The result is an array with every column sorted out,
+    # such that the values in the selected row are the actual sorted values,
+    # i.e. only one value of every column is sorted out,
+    # with respect of the rest of that row, and the rest remains ummovable.
+    # 
+    # This tool is useful when the array contains parameters with
+    # different semantics and only one row is needed to be sorted.
     # 
     # Parameters
     # ----------
-    # array : numpy.ndarray or pandas.core.frame.DataFrame
-    #         or pandas.core.series.Series
+    # array : numpy.ndarray
+    #       Array to be sorted.
+    # nrow : int
+    #       Number of the row which values are going to be sorted against to.
+    # sort_order : {"ascending", "descending"}
+    #       Default order is "ascending".
+    # 
+    # Returns
+    # -------
+    # sorted_array : numpy.ndarray
+    #       Array containing the sorted values as explained.
+    # 
+    # Example
+    # -------
+    # 
+    # >>> array=np.random.randint(1,10,size=(3,4))
+    # >>> array
+    # array([[6, 4, 2, 3],
+    #        [3, 9, 7, 1],
+    #        [4, 6, 4, 5]])
+    # 
+    # Suppose that we want to sort the values of the first row (row=0),
+    # but when it is done so, we want the rest of the values of each column to
+    # be fixed, instead of being sorted out.
+    # 
+    # That is to say, the lowest value of the mentioned row is 2
+    # and the rest of the values of the column that it is defined are 7 and 4.
+    # If we sort the row, the first number will be 2, but 7 and 4
+    # are required to follow number 2 and stay in the same row.
+    # 
+    # The rest of the values of that first row are ordered
+    # following the same mechanism.
+    # 
+    # However, due to the naturally arised difficulty by the matrix definition,
+    # it is not straightforward to perform this operation programatically.
+    # Nevertheless, the matrix definition does allow 
+    # to work with consecutive transposes!
+    # 
+    # >>> array1=array.T
+    # >>> array1
+    # array([[6, 3, 4],
+    #        [4, 9, 6],
+    #        [2, 7, 4],
+    #        [3, 1, 5]])
+    # 
+    # And now we apply the same method as sorting ROWS AGAINST a specified
+    # COLUMN, where now array === array.T, and ncol=nrow=0
+    # which is performed by the 'sort_array_rows_by_column' function:
+    # 
+    # >>> array1_tr=sort_array_rows_by_column(array.T, ncol=0)
+    # >>> array1_tr
+    # array([[2, 7, 4],
+    #        [3, 1, 5],
+    #        [4, 9, 6],
+    #        [6, 3, 4]])
+    # 
+    # And now we calculate its transpose.
+    # >>> array2 = array1_tr.T
+    # >>> array2
+    # array([[2, 3, 4, 6],
+    #        [7, 1, 9, 3],
+    #        [4, 5, 6, 4]])
+    
+    array_tr = array.T
+    sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
+    sorted_array_cbr = sorted_array_cbr_tr.T
+    
+    return sorted_array_cbr
+
+
+def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
+    
+    # This functon sorts a 2D array 'completely' at once, in the sense
+    # that the operations are only accomplished such that
+    # there are always ummovable elements, instead of sorting each and every
+    # value in an array, like np.sort() method does.
+    # The order is always ASCENDING.
+    # 
+    # It firstly performs the sorting against a specific column,
+    # for that calling to the 'sort_array_rows_by_column' function.
+    # Then it sort every column of the resulting array against a specific row,
+    # for that calling the 'sort_array_columns_by_row' function.
+    # Recall that the rest of the rows are not sorted, again,
+    # like np.sort() would do.
+    # 
+    # This tool is useful when the array contains parameters with
+    # different semantics and firstly only one column and secondly, 
+    # after that operation, every row needs to be sorted without
+    # considering them individually.
+    # 
+    # Parameters
+    # ----------
+    # array : numpy.ndarray
+    #       Array to be sorted.
+    # ncol : int
+    #       Number of the column which values are going to be sorted against to.
+    # nrow : int
+    #       Number of the row which values are going to be sorted against to.
+    # sort_order : {"ascending", "descending"}
+    #       Default order is "ascending".
+    # 
+    # Returns
+    # -------
+    # sorted_array : numpy.ndarray
+    #       Array containing the sorted values as explained.
+    # 
+    # Example
+    # -------
+    # 
+    # >>> array=np.random.randint(1,10,size=(3,4))
+    # >>> array
+    # array([[6, 4, 2, 3],
+    #        [3, 9, 7, 1],
+    #        [4, 6, 4, 5]])
+    # 
+    # sort_array_complete(array, ncol=0, nrow=0)
+    # array([[1, 3, 7, 9],
+    #        [5, 4, 4, 6],
+    #        [3, 6, 2, 4]])
+    
+    sorted_array_rbc = sort_array_rows_by_column(array, ncol, sort_order)
+    sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
+                                                 nrow,
+                                                 sort_order)
+    sorted_array_complete = sorted_array_cbr.copy()
+    
+    return sorted_array_complete
+
+
+def approach_value_in_array(array, given_value):
+    
+    # Finds the index of the nearest numerical value 
+    # compared to the original one in the given array.
+    # 
+    # Parameters
+    # ----------
+    # array : numpy.ndarray or pandas.DataFrame
+    #         or pandas.Series
     #         Array or pandas data frame or series containing the values.
     # 
     # given_value : float
@@ -110,66 +290,101 @@ def approach_value_in_array(array, given_value):
     return approached_val, approached_val_idx
 
 
-def objectvalues2float(data, colname):
+def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
 
-    # Function that converts dtype==object ('O') data
-    # to 64-bit precision float numbers.
-    # If there is no such type of data, it returns the same type of data.
+    # Function that converts an object's values from the original dtype
+    # to the desired one.
+    # If the data's dtype is not the same as the original (old) one
+    # (e.g, if the original dtype is given mistakenly),
+    # the function simply returns the object unchanged,
+    # as well as printing a message showing the latter.
     #
     # Parameters
     # ----------
-    # data : pd.core.frame.DataFrame or numpy.ndarray
+    # obj_data : pd.DataFrame or numpy.ndarray
     #       Object containing data.
+    # old_type : str
+    #       Type of the given object's values.
+    #       Options are {"O": object, "U": string, "d": double}.
+    # new_type : str
+    #       Type the data has to be converted to.
+    #       Options are the same as for parameter 'old_type'.
     # colname : str
-    #       Necessary only if pd.core.frame.DataFrame cases is passed.
+    #       Only necessary if pd.DataFrame cases is passed.
     #       Column name along which to perform the conversion.
     #       Set to None if a numpy.ndarray is passed.
     #
     # Returns
     # -------
-    # data : pd.core.frame.DataFrame or numpy.ndarray
+    # obj_data : pd.DataFrame or numpy.ndarray
     #       Object containing floated data, if necessary.
 
-    method_name = cast(types.FrameType, inspect.currentframe()).f_code.co_name
+    arg_names = basicObjectValueTypeConverter.__code__.co_varnames
+    
+    type_option_list = ["O", "U", "d"]
+    
+    if old_type not in type_option_list:
+        raise ValueError(f"Wrong option of the original data type "
+                         f"(argument '{arg_names[1]}').\n"
+                         f"Options are {type_option_list}.")
+    
+    
+    if isinstance(obj_data, pd.DataFrame):
 
-    if isinstance(data, pd.core.frame.DataFrame):
+        data_type = obj_data.loc[:,colname].dtype
+        
+        if colname is None:
+            raise ValueError("Please introduce a valid "
+                             f"column name (argument '{arg_names[3]})"
+                             "of the obj_data frame.")
 
-        if colname == None:
-            print("Please introduce a valid column name of the data frame")
-
-        else:
-
-            if data.loc[:,colname].dtype == 'O':
-                data_floated = data.copy()
-                data_floated.loc[:,colname] = data_floated.loc[:,colname].astype('d')
-                return data_floated
+        else:            
+            if data_type == old_type or old_type in data_type.str:
+                data_floated = obj_data.copy()
+                
+                try:
+                    data_floated.loc[:,colname]\
+                    = data_floated.loc[:,colname].astype(new_type)
+                    return data_floated
+                    
+                except:
+                    raise TypeError(f"Cannot convert object to type '{new_type}'.")
+                    
             else:
-                return data
+                print("Returning object with its values' type unchanged.")
+                return obj_data
 
     else:
+        
+        data_type = obj_data.dtype
 
-        if colname != None:
-            print("Please set the second argument "
-                  f"of the '{method_name}' function to 'None'")
+        if colname is not None:
+            raise ValueError(f"Please set the argument '{arg_names[3]}' "
+                             "to 'None'.")
 
         else:
 
-            if data.dtype == 'O':
-                data_floated = data.copy().astype('d')
-                return data_floated
+            if data_type == old_type or old_type in data_type.str:
+                try:
+                    data_floated = obj_data.copy().astype(new_type)
+                    return data_floated
+                except:
+                    raise TypeError(f"Cannot convert object to type '{new_type}'.")
             else:
-                return data
+                print("Returning object with its values' type unchanged.")
+                return obj_data
 
-def sort_values_externally(array, wantarray=False):
+def sort_values_externally(array, key=None, reverse=False,
+                           axis=-1, order=None,
+                           wantarray=False):
     
     # Function that sorts array values,
-    # irrespective of the type (except special cases) of data.
-    # It is intended to use in such cases where
+    # using this time np.sort() or list.sort() method, depending on the case.
+    # It is intended to use especially in such cases where
     # the simple use of sort() method would lead
     # no other option than assigning a variable,
-    # which causes to return a generator;
-    # of course, this function can be used
-    # however simple the case it is.
+    # which causes to return a generator.
+    # Of course, this function can be used however simple the case it is.
     # 
     # Parameters
     # ----------
@@ -179,7 +394,7 @@ def sort_values_externally(array, wantarray=False):
     # wantarray : bool
     #       Determines whether to return the sorted values
     #       in an array, otherwise the functions returns
-    #       them in a list. Default behavior is the latter one.
+    #       them in a list. Default behaviour is the latter one.
     #       
     # Returns
     # -------
@@ -188,10 +403,10 @@ def sort_values_externally(array, wantarray=False):
 
     if isinstance(array, list):
         # Invoke the method without assigning a new variable #
-        array.sort()
+        array.sort(key=None, reverse=reverse)
 
     elif isinstance(array, np.ndarray):
-        array = np.sort(array)
+        array = np.sort(array, axis=axis, order=order)
 
     if wantarray:
         array = np.array(array)
@@ -223,7 +438,6 @@ def count_unique_type_objects(list_of_objects):
     
     return unique_type_list, lutl    
         
-
 
 def select_array_elements(array, idx2access):
 
@@ -267,16 +481,17 @@ def remove_elements_from_array(array, idx2access, axis=None):
     # Parameters
     # ----------
     # array : list or numpy.array
-    #       List or array containing whatever values
+    #       List or array containing the values.
     # idx2access : list or numpy.array of integers or booleans
     #       Object containing indexes used to select elements
     #       from the previous list or array.
     # 
     # Returns
     # -------
-    # array_filtered : numpy.ndarrayararray_filteredray_filtered
+    # array_filtered : numpy.ndarray
     #       NumPy's array with the selected elements removed.
     
     array_filtered = np.delete(array, idx2access, axis=axis)
     
     return array_filtered
+

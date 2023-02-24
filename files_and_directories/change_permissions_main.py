@@ -2,175 +2,207 @@
 # Import modules #
 #----------------#
 
-import importlib
+import grp
+import pwd
+
 import os
 from pathlib import Path
+import shutil
 
-#---------------------------------------#
-# Get the all-code containing directory #
-#---------------------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "file_and_directory_paths.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp1}"
-                   
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-file_and_directory_paths = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(file_and_directory_paths)
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
 
-module_imp2 = "directory_handler.py"
-module_imp2_path = f"{fixed_dirpath}/"\
-                   f"files_and_directories/{module_imp2}"
-                   
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-directory_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(directory_handler)
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod1_path = f"{fixed_dirpath}/files_and_directories"
+custom_mod2_path = f"{fixed_dirpath}/parameters_and_constants"
+custom_mod3_path = f"{fixed_dirpath}/strings"
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import file_and_directory_handler
+import file_and_directory_paths
+import global_parameters
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
-find_allDirectories = directory_handler.find_allDirectories
+find_allDirectories = file_and_directory_handler.find_allDirectories
+find_ext_file_paths = file_and_directory_handler.find_ext_file_paths
+
+find_substring_index = string_handler.find_substring_index
+basic_object_types = global_parameters.basic_object_types
 
 #-----------------------------#
 # Get this laptop user´s name #
 #-----------------------------#
 
-whoami = os.popen("whoami").read()[:-1]
+whoami = home_PATH.parts[-1]
 
 #-------------------------#
 # Define custom functions #
 #-------------------------#
 
-def modify_file_permissions(source_directory, 
-                              extensions2skip,
-                              attrs_str="ugo-x"):
+def modify_obj_permissions(path, 
+                           obj_type="file",
+                           extensions2skip="",
+                           attr_id=664):
     
-    print("Removing executability permission of all files "
-          "except the following extensioned ones:\n"
-          f"{extensions2skip}")
+    # Default permission ID configuration (as when touching files
+    # or creating directories) is as follows:
+    # 
+    # Files: attr_id = 664
+    # Directories: attr_id = 775
+        
+    arg_names = modify_obj_permissions.__code__.co_varnames
+    ot_arg_pos = find_substring_index(arg_names, 
+                                      "obj_type",
+                                      find_whole_words=True)
+    attr_arg_pos = find_substring_index(arg_names, 
+                                        "attr_id",
+                                        find_whole_words=True)
     
+    if isinstance(attr_id, str):
+        raise TypeError(typeErrorStr.format(arg_names[attr_arg_pos]))
+        
+    le2s = len(extensions2skip)
     
-    
-    file_extension_list = find_allfile_extensions(extensions2skip)
-    for extension in file_extension_list:
-        find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
-                            "-type f "\
-                            f"-exec chmod {attrs_str} "\
-                            r"'{}' "\
-                            "\;"
-        os.system(find_exec_command)
+    if obj_type not in bo_types:
+        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))        
+  
+    if obj_type == bo_types[0]:
+        
+        if le2s > 0:
+            print(f"Modifying permissions of all files in {path} "
+                  "except the following extensioned ones...\n"
+                  f"{extensions2skip}")
+        else:
+            print(f"Modifying permissions of all files in {path}...")
+            
+        file_extension_list = find_allfile_extensions(extensions2skip, 
+                                                      path, 
+                                                      top_path_only=True)
+        obj_path_list = find_ext_file_paths(file_extension_list,
+                                            path, 
+                                            top_path_only=True)
+            
+    elif obj_type == bo_types[1]:
+        print(f"Modifying permissions of all directories in {path}...")
+        obj_path_list = find_allDirectories(path)
         
 
-def reset_directory_permissions(source_directory):
-    
-    print("Resetting directory permissions to default...")
-    
-    dirlist = directory_handler.find_allDirectories(source_directory)
-    for dirc in dirlist:
-        find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
-                            "-type d "\
-                            "-exec chmod 775 "\
-                            r"'{}' "\
-                            "\;"
-        os.system(find_exec_command)
-        
+    for obj_path in obj_path_list:
+        try:
+            os.chmod(obj_path, attr_id)    
+        except PermissionError:
+            raise PermissionError(permissionErrorStr)
+                
  
-def change_file_owner_group(source_directory,
-                            change_owner,
-                            change_group, 
-                            extensions2skip):
+def modify_obj_owner(path,
+                     module="shutil",
+                     obj_type="file",
+                     extensions2skip="",
+                     new_owner=None,
+                     new_group=None):    
+    # Note
+    # ----
+    # In order to modify file and/or directory owner and/or group names,
+    # both os.chown and shutil.chown need the user to be rooted.
     
-    file_extension_list = find_allfile_extensions(extensions2skip)
+    arg_names = modify_obj_permissions.__code__.co_varnames
+    mod_arg_pos = find_substring_index(arg_names, 
+                                       "module",
+                                       find_whole_words=True)
+    ot_arg_pos = find_substring_index(arg_names, 
+                                      "obj_type", 
+                                      find_whole_words=True)
     
-    if change_owner and change_group:
-        print("Changing all files' owner and group "
-              "except the following ones:\n"
-              f"{extensions2skip}")
-
-        for extension in file_extension_list:
-            find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
-                                "-type f "\
-                                f"-exec chown {whoami}:{whoami} "\
-                                r"'{}' "\
-                                "\;"
-            os.system(find_exec_command)
-        
-    elif change_owner and not change_group:
-        print("Changing all files' owner except the following ones:\n"
-              f"{extensions2skip}")
-
-        for extension in file_extension_list:
-            find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
-                                "-type f "\
-                                f"-exec chown {whoami} "\
-                                r"'{}' "\
-                                "\;"
-            os.system(find_exec_command)
-            
-    elif not change_owner and change_group:
-        print("Changing all files' group except the following ones:\n"
-              f"{extensions2skip}")
-        
-        for extension in file_extension_list:
-            find_exec_command = f"sudo find '{source_directory}' -name '*.{extension}' "\
-                                "-type f "\
-                                f"-exec chgrp {whoami} "\
-                                r"'{}' "\
-                                "\;"
-            os.system(find_exec_command)
-        
-
-def change_directory_owner_group(source_directory,
-                                 change_owner,
-                                 change_group):
+    le2s = len(extensions2skip)
     
-    dirlist = directory_handler.find_allDirectories(source_directory)
-    if change_owner and change_group:
-        print("Changing all directories' owner and group...")
+    if obj_type not in bo_types:
+        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))
+        
+    if module not in modules:
+        raise ValueError(valueErrorStr.format(arg_names[mod_arg_pos], modules))
+        
+    if obj_type == bo_types[0]:
+        
+        if le2s > 0:
+            print(f"Modifying permissions of all files in {path} "
+                  "except the following extensioned ones...\n"
+                  f"{extensions2skip}")
+        else:
+            print(f"Modifying permissions of all files in {path}...")
+            
+        file_extension_list = find_allfile_extensions(extensions2skip, 
+                                                      path, 
+                                                      top_path_only=True)
+        obj_path_list = find_ext_file_paths(file_extension_list,
+                                            path, 
+                                            top_path_only=True)
+        
+    elif obj_type == bo_types[1]:
+        print(f"Modifying permissions of all directories in {path}...")
+        obj_path_list = find_allDirectories(path)
+    
+    for obj_path in obj_path_list:
+        if module == "os":
+            
+            # Owner modification #
+            if new_owner is None or new_owner == "unchanged":
+                uid = -1
+            else:
+                uid = pwd.getpwnam(new_owner).pw_uid
+                
+            # Group modification #
+            if new_group is None or new_group == "unchanged":
+                gid = -1
+            else:
+                gid = grp.getgrnam(new_group).gr_gid
+                
+            try:
+                os.chown(obj_path, uid, gid)
+            except PermissionError:
+                raise PermissionError(permissionErrorStr)
+            
+        elif module == "shutil":
+            try:
+                shutil.chown(obj_path, user=new_owner, group=new_group)
+            except PermissionError:
+                raise PermissionError(permissionErrorStr)
+    
+#------------------#
+# Local parameters #
+#------------------#
 
-        for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
-                                "-type d "\
-                                f"-exec chown {whoami} "\
-                                r"'{}' "\
-                                "\; "\
-                                f"-exec chgrp {whoami} "\
-                                r"'{}' "\
-                                "\;"                                
-            os.system(find_exec_command)
-            
-    elif change_owner and not change_group:
-        print("Changing all directories' owner...")
-        
-        for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
-                                "-type d "\
-                                f"-exec chown {whoami} "\
-                                r"'{}' "\
-                                "\;"                               
-            os.system(find_exec_command)
-            
-    elif not change_owner and change_group:
-        print("Changing all directories' group...")
-        
-        for dirc in dirlist:
-            find_exec_command = f"sudo find '{source_directory}' -wholename '{dirc}' "\
-                                "-type d "\
-                                f"-exec chgrp {whoami} "\
-                                r"'{}' "\
-                                "\;"                                
-            os.system(find_exec_command)
+modules = ["os", "shutil"]
+bo_types = basic_object_types
+
+# Error indicator tables #
+#------------------------#
+
+typeErrorStr = """Argument '{}' "must be of type 'int'"""
+permissionErrorStr = "Please execute the program as sudo."
+valueErrorStr = """Wrong '{}' option. Options are {}."""

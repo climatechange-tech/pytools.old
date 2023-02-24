@@ -2,41 +2,44 @@
 # Import modules #
 #----------------#
 
-import importlib
 import os
 from pathlib import Path
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "string_handler.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"strings/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-string_handler = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(string_handler)
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod_path = f"{fixed_dirpath}/strings"
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-file_path_specs = string_handler.file_path_specs
-file_list_2_string = string_handler.file_list_2_string
-join_file_path_specs = string_handler.join_file_path_specs
+obj_path_specs = string_handler.obj_path_specs
+fileList2String = string_handler.fileList2String
+obj_path_specs = string_handler.get_file_spec
+modify_obj_specs = string_handler.modify_obj_specs
 
 #-------------------------#
 # Define custom functions #
@@ -53,6 +56,7 @@ def netCDF2raster(nc_file_list,
         nc_file_list = [nc_file_list]
     
     lncfl = len(nc_file_list)
+    obj2change = "ext"
     
     for ncf_file in enumerate(nc_file_list):
         
@@ -62,13 +66,8 @@ def netCDF2raster(nc_file_list,
         print(f"Converting netCDF file to raster...\n"
               f"{ncf_num} out of {lncfl}...")
         
-        file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-        = file_path_specs(ncf_name, "_")
-        
-        file_path_ext = raster_extension
-        raster_file_name = join_file_path_specs(file_path_noname,
-                                                file_path_name,
-                                                file_path_ext)
+        raster_file_name\
+        = modify_obj_specs(ncf_name, obj2change, raster_extension)
     
         if nodata_value:
             zsh_rasterization\
@@ -106,6 +105,8 @@ def merge_independent_rasters(raster_files_dict,
     else:
         
         lls_num = list(list_lengths_set)[0]
+        obj2change = "name_noext_parts"
+        
         for i in range(lls_num):
             
             print(f"Processing the files no. {i+1} out of {lls_num-(i+1)} "
@@ -114,22 +115,21 @@ def merge_independent_rasters(raster_files_dict,
             raster_file_list = [raster_files_dict[key][i]
                                 for key in keys]
             
-            file_path_noname, file_path_name, file_path_name_split, file_path_ext\
-            = file_path_specs(raster_file_list[0])
+            file_path_name_parts = obj_path_specs(raster_file_list[0],
+                                                 file_spec_key=obj2change,
+                                                 splitchar=splitchar)
             
-            file_path_name_split[-2] = joint_region_name
-
+            fpnp_changes_tuple = (file_path_name_parts[-2], joint_region_name)
 
             """It is assumed that every file follows
             the standard name described at module cdo_tools.py
             """
-            file_path_name_new = splitchar.join(file_path_name_split)
             
-            output_file_name = join_file_path_specs(file_path_noname,
-                                                    file_path_name_new,
-                                                    file_path_ext)            
+            output_file_name = modify_obj_specs(raster_file_list[0],
+                                                 obj2change,
+                                                 fpnp_changes_tuple)           
             
-            zsh_allfile_string = file_list_2_string(raster_file_list)
+            zsh_allfile_string = fileList2String(raster_file_list)
             
             if nodata_value: 
                 zsh_raster_merge = f"gdal_merge.py "\

@@ -122,97 +122,159 @@ def find_substring_index(string, substring, find_whole_words=False):
         else:
             return -1
 
+    
+def obj_path_specs(obj_path, splitchar=None):
+    
+    obj_PATH = Path(obj_path)
+    
+    obj_path_parent = obj_PATH.parent
+    obj_path_name = obj_PATH.name
+    obj_path_name_noext = obj_PATH.stem
+    obj_path_ext = obj_PATH.suffix[1:]
+    
+    obj_specs_dict = {
+        objSpecsKeys[0] : obj_path_parent,
+        objSpecsKeys[1] : obj_path_name,
+        objSpecsKeys[2] : obj_path_name_noext,
+        objSpecsKeys[4] : obj_path_ext
+        }
+    
+    if splitchar is not None:
+        obj_path_name_noext_parts = obj_path_name_noext.split(splitchar)
+        addItemDict = {objSpecsKeys[3] : obj_path_name_noext_parts}
+        obj_specs_dict.update(addItemDict)
+    
+    if obj_path_parent == "." or obj_path_parent == Path("."):
+        obj_specs_dict.pop(objSpecsKeys[0])
+        
+    return obj_specs_dict
 
-def file_path_specs(file_path, splitchar="_"):
+
+def get_obj_specs(obj_path,
+                  obj_spec_key=None,
+                  splitchar=None):
     
-    file_PATH = Path(file_path)
+    arg_names = get_obj_specs.__code__.co_varnames
+    osk_arg_pos = find_substring_index(arg_names, 
+                                       "obj_spec_key",
+                                       find_whole_words=True)
     
-    file_path_parent = file_PATH.parent
-    file_path_name = file_PATH.stem
-    file_path_name_split = file_path_name.split(splitchar)
-    file_path_ext = file_PATH.suffix[1:]
+    if obj_spec_key not in objSpecsKeys_short:
+        raise ValueError(f"Wrong '{arg_names[osk_arg_pos]}' option. "
+                         f"Options are {objSpecsKeys_short}.")
+        
+    if not isinstance(obj_path, dict):
+        obj_specs_dict = obj_path_specs(obj_path, splitchar)
+        
+    if obj_spec_key == "name":
+        osk = objSpecsKeys[1]
     
-    if "/" in file_path:
-        return file_path_parent, file_path_name, file_path_name_split, file_path_ext
+    elif obj_spec_key == "name_noext":
+        osk = objSpecsKeys[2]
+        
+    elif obj_spec_key == "name_noext_parts" and splitchar is not None:
+        osk = objSpecsKeys[3]
+        
+    elif obj_spec_key == "name_noext_parts" and splitchar is None:
+        raise ValueError("You must specify a string-splitting character "
+                         f"if '{arg_names[osk_arg_pos]}' == {obj_spec_key}.")
+        
+    elif obj_spec_key == "ext":
+        osk = objSpecsKeys[4]
+    
+    obj_spec = obj_specs_dict[osk]
+    return obj_spec
+    
+    
+def modify_obj_specs(target_path_obj,
+                     obj2change,
+                     new_obj=None,
+                     str2add=None):
+    
+    # target_path_obj : str or dict
+    
+    arg_names = modify_obj_specs.__code__.co_varnames
+    obj2ch_arg_pos = find_substring_index(arg_names, "obj2")
+    
+    if obj2change not in objSpecsKeys_short:
+        raise ValueError(f"Wrong {arg_names[obj2ch_arg_pos]} option. "
+                         "Options are {objSpecsKeys_short}.")
+    
+    if not isinstance(target_path_obj, dict):
+        obj_specs_dict = obj_path_specs(target_path_obj)
+        
+    if obj2change == "name_noext_parts" and not isinstance(new_obj, tuple):
+        raise ValueError("bi gauzak bete behar dira: "
+                         "tupla(aldatzeko karaktere-katea, ordezkoa")
+            
+    if obj2change == "name":
+        osk = objSpecsKeys[1]
+            
+    elif obj2change == "name_noext":
+        osk = objSpecsKeys[2]
+
+        if str2add is not None:
+            obj_specs_dict[osk] += str2add    
+            lengthened_fileName = join_obj_path_specs(obj_specs_dict)
+            new_obj = lengthened_fileName
+        
+    elif obj2change == "name_noext_parts" and isinstance(new_obj, tuple):
+        osk = objSpecsKeys[2]
+        name_noext = get_obj_specs(target_path_obj, osk)
+        new_obj_aux = substring_replacer(name_noext, new_obj[0], new_obj[1])
+        new_obj = new_obj_aux
+            
+    elif obj2change == "ext":
+        osk = objSpecsKeys[4]
+
+    item2updateDict = {osk : new_obj}
+    obj_specs_dict.update(item2updateDict)
+    
+    new_obj_path_joint = join_obj_path_specs(obj_specs_dict)
+    return new_obj_path_joint
+        
+
+def join_obj_path_specs(obj_specs_dict):
+           
+    obj_path_ext = obj_specs_dict[objSpecsKeys[-1]]
+    obj_path_name_noext = obj_specs_dict[objSpecsKeys[2]]
+  
+    try:
+        obj_path_parent = obj_specs_dict[objSpecsKeys[0]]
+    except:
+        obj_path_parent = None
+    
+    if obj_path_parent is not None:
+        joint_obj_path = f"{obj_path_parent}/{obj_path_name_noext}.{obj_path_ext}"
     else:
-        return None, file_path_name, file_path_name_split, file_path_ext
-    
-
-
-def get_file_name_noRelPath(file_path, splitchar="_"):
-    
-    file_path_parent, file_path_name, file_path_name_split, file_path_ext\
-    = file_path_specs(file_path, splitchar)
+        joint_obj_path = f"{obj_path_name_noext}.{obj_path_ext}"
         
-    file_name_noRelPath = f"{file_path_name}.{file_path_ext}"
-
-    return file_name_noRelPath
-
-    
-def create_temporal_file_name(file_path, splitchar="_"):
-    
-    file_path_parent, file_path_name, file_path_name_split, file_path_ext\
-    = file_path_specs(file_path, splitchar)
-    
-    temp_file = f"{file_path_parent}/{file_path_name}_temp.{file_path_ext}"
-    temp_file_noneFiltered = noneInString_filter(temp_file)
-        
-    return temp_file_noneFiltered
+    return joint_obj_path
 
 
-def insert_str_into_file_name(file_path,
-                              file_path_splitchar,
-                              string2insert,
-                              idx):
-        
-    file_path_parent, file_path_name, file_path_name_split, file_path_ext\
-    = file_path_specs(file_path, file_path_splitchar)
-    
-    file_path_name_split.insert(idx, string2insert)
-    file_path_name = file_path_splitchar.join(file_path_name_split)
-    
-    new_file_name = join_file_path_specs(file_path_parent, 
-                                         file_path_name, 
-                                         file_path_ext)
-    
-    return new_file_name
+def fileList2String(obj_list):
 
+    allobj_string = ""
+    for file in obj_list:
+        allobj_string += f"{file} "
 
-def join_file_path_specs(file_path_parent, 
-                         file_path_name, 
-                         file_path_ext,
-                         file_path_name_joiner=None):
-    
-    if isinstance(file_path_name, list) and file_path_name_joiner is not None:
-        file_path_name = file_path_name_joiner.join(file_path_name)
-        
-    if file_path_ext is None:
-        new_file_path = f"{file_path_parent}/{file_path_name}"
-    else:       
-        new_file_path = f"{file_path_parent}/{file_path_name}.{file_path_ext}"
-        
-    new_file_path_noneFiltered = noneInString_filter(new_file_path)
-    
-    return new_file_path_noneFiltered
-
-
-def file_list_2_string(file_list):
-
-    allfile_string = ""
-    for file in file_list:
-        allfile_string += f"{file} "
-
-    return allfile_string
+    return allobj_string
 
 
 def substring_replacer(string, string2find, string2replace):
     string_replaced = string.replace(string2find, string2replace)
     return string_replaced
 
-    
-def noneInString_filter(string):
-    if "/" in string:
-        string_filtered = substring_replacer(string, "None/","")
-    else:
-        string_filtered = substring_replacer(string, "None","")
-    return string_filtered
+
+#------------------#
+# Local parameters #
+#------------------#
+
+objSpecsKeys = ["obj_path_parent",
+                "obj_path_name", 
+                "obj_path_name_noext",
+                "obj_path_name_noext_parts",
+                "obj_path_ext"]
+
+objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
+                      for s in objSpecsKeys[1:]]

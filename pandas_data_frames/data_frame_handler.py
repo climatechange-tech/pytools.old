@@ -4,37 +4,38 @@
 
 import datetime
 
-import importlib
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
-
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "global_parameters.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"global_parameters/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-global_parameters = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(global_parameters)
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod1_path = f"{fixed_dirpath}/parameters_and_constants"
+                                        
+# Add the module path to the path variable #
+#------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import global_parameters
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
@@ -46,13 +47,53 @@ basic_time_format_strs = global_parameters.basic_time_format_strs
 # Define functions #
 #------------------#
 
-def infer_time_frequency(df):
+def infer_time_frequency(df_or_index):
     
-    date_key = find_date_key(df)
-    time_freq = pd.infer_freq(df[date_key])
+    # Infer the most likely frequency given the input index,
+    # using pandas's infer_freq method.
+    # If the frequency is uncertain, a warning will be printed.
+    # 
+    # Parameters
+    # ----------
+    # df_or_index : pandas.DataFrame or
+    #               pandas.Series or
+    #               DatetimeIndex or TimedeltaIndex
+    # 
+    #       The method will first assume that the input argument 
+    #       is a pandas object, so that is has a date key column,
+    #       and will attempt to infer the time frequency.
+    #       
+    #       To do so, the already defined 'find_date_key' attempts
+    #       to find the date column. If cannot be found,
+    #       that will mean that the input argument is not a pandas object
+    #       but a DatetimeIndex of TimedeltaIndex object instead.
+    # 
+    # Returns
+    # -------
+    # str
+    #       The time frequency.
+    #       If the frequency cannot be determined, pandas.infer_freq
+    #       method returns None. In such case, this function is designed
+    #       to raise a ValueError that indicates so.
+    # 
+    # Note
+    # ----
+    #       If passed a pandas's Series 
+    #       will use the values of the series (NOT THE INDEX).
     
-    return time_freq
+   
+    try:
+        date_key = find_date_key(df_or_index)
+        time_freq = pd.infer_freq(df_or_index[date_key])
+    except:
+        time_freq = pd.infer_freq(df_or_index)
+        
+    if time_freq is None:
+        raise ValueError("Could not determine the time frequency.")
+    else:
+        return time_freq
 
+    
 def infer_full_period_of_time(df):
     
     date_key = find_date_key(df)
@@ -61,13 +102,14 @@ def infer_full_period_of_time(df):
     
     return full_period
 
+
 def find_date_key(df):
     
     # Function that searches for date key in the columns of a pandas data frame.
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame
+    # df : pandas.DataFrame
     #       Pandas data frame containing data.
     # 
     # Returns
@@ -138,7 +180,7 @@ def read_table_and_split_bywhitespaces(file_name,
     # 
     # Returns
     # -------
-    # new_df : pandas.core.dataset.Dataset
+    # new_df : pandas.Dataset
     #       Text file converted to a data frame.
 
     df = pd.read_table(file_name, 
@@ -212,7 +254,7 @@ def read_table_simple(file_name,
     #       the text file has no header at all.
     # Returns
     # -------
-    # new_df : pandas.core.dataset.Dataset
+    # new_df : pandas.Dataset
     #       Text file converted to a data frame.
     
     df = pd.read_table(file_name,
@@ -230,14 +272,14 @@ def convert_decimal_sign(df, conversion_type="point2comma"):
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame
+    # df : pandas.DataFrame
     #       Data frame containing data
     # conversion_type = {'point2comma', 'comma2point'}
     #       Defines the direction of the conversion.
     # 
     # Returns
     # -------
-    # df_decimal_sign_changed : pandas.core.frame.DataFrame
+    # df_decimal_sign_changed : pandas.DataFrame
     
     df = df.astype('U')
         
@@ -312,7 +354,7 @@ def save2excel(file_name,
     # ----------
     # file_name : str
     #       String used to give a name to the excel file.
-    # frame_obj : dict or pandas.core.frame.DataFrame
+    # frame_obj : dict or pandas.DataFrame
     #       Object to introduce data into the excel file.
     #       A dictionary is used to introduce data with custom named tabs.
     #       Keys are tab or sheet names and values are pandas data frames.
@@ -338,13 +380,13 @@ def save2excel(file_name,
                            header=save_header)
         writer.save()
 
-    elif isinstance(frame_obj, pd.core.frame.DataFrame):
+    elif isinstance(frame_obj, pd.DataFrame):
         frame_obj.to_excel(file_name, save_index, save_header)
         
     else:
         raise ValueError("Wrong type of frame. "
                          "It must either be of type dict or"
-                         "pd.core.frame.DataFrame")
+                         "pd.DataFrame")
         
         
 def json2df(json_file_list):
@@ -377,7 +419,7 @@ def save2csv(file_name,
     # ----------
     # file_name : str
     #       String of the output file.
-    # data_frame : pandas.core.frame.DataFrame
+    # data_frame : pandas.DataFrame
     #       Data frame where data is stored.
     # separator : str
     #       String used to separate data columns.
@@ -391,7 +433,7 @@ def save2csv(file_name,
     #       In case the data frame contains a time column,
     #       use to give format thereof when storing the data frame.
     
-    if isinstance(data_frame, pd.core.frame.DataFrame):
+    if isinstance(data_frame, pd.DataFrame):
         
         file_name += f".{extensions[0]}"
         
@@ -409,7 +451,7 @@ def save2csv(file_name,
         
     else:        
         raise TypeError("Wrong type of data. "
-                        "It must be pd.core.frame.DataFrame")
+                        "It must be pd.DataFrame")
     
 def csv2df(file_name,
            separator,
@@ -441,14 +483,14 @@ def csv2df(file_name,
     #       Otherwise, ´errors="strict"´ is passed to ´open()´.
     # header : int, list of int, str or NoneType
     #       Row number(s) to use as the column names, and the start of the
-    #       data. Default behavior is to infer the column names: if no names
-    #       are passed the behavior is identical to 'header=0' and column
+    #       data. Default behaviour is to infer the column names: if no names
+    #       are passed the behaviour is identical to 'header=0' and column
     #       names are inferred from the first line of the file, if column
-    #       names are passed explicitly then the behavior is identical to
+    #       names are passed explicitly then the behaviour is identical to
     #       'header=None'. Explicitly pass 'header=0' to be able to
     #       replace existing names.
     # parse_dates : bool or list of int or names or list of lists or dict, default False
-    # The behavior is as follows:
+    # The behaviour is as follows:
     # 
     #   * boolean. If True -> try parsing the index.
     #   * list of int or names. e.g. If [1, 2, 3] -> try parsing columns 1, 2, 3
@@ -499,7 +541,7 @@ def insert_column_in_df(df, index_col, column_name, values):
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame
+    # df : pandas.DataFrame
     #       Data frame containing data.
     # index_col : int
     #       Denotes the column position to insert new data.
@@ -508,7 +550,7 @@ def insert_column_in_df(df, index_col, column_name, values):
     #       the rest of the data will be displaced rightwards.
     # column_name : str
     #       Name of the column to be inserted.
-    # values : list, numpy.array or pandas.core.series.Series
+    # values : list, numpy.array or pandas.Series
 
     df.insert(index_col, column_name, values)
     
@@ -523,7 +565,7 @@ def insert_row_in_df(df, index_row, values=np.nan, reset_indexes=False):
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame
+    # df : pandas.DataFrame
     #       Data frame containing data.
     # index_row : int, str, datetime.datetime
     #             or pandas._libs.tslibs.timestamps.Timestamp
@@ -542,14 +584,14 @@ def insert_row_in_df(df, index_row, values=np.nan, reset_indexes=False):
     #           and then the indexes will be sorted.
     #           Note this means that the new time array spacing is NOT even.
     #           
-    # values : single value or list or numpy.array or pandas.core.series.Series
+    # values : single value or list or numpy.array or pandas.Series
     #       The type of the value(s) is considered as irrelevant.
     #       Default value is a row of NaNs.
     
     idx = df.index
     
-    if isinstance(idx, pd.core.indexes.range.RangeIndex)\
-    or isinstance(idx, pd.core.indexes.numeric.Float64Index):
+    if isinstance(idx, pd.RangeIndex)\
+    or isinstance(idx, pd.Float64Index):
     
         if index_row == 0:
             df_shift = df.shift()
@@ -603,7 +645,7 @@ def sort_df_indexes(df,
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame or pandas.core.series.Series.
+    # df : pandas.DataFrame or pandas.Series.
     # level : int or level name or list of ints or list of level names
     #       If not None, sort on values in specified index level(s)
     # axis : {0, 'index', 1, 'columns'}
@@ -651,7 +693,7 @@ def sort_df_values(df,
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame or pandas.core.series.Series.
+    # df : pandas.DataFrame or pandas.Series.
     # by : str or list of str
     #       Name or list of names to sort by.
     # ignore_index : bool
@@ -693,8 +735,8 @@ def reindex_df(df, col_to_replace=None, vals_to_replace=None):
     # 
     # Parameters
     # ----------
-    # df : pandas.core.frame.DataFrame or pandas.core.series.Series.
-    # vals_to_replace : list, np.ndarray or pandas.core.series.Series
+    # df : pandas.DataFrame or pandas.Series.
+    # vals_to_replace : list, np.ndarray or pandas.Series
     #       New labels / index to conform to.
     # col_to_replace : str or int
     #       If further reindexing is required,

@@ -7,46 +7,44 @@ Simply copy this script to the desired directory.
 # Import modules #
 #----------------#
 
-import importlib
 from pathlib import Path
-
-#---------------------------------------#
-# Get the all-code containing directory #
-#---------------------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-fixed_dirpath = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "readable_time_displayers.py"
-module_imp1_path = f"{fixed_dirpath}/"\
-                   f"time_handling/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, module_imp1_path)
-readable_time_displayers = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(readable_time_displayers)
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "netcdf_handler.py"
-module_imp2_path = f"{fixed_dirpath}/"\
-                   f"weather_and_climate/{module_imp2}"
+custom_mod1_path = f"{fixed_dirpath}/time_handling"
+custom_mod2_path = f"{fixed_dirpath}/weather_and_climate"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, module_imp2_path)
-netcdf_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(netcdf_handler)
+                                        
+# Add the module path to the path variable #
+#------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import time_formatters
+import netcdf_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-count_time = readable_time_displayers.count_time
+count_time = time_formatters.count_time
 
 extract_and_store_latlon_bounds = netcdf_handler.extract_and_store_latlon_bounds 
 extract_and_store_period_bounds = netcdf_handler.extract_and_store_period_bounds

@@ -1,32 +1,67 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec  8 19:17:36 2022
-
-@author: jonander
-"""
-
 # Adapted from https://stackoverflow.com/questions/12033905/using-python-to-create-an-average-out-of-a-list-of-times
+
+#----------------#
+# Import modules #
+#----------------#
+
+from pathlib import Path
+import sys
 
 import datetime
 import numpy as np
 
-def datetime_to_radians(x):    
+#-----------------------#
+# Import custom modules #
+#-----------------------#
+
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
+
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod_path = f"{fixed_dirpath}/time_handling"
+
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import time_formatters
+
+#----------------------------------------------------#
+# Define imported module(s)´ function call shortcuts #
+#----------------------------------------------------#
+
+time2seconds = time_formatters.time2seconds
+time_format_tweaker = time_formatters.time_format_tweaker
+
+#------------------#
+# Define functions #
+#------------------#
+
+def datetime_to_radians(x):
     # Radians are calculated using a 24-hour circle, not 12-hour, 
     # starting at north and moving clockwise.
     
-    # If the time given is already a datetime.time() object,
-    # skip to the next step
+    # If the given time is already a datetime.time() object,
+    # skip to the next step.
     
     if isinstance(x, datetime.time):
         time_of_day = x
     else:
         time_of_day = x.time()
     
-    seconds_from_midnight = 3600 * time_of_day.hour + \
-                            60 * time_of_day.minute + \
-                            time_of_day.second
-                            
+    time_tuple = (time_of_day.hour, time_of_day.minute, time_of_day.second)
+    seconds_from_midnight = time2seconds(time_tuple)
+    
     radians = seconds_from_midnight / (24 * 60 * 60) * 2 * np.pi
     return radians
 
@@ -64,11 +99,11 @@ def radians_to_time_of_day(x):
     # If the seconds match the next day's midnight,
     # set the hour to zero instead of 24.
     # Minutes and seconds are calculated on the 60th basis.
-    hour = (seconds_from_midnight_int // 3600) % 24
-    minute = (seconds_from_midnight_int % 3600) // 60
-    second = seconds_from_midnight_int % 60
+    hour, minute, second = time_format_tweaker(seconds_from_midnight_int)
     
-    return datetime.time(hour, minute, second)
+    dt_time = datetime.time(hour, minute, second)
+    
+    return dt_time
 
 def average_times_of_day(x):
     # input datetime.datetime array and output datetime.time value
