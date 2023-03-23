@@ -266,45 +266,6 @@ def read_table_simple(file_name,
     return df
 
 
-def convert_decimal_sign(df, conversion_type="point2comma"):
-    
-    # Function that converts decimal points into commas and vice versa.
-    # 
-    # Parameters
-    # ----------
-    # df : pandas.DataFrame
-    #       Data frame containing data
-    # conversion_type = {'point2comma', 'comma2point'}
-    #       Defines the direction of the conversion.
-    # 
-    # Returns
-    # -------
-    # df_decimal_sign_changed : pandas.DataFrame
-    
-    df = df.astype('U')
-        
-    if conversion_type == "point2comma":
-        for col in df.columns:
-            try:
-                df[col] = [arr.replace(".", ",") for arr in df[col]]
-            except:
-                continue
-        
-    elif conversion_type == "comma2point":
-        for col in df.columns:
-            try:
-                df[col] = [arr.replace(",", ".") for arr in df[col]] 
-            except:
-                continue
-            
-    else:
-        raise ValueError("Wrong conversion option. "
-                         "Options are {'point2comma', 'comma2point'}")
-
-    df_decimal_sign_changed = df.copy()
-    return df_decimal_sign_changed
-
-
 def excel2df(file_name):
     
     sheets_dict = pd.read_excel(file_name , sheet_name=None )
@@ -460,7 +421,8 @@ def csv2df(file_name,
            header='infer',
            parse_dates=False,
            infer_dt_format_bool=False,
-           index_col=None):
+           index_col=None,
+           decimal="."):
     
     # Function that loads a CSV file and loads the content
     # into a pandas data frame to a CSV file.
@@ -509,6 +471,9 @@ def csv2df(file_name,
     #       Column(s) to use as the row labels of the 'DataFrame', either given as
     #       string name or column index. If a sequence of int / str is given, a
     #       MultiIndex is used.
+    # decimal : str
+    #       Character to recognize as decimal point (e.g. use ',' 
+    #       for European data). Default value is '.' (dot).
         
     if not parse_dates:
         df = pd.read_csv(file_name, 
