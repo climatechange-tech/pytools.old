@@ -341,6 +341,35 @@ def time_format_tweaker(t,
         else:
             return t_res
         
+    elif isinstance(t, pd.DataFrame) or isinstance(t, pd.Series):
+        
+        t_values = t.values
+        
+        if t_values.dtype == "O":
+            if std24HourFormat:
+                try:
+                    t_res = properHourRangeConverter(t, time_fmt_str)
+                except Exception:
+                    raise TypeError("Cannot handle hour range standarization "
+                                    f"with '{arg_names[t_arg_pos]}' {type(t)}.")
+                    
+            else:
+                try:
+                    t_timestamp = time2Timestamp(t, time_fmt_str)
+                    return t_timestamp
+                except Exception:
+                    raise Exception(f"Cannot convert '{arg_names[t_arg_pos]}' "
+                                    f"{type(t)} to DatetimeIndex array.")
+            
+        else:
+            try:
+                t_res = t.dt.strftime(time_fmt_str)
+            except:
+                t_res_series = t.iloc[:,0]
+                t_res = t_res_series.dt.strftime(time_fmt_str)
+            
+        return t_res
+        
     else:
         if std24HourFormat:
             try:
