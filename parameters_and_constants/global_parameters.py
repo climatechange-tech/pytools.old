@@ -13,12 +13,32 @@ The parameters are organized similar as are
 the directories inside "pytools" directory.
 """
 
+#--------------#
+# Time concept #
+#--------------#
+
 basic_time_format_strs = dict(
-    CFT = "%a %b %d %H:%M:%S %Y",
-    H   = "%Y-%m-%d %H:%M:%S",
-    D   = "%Y-%m-%d",
-    M   = "%Y-%m",
-    Y   = "%Y"
+    H           = "%Y-%m-%d %H:%M:%S",
+    H_noDateSep = "%Y%m%d %H:%M:%S",
+    D           = "%Y-%m-%d",
+    D_noDateSep = "%Y%m%d",
+    M           = "%Y-%m",
+    Y           = "%Y"
+    )
+
+non_std_time_format_strs = dict(
+    CFT_H = "%a %b %d %H:%M:%S %Y",
+    CFT_D = "%a %b %d %Y",
+    CFT_M = "%b %Y"
+    )
+
+# TODO: gehitu beste batzuk
+
+custom_time_format_strs = dict(
+    CT_Excel_Spanish_H       = "%d/%m/%y %H:%M:%S",
+    CT_Excel_Spanish_noBar_H = "%d%m%y %H:%M:%S",
+    CT_Excel_Spanish_D       = "%d/%m/%y",
+    CT_Excel_Spanish_noBar_D = "%d%m%y"
     )
 
 month_number_dict = {
@@ -51,7 +71,16 @@ season_timeFreq_dict = {
     12 : "Q-DEC"
     }
 
+mathematical_year_days = 360
+
+#----------------# 
+# Climate change #
+#----------------# 
 
 emission_rcp_scenarios = ["historical", "rcp26", "rcp45", "rcp85"]
+
+#----# 
+# OS #
+#----# 
 
 basic_object_types = ["file", "directory"]

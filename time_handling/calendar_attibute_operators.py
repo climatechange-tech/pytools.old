@@ -79,9 +79,30 @@ def nearest_leap_year(year):
         elif max_idx_year_diff > 1 and max_idx_year_diff != 2:
             nearest_lp_year = year_list[min_idx]
         elif min_idx_year_diff == max_idx_year_diff:
-            nearest_lp_year = f"{year_list[max_idx]} or {year_list[min_idx]}"
+            nearest_lp_year = f"{year_list[min_idx]} or {year_list[max_idx]}"
         
     else:
         nearest_lp_year = year
         
     return nearest_lp_year
+
+
+def leapYear_detector(start_year, end_year, return_days=False):
+    
+    if isinstance(start_year, str):
+        start_year = eval(start_year)
+    if isinstance(end_year, str):
+        end_year = eval(end_year)
+    
+    if return_days:
+        days_per_year = [len(pd.date_range(str(year),
+                                           str(year+1),
+                                           inclusive="left"))
+                         for year in range(start_year, end_year+1)]
+        return days_per_year
+        
+    else:
+        isLeapYear_arr = [calendar.isleap(year)
+                          for year in range(start_year, end_year+1)]
+        return isLeapYear_arr
+    
