@@ -46,7 +46,7 @@ def autocorrelate(x, twosided=False):
     # suggesting that if it's "up" today,
     # it's more likely to be up tomorrow, too.
     # 
-    # Naturally, autocorrelation can be a useful tool for traders to utilize;
+    # Of course, autocorrelation can be a useful tool for traders to utilize;
     # particularly for technical analysts.
     #  
     # Adapted from https://stackoverflow.com/questions/643699/how-can-i-use-numpy-correlate-to-do-autocorrelation
