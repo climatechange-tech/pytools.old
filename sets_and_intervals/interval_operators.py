@@ -1,3 +1,10 @@
+#----------------#
+# Import modules #
+#----------------#
+
+import piso
+piso.register_accessors()
+
 #------------------#
 # Define functions #
 #------------------#

@@ -478,6 +478,7 @@ def csv2df(file_name,
     if not parse_dates:
         df = pd.read_csv(file_name, 
                          sep=separator,
+                         decimal=decimal,
                          encoding=encoding,
                          header=header,
                          index_col=index_col,
@@ -489,6 +490,7 @@ def csv2df(file_name,
     else:
         df = pd.read_csv(file_name, 
                          sep=separator,
+                         decimal=decimal,
                          encoding=encoding,
                          header=header,
                          engine=engine,
@@ -742,6 +744,22 @@ def reindex_df(df, col_to_replace=None, vals_to_replace=None):
             = df.drop(columns=colname_to_drop).values
         
     return df_reidx_dropCol
+
+
+def create_pivot_table(df, df_values, df_index, funcToApplyOnValues):
+    
+    pivot_table = pd.pivot_table(df,
+                                 values=df_values, 
+                                 index=df_index,
+                                 aggfunc=funcToApplyOnValues)
+    
+    return pivot_table
+
+
+def countDataByConcept(df, df_cols):
+    dataCount = df.groupby(df_cols).count()
+    return dataCount    
+
 
 
 #-----------------------------------------------#
