@@ -431,7 +431,7 @@ def climat_periodic_statistics(obj,
         obj_climat = pd.DataFrame(climat_arr, columns=climat_obj_cols)
         
         obj_climat.iloc[:, 0] = time_format_tweaker(obj_climat.iloc[:, 0],
-                                                    to_pandas_datetime=True)        
+                                                    to_pandas_datetime="datetime")        
         
     elif isinstance(obj, xr.Dataset)\
     or isinstance(obj, xr.DataArray):

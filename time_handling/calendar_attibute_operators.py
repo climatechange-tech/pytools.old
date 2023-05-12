@@ -60,13 +60,15 @@ def week_range(date):
         
 def nearest_leap_year(year):
     
-    if not calendar.isleap(year):
+    year_isleap = leapYearDetector(year, year)
+    
+    if not year_isleap:
         year_list = list(range(year-4, year+4))
         lyl = len(year_list)
         
         nearest_leap_year_idx = [i
                                  for i in range(lyl) 
-                                 if calendar.isleap(year_list[i])]
+                                 if leapYearDetector(year_list[i], year_list[i])]
         
         min_idx = nearest_leap_year_idx[0]
         max_idx = nearest_leap_year_idx[1]
@@ -87,7 +89,7 @@ def nearest_leap_year(year):
     return nearest_lp_year
 
 
-def leapYear_detector(start_year, end_year, return_days=False):
+def leapYearDetector(start_year, end_year, return_days=False):
     
     if isinstance(start_year, str):
         start_year = eval(start_year)
@@ -95,14 +97,27 @@ def leapYear_detector(start_year, end_year, return_days=False):
         end_year = eval(end_year)
     
     if return_days:
-        days_per_year = [len(pd.date_range(str(year),
-                                           str(year+1),
-                                           inclusive="left"))
-                         for year in range(start_year, end_year+1)]
-        return days_per_year
+        
+        if start_year == end_year:
+            days_year = len(pd.date_range(str(start_year),
+                                          str(start_year+1),
+                                          inclusive="left"))
+            return days_year
+            
+        else:
+            days_per_year = [len(pd.date_range(str(year),
+                                               str(year+1),
+                                               inclusive="left"))
+                             for year in range(start_year, end_year+1)]
+            return days_per_year
         
     else:
-        isLeapYear_arr = [calendar.isleap(year)
-                          for year in range(start_year, end_year+1)]
-        return isLeapYear_arr
+        if start_year == end_year:
+            isLeapYear = calendar.isleap(start_year)
+            return isLeapYear
+        
+        else:
+            isLeapYear_arr = [calendar.isleap(year)
+                              for year in range(start_year, end_year+1)]
+            return isLeapYear_arr
     

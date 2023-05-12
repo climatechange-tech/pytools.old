@@ -71,7 +71,7 @@ season_timeFreq_dict = {
     12 : "Q-DEC"
     }
 
-mathematical_year_days = 360
+mathematical_year_days = 365
 
 #----------------# 
 # Climate change #

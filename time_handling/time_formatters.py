@@ -109,10 +109,10 @@ def count_time(mode, return_days=False):
     global ti
     
     if mode == "start":  
-        ti = os.times()[-1]
+        ti = time.time()
         
     elif mode == "stop":
-        tf = os.times()[-1]
+        tf = time.time()
         elapsed_time = abs(ti-tf)
         
         return time_format_tweaker(elapsed_time,
@@ -122,9 +122,9 @@ def count_time(mode, return_days=False):
         
 def time_format_tweaker(t,
                         time_fmt_str=None,
-                        print_str=None,
+                        print_str=False,
                         return_days=False,
-                        to_pandas_datetime=False,
+                        to_pandas_datetime="datetime",
                         std24HourFormat=False):
     
     # 
@@ -139,11 +139,22 @@ def time_format_tweaker(t,
     #    numpy.ndarray, pandas.Series or xarray.DataArray 
     # In either case, the object containg the date times.
     # 
-    # to_pandas_datetime : bool
-    #         If True, the function gives, if necessary, the standard (Gregorian)
-    #         calendar format to the given array containing datetimes.
-    #         In any case, Python sees the dates as strings, so the function
-    #         gives the date time format using pd.to_datetime formatter.
+    # to_pandas_datetime : {"pandas", "datetime", "model_datetime"}
+    # 
+    #         Method to use in order to give to the time (t) object.
+    # 
+    #         If "pandas" is selected, then the dates are treated as strings,
+    #         so the function gives the date time format using 
+    #         pd.to_datetime formatter.
+    # 
+    #         If "datetime", then the format is given using
+    #         the built-in "datetime" module's datetime.strptime attribute.
+    # 
+    #         Lastly, the option "model_datetime" is designed in order
+    #         to use again "datetime" module, 
+    #         but creating a model (or generic) date and time where the year
+    #         is 1, for example in model or calendar year calculations
+    #         in climate change; that is to say the year is unimportant.         
     # 
     # Returns
     # -------
@@ -161,12 +172,20 @@ def time_format_tweaker(t,
     = find_substring_index(arg_names, "print_str", find_whole_words=True)
     t_arg_pos\
     = find_substring_index(arg_names, "t", find_whole_words=True)
+    to_pd_dt_arg_pos\
+    = find_substring_index(arg_names, "to_pandas", find_whole_words=True)
     
-    print_str_options = [None, "basic", "extended"]
+    to_pd_dt_options = ["pandas", "datetime", "model_datetime"]
+    print_str_options = [False, "basic", "extended"]
+    
     
     if print_str not in print_str_options:
         raise ValueError(f"Wrong '{arg_names[print_arg_pos]}' option. "
                          f"Options are {print_str_options}.")
+        
+    if to_pandas_datetime not in to_pd_dt_options:
+        raise ValueError(f"Wrong '{arg_names[to_pd_dt_arg_pos]}' option. "
+                         f"Options are {to_pd_dt_options}.")
         
 
     if isinstance(t, int) or isinstance(t, float):
@@ -241,14 +260,14 @@ def time_format_tweaker(t,
         
         t_res = datetime.datetime.strptime(t, time_fmt_str)
         
-        if to_pandas_datetime is None:
+        if to_pandas_datetime == "datetime":
             return t_res
         
-        elif to_pandas_datetime:
+        elif to_pandas_datetime == "pandas":
             t_timestamp = time2Timestamp(t, time_fmt_str)
             return t_timestamp
     
-        else:
+        elif to_pandas_datetime == "model_datetime":
             if ("%Y" not in time_fmt_str or "%y" not in time_fmt_str)\
                 and "%m" not in time_fmt_str\
                 and "%d" not in time_fmt_str:
@@ -285,7 +304,7 @@ def time_format_tweaker(t,
                                                        method_name))
             
         t_res = datetime.datetime(*t).strftime(time_fmt_str) 
-        if to_pandas_datetime:
+        if to_pandas_datetime == "pandas":
             raise Exception(f"'{arg_names[t_arg_pos]}' {type(t)} "
                             "will not give a satisfactory DatetimeIndex array.")
             
@@ -300,7 +319,7 @@ def time_format_tweaker(t,
                                                        method_name))
             
         t_res = datetime.datetime(*t[:-4]).strftime(time_fmt_str)
-        if to_pandas_datetime:
+        if to_pandas_datetime == "pandas":
             raise Exception(f"'{arg_names[t_arg_pos]}' {type(t)} "
                             "will not give a satisfactory DatetimeIndex array.")
             
@@ -319,10 +338,10 @@ def time_format_tweaker(t,
             
         t_res = datetime.datetime.strftime(t, time_fmt_str) 
         
-        if to_pandas_datetime:
+        if to_pandas_datetime == "pandas":
             t_timestamp = time2Timestamp(t, time_fmt_str)
             return t_timestamp
-        else:
+        elif to_pandas_datetime == "datetime":
             return t_res
     
         
@@ -335,10 +354,10 @@ def time_format_tweaker(t,
             
         t_res = cft.datetime.strftime(t, time_fmt_str)
         
-        if to_pandas_datetime:
+        if to_pandas_datetime == "pandas":
             t_timestamp = time2Timestamp(t, time_fmt_str)
             return t_timestamp
-        else:
+        elif to_pandas_datetime == "datetime":
             return t_res
         
     elif isinstance(t, pd.DataFrame) or isinstance(t, pd.Series):

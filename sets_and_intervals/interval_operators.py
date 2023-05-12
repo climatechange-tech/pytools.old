@@ -35,3 +35,6 @@ def basic_interval_operator(interval_array,
     #         merged_bin = pd.Interval(min_num_interval_left,
     #                                  max_num_interval_right,
     #                                  closed="left")
+    
+# def define_interval(method="pandas | intervaltree", closed="both"):
+    

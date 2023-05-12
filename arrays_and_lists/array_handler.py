@@ -98,6 +98,9 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     return sorted_array_rbc
 
 
+# TODO: def sort_array_rows_by_column_numpythonic ('order' argument)
+
+
 def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     
     # Function that sorts the values in a 2D dimension array
@@ -181,6 +184,9 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     sorted_array_cbr = sorted_array_cbr_tr.T
     
     return sorted_array_cbr
+
+
+# TODO: def sort_array_columns_by_row_numpythonic ('order' argument)
 
 
 def sort_array_complete(array, ncol, nrow, sort_order="ascending"):

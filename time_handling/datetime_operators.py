@@ -28,7 +28,8 @@ custom_mod1_path = f"{fixed_dirpath}/arrays_and_lists"
 custom_mod2_path = f"{fixed_dirpath}/files_and_directories" 
 custom_mod3_path = f"{fixed_dirpath}/parameters_and_constants"
 custom_mod4_path = f"{fixed_dirpath}/pandas_data_frames" 
-custom_mod5_path = f"{fixed_dirpath}/time_handling"
+custom_mod5_path = f"{fixed_dirpath}/strings"
+custom_mod6_path = f"{fixed_dirpath}/time_handling"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -38,6 +39,7 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
+sys.path.append(custom_mod6_path)
 
 # Perform the module importations #
 #---------------------------------#
@@ -52,20 +54,22 @@ import time_formatters
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-basic_time_format_strs = global_parameters.basic_time_format_strs
+# basic_time_format_strs = global_parameters.basic_time_format_strs
 mathematical_year_days = global_parameters.mathematical_year_days
 
-count_unique_type_objects = array_handler.count_unique_type_objects
+# count_unique_type_objects = array_handler.count_unique_type_objects
 
-infer_time_frequency = data_frame_handler.infer_time_frequency
-find_date_key = data_frame_handler.find_date_key
-save2csv = data_frame_handler.save2csv
-save2excel = data_frame_handler.save2excel
-insert_row_in_df = data_frame_handler.insert_row_in_df
+# infer_time_frequency = data_frame_handler.infer_time_frequency
+# find_date_key = data_frame_handler.find_date_key
+# save2csv = data_frame_handler.save2csv
+# save2excel = data_frame_handler.save2excel
+# insert_row_in_df = data_frame_handler.insert_row_in_df
 
-modify_obj_specs = string_handler.modify_obj_specs
+# modify_obj_specs = string_handler.modify_obj_specs
 
 time_format_tweaker = time_formatters.time_format_tweaker
+
+#%%
 
 #------------------#
 # Define functions #
@@ -308,31 +312,199 @@ def standardize_calendar(obj,
         # elif isinstance(obj[0], xr.Dataset)\
         # or isinstance(obj[0], xr.DataArray):
             
+#%%
 
-# TODO: birfindu ondokoa
+# TODO: birfindu ondoko guztia
             
-def natural_year(datetime_start, datetime_end,
-                 time_fmt_str=None,
-                 strict=False, exact_year=False):
+# def natural_year(dt_start, dt_end, 
+#                   time_fmt_str=None,
+#                   strict=False, exact_year=False,
+#                   return_str=False):
     
-    dt_start_std = time_format_tweaker(datetime_start, time_fmt_str)
-    dt_end_std = time_format_tweaker(datetime_end, time_fmt_str)
-    
-    timeDelta = abs(dt_start_std - dt_end_std)
-    timeDelta_days = timeDelta.to_pytimedelta().days
-    
-    
-    i = timeDelta_days // mathematical_year_days    
-    
-    # Intervals #
-    
-    # TODO: ondokoa ibiltarteen sortzaileen funtzioren batera???
-    itv_oneYear = pd.Interval(mathematical_year_days*i,
-                              mathematical_year_days*(i+1),
-                              closed="left")
-    
-    itv_oneYear_upper_half\
-    = pd.Interval(mathematical_year_days*i + mathematical_year_days/2,
-                  mathematical_year_days*(i+1),
-                  closed="left")
+dt_start="210528"
+dt_end="230227"
 
+# time_fmt_str="%d%m%y"
+time_fmt_str="%y%m%d"
+
+strict=False
+exact_year=True
+
+
+    
+dt_start_std = time_format_tweaker(dt_start,
+                                   time_fmt_str, 
+                                   to_pandas_datetime="datetime")
+
+dt_end_std = time_format_tweaker(dt_end, 
+                                 time_fmt_str,
+                                 to_pandas_datetime="datetime")
+
+timeDelta = abs(dt_start_std - dt_end_std)
+
+try:
+    timeDelta_days = timeDelta.to_pytimedelta().days
+except:
+    timeDelta_days = timeDelta.days
+
+n = timeDelta_days // mathematical_year_days    
+
+# Intervals #
+
+# TODO: ondokoa ibiltarteen sortzaileen funtzioren batera???
+ndays_oneYear = pd.Interval(mathematical_year_days*n,
+                            mathematical_year_days*(n+1),
+                            closed="left")
+
+ndays_oneYear_upper_half\
+= pd.Interval(mathematical_year_days*n + mathematical_year_days/2,
+              mathematical_year_days*(n+1),
+              closed="left")
+
+#%%
+
+if not strict:
+    
+    if n > 0:
+        
+        # TODO: eta ondokoa hobeto?
+        # timeDelta_days not in ndays_oneYear_upper_half
+        
+        if timeDelta_days in ndays_oneYear\
+        and timeDelta_days not in ndays_oneYear_upper_half:
+            
+            ti_natural_year = dt_end_std.year - n
+            ti_natural_month = dt_end_std.month
+            
+            tf_natural_year = dt_start_std.year
+            tf_natural_month = ti_natural_month
+            tf_natural_day = dt_end_std.day
+            
+            if not exact_year:
+                ti_natural_day = 1
+                
+            else:
+                ti_natural_day = tf_natural_day
+                dt_start_natural = pd.Timestamp(ti_natural_year, 
+                                                ti_natural_month,
+                                                ti_natural_day) + pd.Timedelta(days=1)
+                
+                
+        # TODO: eta ondokoa hobeto?
+        # elif timeDelta_days in ndays_oneYear_upper_half:
+                    
+        elif timeDelta_days in ndays_oneYear\
+            and timeDelta_days in ndays_oneYear_upper_half:
+            
+            ti_natural_year = dt_end_std.year - n
+            ti_natural_month = dt_start_std.month
+            
+            tf_natural_year = dt_start_std.year
+            tf_natural_month = ti_natural_month
+            tf_natural_day = dt_end_std.day
+            
+            if not exact_year:
+                ti_natural_day = 1
+                
+            else:
+                ti_natural_day = tf_natural_day
+                dt_start_natural = pd.Timestamp(ti_natural_year, 
+                                                ti_natural_month,
+                                                ti_natural_day) + pd.Timedelta(days=1)
+      
+    elif n == 0:
+                
+        ti_natural_year = dt_start_std.year
+        ti_natural_month = dt_start_std.month
+        ti_natural_day = dt_start_std.day
+        
+        tf_natural_year = dt_end_std.year
+        tf_natural_month = dt_end_std.month
+        tf_natural_day = dt_end_std.day
+        
+        dt_start_natural = pd.Timestamp(tf_natural_year, 
+                                      tf_natural_month,
+                                      tf_natural_day)        
+        
+        dt_end_natural = pd.Timestamp(tf_natural_year, 
+                                      tf_natural_month,
+                                      tf_natural_day)
+      
+#%%
+            
+else:
+    #%%
+          
+    ti_natural_year = dt_end_std.year - 1
+    ti_natural_month = dt_end_std.month
+    
+    tf_natural_year = dt_end_std.year
+    tf_natural_month = ti_natural_month
+    tf_natural_day = dt_end_std.day
+    
+    if not exact_year:
+        ti_natural_day = 1
+        
+        dt_start_natural = pd.Timestamp(ti_natural_year, 
+                                        ti_natural_month,
+                                        ti_natural_day)
+           
+    else:
+        ti_natural_day = dt_end_std.day
+        
+        if tf_natural_month == 12:
+            tf_natural_month_next = 1
+            tf_natural_year_next = tf_natural_year + 1
+        else:
+            tf_natural_month_next = tf_natural_month + 1
+            tf_natural_year_next = tf_natural_year
+               
+        dt_start_natural = pd.Timestamp(ti_natural_year, 
+                                        ti_natural_month,
+                                        ti_natural_day) + pd.Timedelta(days=1)
+        
+    dt_end_natural = pd.Timestamp(tf_natural_year, 
+                                  tf_natural_month,
+                                  tf_natural_day)
+
+print(dt_start_natural, dt_end_natural)
+                
+
+#%%
+
+if n > 0:
+    
+    
+    
+elif n == 0:
+    
+    ti_natural_year = dt_start_std.year
+    ti_natural_month = dt_start_std.month
+    ti_natural_day = dt_start_std.day
+    
+    tf_natural_year = dt_end_std.year
+    tf_natural_month = dt_end_std.month
+    tf_natural_day = dt_end_std.day
+    
+    dt_start_natural = pd.Timestamp(tf_natural_year, 
+                                  tf_natural_month,
+                                  tf_natural_day)        
+    
+    dt_end_natural = pd.Timestamp(tf_natural_year, 
+                                  tf_natural_month,
+                                  tf_natural_day)
+    
+    # kitto
+                
+#%%
+
+# if format_output:
+    
+#     natural_year_range_table ="""
+#     Natural year belonging to the date range
+#     """
+    
+#     print(natural_year_range_table.format())
+    
+            
+            
