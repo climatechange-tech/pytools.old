@@ -143,9 +143,6 @@ def obj_path_specs(obj_path, splitchar=None):
         obj_path_name_noext_parts = obj_path_name_noext.split(splitchar)
         addItemDict = {objSpecsKeys[3] : obj_path_name_noext_parts}
         obj_specs_dict.update(addItemDict)
-    
-    if obj_path_parent == "." or obj_path_parent == Path("."):
-        obj_specs_dict.pop(objSpecsKeys[0])
         
     return obj_specs_dict
 
@@ -165,8 +162,11 @@ def get_obj_specs(obj_path,
         
     if not isinstance(obj_path, dict):
         obj_specs_dict = obj_path_specs(obj_path, splitchar)
+    
+    if obj_spec_key == "parent":
+        osk = objSpecsKeys[0]
         
-    if obj_spec_key == "name":
+    elif obj_spec_key == "name":
         osk = objSpecsKeys[1]
     
     elif obj_spec_key == "name_noext":
@@ -207,7 +207,10 @@ def modify_obj_specs(target_path_obj,
         raise ValueError("bi gauzak bete behar dira: "
                          "tupla(aldatzeko karaktere-katea, ordezkoa")
             
-    if obj2change == "name":
+    if obj2change == "parent":
+        osk = objSpecsKeys[0]
+        
+    elif obj2change == "name":
         osk = objSpecsKeys[1]
             
     elif obj2change == "name_noext":
@@ -277,4 +280,4 @@ objSpecsKeys = ["obj_path_parent",
                 "obj_path_ext"]
 
 objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
-                      for s in objSpecsKeys[1:]]
+                      for s in objSpecsKeys]

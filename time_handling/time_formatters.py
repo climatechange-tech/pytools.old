@@ -415,9 +415,9 @@ def time2Timestamp(t, time_fmt_str=None):
         t_list = [t]
      
     else:
-        try:
-            t_list = t.values
-        except Exception:
+        if hasattr(t_list, "values"):
+            t_list = t.values            
+        else:
             t_list = list(t)
         
     cftime_check = np.all([isinstance(time_el, cft.datetime)

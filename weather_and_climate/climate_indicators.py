@@ -567,19 +567,13 @@ def calculate_HDY(hourly_df,
                                 
         try:
             hdata_MONTH_dm\
-            = periodic_statistics(hdata_MONTH,
-                                                     'mean'
-                                                     'D',
-                                                     drop_date_idx_col)
+            = periodic_statistics(hdata_MONTH, 'mean', 'D', drop_date_idx_col)
         except:
             hdata_MONTH.loc[:,varlist_primary[1:]]\
             = hdata_MONTH.loc[:,varlist_primary[1:]].apply(pd.to_numeric)
         
         hdata_MONTH_dm \
-        = periodic_statistics(hdata_MONTH,
-                                                 'mean',
-                                                 'D',
-                                                 drop_date_idx_col)
+        = periodic_statistics(hdata_MONTH, 'mean', 'D', drop_date_idx_col)
         
         hdata_MONTH_dm_bymonth = hdata_MONTH_dm[hdata_MONTH_dm.date.dt.month == m]\
                                  .reset_index(drop=drop_new_idx_col)
