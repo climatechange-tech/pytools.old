@@ -25,23 +25,35 @@ fixed_dirpath = get_pytools_path.return_pytools_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_dirpath}/parameters_and_constants"
+custom_mod1_path = f"{fixed_dirpath}/files_and_directories"
+custom_mod2_path = f"{fixed_dirpath}/parameters_and_constants"
+custom_mod3_path = f"{fixed_dirpath}/strings"
                                         
 # Add the module path to the path variable #
 #------------------------------------------#
 
 sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
 # Perform the module importations #
 #---------------------------------#
 
+import file_and_directory_handler
+import file_and_directory_paths
 import global_parameters
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
 basic_time_format_strs = global_parameters.basic_time_format_strs
+
+find_fileString_paths = file_and_directory_paths.find_fileString_paths
+remove_files_byFS = file_and_directory_handler.remove_files_byFS
+
+get_obj_specs = string_handler.get_obj_specs
 
 #------------------#
 # Define functions #
@@ -329,9 +341,13 @@ def save2excel(file_name,
     #       that identifies column numbers. Default value is False.
     
     file_name += f".{extensions[1]}"
+    fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
+    
+    fileAlreadyExists = bool(len(find_fileString_paths(file_name, 
+                                                       fn_parent,
+                                                       top_path_only=True)))
     
     if isinstance(frame_obj, dict):
-    
         writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
         
         for sheet, frame in frame_obj.items():
@@ -339,10 +355,47 @@ def save2excel(file_name,
                            sheet_name=sheet,
                            index=save_index,
                            header=save_header)
-        writer.save()
+            
+        if fileAlreadyExists:
+            overWriteStdIn\
+            = input(f"Warning: file '{file_name}' "
+                    f"at directory '{fn_parent}' already exists.\n"
+                    "Do you want to overwrite it? (y/n)")
+            
+            while overWriteStdIn != "y" or overWriteStdIn != "n":
+                overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                                       "or 'n' for 'no'.")
+                
+            if overWriteStdIn == "y":
+                remove_files_byFS(file_name, fn_parent)
+                writer.save() 
+            else:
+                pass
+        
+        else:
+            writer.save()
+
 
     elif isinstance(frame_obj, pd.DataFrame):
-        frame_obj.to_excel(file_name, save_index, save_header)
+        
+        if fileAlreadyExists:
+            overWriteStdIn\
+            = input(f"Warning: file '{file_name}' "
+                    f"at directory '{fn_parent}' already exists.\n"
+                    "Do you want to overwrite it? (y/n)")
+            
+            while overWriteStdIn != "y" or overWriteStdIn != "n":
+                overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                                       "or 'n' for 'no'.")
+                
+            if overWriteStdIn == "y":
+                remove_files_byFS(file_name, fn_parent)
+                frame_obj.to_excel(file_name, save_index, save_header) 
+            else:
+                pass
+            
+        else:
+            frame_obj.to_excel(file_name, save_index, save_header)
         
     else:
         raise ValueError("Wrong type of frame. "
@@ -397,22 +450,72 @@ def save2csv(file_name,
     if isinstance(data_frame, pd.DataFrame):
         
         file_name += f".{extensions[0]}"
+        fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
+        
+        fileAlreadyExists = bool(len(find_fileString_paths(file_name, 
+                                                           fn_parent,
+                                                           top_path_only=True)))
         
         if not date_format:
-            data_frame.to_csv(file_name,
-                              sep=separator,
-                              index=save_index,
-                              header=save_header)
+            
+            if fileAlreadyExists:
+                overWriteStdIn\
+                = input(f"Warning: file '{file_name}' "
+                        f"at directory '{fn_parent}' already exists.\n"
+                        "Do you want to overwrite it? (y/n)")
+                
+                while overWriteStdIn != "y" or overWriteStdIn != "n":
+                    overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                                           "or 'n' for 'no'.")
+                    
+                if overWriteStdIn == "y":
+                    remove_files_byFS(file_name, fn_parent)
+                    data_frame.to_csv(file_name,
+                                      sep=separator,
+                                      index=save_index,
+                                      header=save_header)
+                    
+                else:
+                    pass
+                
+            else:
+                data_frame.to_csv(file_name,
+                                  sep=separator,
+                                  index=save_index,
+                                  header=save_header)
+                
+            
         else:
-            data_frame.to_csv(file_name,
-                              sep=separator,
-                              date_format=date_format,
-                              index=save_index,
-                              header=save_header)
-        
+            if fileAlreadyExists:
+                overWriteStdIn\
+                = input(f"Warning: file '{file_name}' "
+                        f"at directory '{fn_parent}' already exists.\n"
+                        "Do you want to overwrite it? (y/n)")
+                
+                while overWriteStdIn != "y" or overWriteStdIn != "n":
+                    overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                                           "or 'n' for 'no'.")
+                    
+                if overWriteStdIn == "y":
+                    remove_files_byFS(file_name, fn_parent)
+                    data_frame.to_csv(file_name,
+                                      sep=separator,
+                                      date_format=date_format,
+                                      index=save_index,
+                                      header=save_header)
+                    
+                else:
+                    pass
+                
+            else:
+                data_frame.to_csv(file_name,
+                                  sep=separator,
+                                  date_format=date_format,
+                                  index=save_index,
+                                  header=save_header)
+            
     else:        
-        raise TypeError("Wrong type of data. "
-                        "It must be pd.DataFrame")
+        raise TypeError("Wrong type of data. It must be of type 'pd.DataFrame'.")
     
 def csv2df(file_name,
            separator,

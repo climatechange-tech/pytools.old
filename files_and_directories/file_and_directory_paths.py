@@ -55,14 +55,14 @@ def posixpath_converter(path, glob_bool=True):
 # Operations involving files as a result #
 #----------------------------------------#
 
-def find_ext_file_paths(extensions, path_to_walk_in, top_path_only=False):
+def find_ext_file_paths(extensions, path_to_walk_into, top_path_only=False):
     
-    # Function that searches for full paths containing the
-    # provided extensioned files, given a path to walk in,
-    # which is equivalent to the shell command 'find',
+    # Function that searches for absolute paths given an extension or
+    # list thereof, walking into a path (i.e. directory)
+    # which is equivalent to the shell command 'find' -including the extension-
     # for the case of files.
     # 
-    # Especially with 'xml' files, sometimes can happen that
+    # Especially with html-like files, sometimes can happen that
     # python is not able to read the files encountered directly,
     # due to their intrinsic structure is not compatible 
     # with python interpreter standards.
@@ -74,7 +74,7 @@ def find_ext_file_paths(extensions, path_to_walk_in, top_path_only=False):
     # extensions : str or list
     #       A string of the file extension or a list of extensions,
     #       WITHOUT THE POINT MARKER in any case.
-    # path_to_walk_in : str
+    # path_to_walk_into : str
     #       String that contains the path to search for the desired files.
     # top_path_only : bool
     #       Controls whether to search for subdirectories.
@@ -92,7 +92,7 @@ def find_ext_file_paths(extensions, path_to_walk_in, top_path_only=False):
         extensions = [extensions]
         
     if top_path_only:
-        ptwi_path = posixpath_converter(path_to_walk_in, glob_bool=False)
+        ptwi_path = posixpath_converter(path_to_walk_into, glob_bool=False)
         filelist = [str(file)
                     for file in ptwi_path.iterdir()
                     for ext in extensions
@@ -100,7 +100,7 @@ def find_ext_file_paths(extensions, path_to_walk_in, top_path_only=False):
                     and file.suffix == f".{ext}"]
         
     else:
-        ptwi_path = posixpath_converter(path_to_walk_in)
+        ptwi_path = posixpath_converter(path_to_walk_into)
         filelist = [str(file)
                     for file in ptwi_path
                     for ext in extensions
@@ -117,24 +117,28 @@ def find_ext_file_paths(extensions, path_to_walk_in, top_path_only=False):
     return unique_filelist
     
 
-def find_fileString_paths(file_string, path_to_walk_in, top_path_only=False):
+def find_fileString_paths(file_string, path_to_walk_into, top_path_only=False):
     
-    # Function that searches for full paths containing the
-    # part of the file name (i.e, file string), given a path to walk in,
-    # which is equivalent to the shell command 'find',
+    # Function that searches for absolute paths given a part of
+    # the file name to be searched, walking into a path (i.e. directory)
+    # which is equivalent to the shell command 'find'
     # for the case of files. Accepts string globbing.
     # 
     # Parameters
     # ---------- 
     # file_string : str or list
     #       A string of the string to be searched or a list of strings.
-    # path_to_walk_in : str
+    #       It also works for complete names in case it is known
+    #       Because at the date it has not been implemented yet,
+    #       for now non-relative paths (i.e. full paths) are not allowed,
+    #       and only the ultimate file name(s) is (are) accepted.
+    # path_to_walk_into : str
     #       String that contains the path to search for the desired files.
     # top_path_only : bool
     #       Controls whether to search for subdirectories.
     #       If True, the function will search for the given extensions
     #       only at the top of the given path,
-    #       without deepening through the subdirectories.
+    #       without deepening through subdirectories.
     # 
     # Returns
     # -------
@@ -146,27 +150,42 @@ def find_fileString_paths(file_string, path_to_walk_in, top_path_only=False):
         file_string = [file_string]
         
     if top_path_only:
-        ptwi_path = posixpath_converter(path_to_walk_in, glob_bool=False)
-        filelist = [str(file)
-                    for fs in file_string
-                    for file in ptwi_path.glob(f"{fs}")
-                    if file.is_file()]
+        ptwi_path = posixpath_converter(path_to_walk_into, glob_bool=False)
+        
+        try:
+            filelist = [str(file)
+                        for fs in file_string
+                        for file in ptwi_path.glob(f"{fs}")
+                        if file.is_file()]
+            
+        except NotImplementedError:
+            raise NotImplementedError("Please, for now provide a name "
+                                      "without the absolute path.")
             
     else:
-        ptwi_path = posixpath_converter(path_to_walk_in)
-        ptwi_top = posixpath_converter(path_to_walk_in, glob_bool=False)
+        ptwi_path = posixpath_converter(path_to_walk_into)
+        ptwi_top = posixpath_converter(path_to_walk_into, glob_bool=False)
         
-        filelist_main = [str(file)
-                         for path in ptwi_path
-                         for fs in file_string
-                         for file in path.glob(f"{fs}")
-                         if file.is_file()]
-        
-        filelist_top = [str(file)
-                        for fs in file_string
-                        for file in ptwi_top.glob(f"{fs}")
-                        if file.is_file()]
-        
+        try:
+            filelist_main = [str(file)
+                             for path in ptwi_path
+                             for fs in file_string
+                             for file in path.glob(f"{fs}")
+                             if file.is_file()]
+  
+        except NotImplementedError:
+            raise NotImplementedError("Please, for now provide a name "
+                                      "without the absolute path.")
+        try:
+            filelist_top = [str(file)
+                            for fs in file_string
+                            for file in ptwi_top.glob(f"{fs}")
+                            if file.is_file()]
+     
+        except NotImplementedError:
+            raise NotImplementedError("Please, for now provide a name "
+                                      "without the absolute path.")
+    
         filelist = filelist_main + filelist_top
         
     unique_filelist = list(np.unique(filelist))
@@ -180,7 +199,7 @@ def find_fileString_paths(file_string, path_to_walk_in, top_path_only=False):
     
 
 def find_allfile_extensions(extensions2skip,
-                            path_to_walk_in,
+                            path_to_walk_into,
                             top_path_only=False):
     
     if isinstance(extensions2skip, str):
@@ -188,19 +207,19 @@ def find_allfile_extensions(extensions2skip,
     
     if top_path_only:
         cwd_local = Path.cwd()
-        path_to_walk_in = posixpath_converter(cwd_local, glob_bool=False)
+        path_to_walk_into = posixpath_converter(cwd_local, glob_bool=False)
         
         extension_list = [get_obj_specs(file, "ext")
-                          for file in path_to_walk_in.iterdir()
+                          for file in path_to_walk_into.iterdir()
                           if file.is_file()
                           and get_obj_specs(file, "ext")
                           and get_obj_specs(file, "ext") not in extensions2skip]
 
     else:
-        path_to_walk_in = posixpath_converter(path_to_walk_in)
+        path_to_walk_into = posixpath_converter(path_to_walk_into)
         
         extension_list = [get_obj_specs(file, "ext")
-                          for file in path_to_walk_in
+                          for file in path_to_walk_into
                           if file.is_file()
                           and get_obj_specs(file, "ext")
                           and get_obj_specs(file, "ext") not in extensions2skip]
@@ -281,18 +300,18 @@ def find_allDirectories(source_directory,
         
 
 def find_ext_file_directories(extensions,
-                              path_to_walk_in,
+                              path_to_walk_into,
                               top_path_only=False):
     
     # Function that searches for directories containing the
-    # provided extensioned files, given a path to walk in.
+    # provided extensioned files, given a path to walk into.
     # 
     # Parameters
     # ---------- 
     # extensions : str or list
     #       A string of the file extension or a list of extensions,
     #       WITHOUT THE POINT MARKER in any case.
-    # path_to_walk_in : str
+    # path_to_walk_into : str
     #       String that contains the path to search for the desired files.
     # top_path_only : bool
     #       Controls whether to search for subdirectories.
@@ -310,14 +329,14 @@ def find_ext_file_directories(extensions,
         extensions = [extensions]
         
     if top_path_only:
-        ptwi_path = posixpath_converter(path_to_walk_in, glob_bool=False)
+        ptwi_path = posixpath_converter(path_to_walk_into, glob_bool=False)
         dirlist = [path.parent
                    for path in ptwi_path.iterdir()
                    for ext in extensions
                    if f".{ext}" == path.suffix]
 
     elif not top_path_only:
-        ptwi_path = posixpath_converter(path_to_walk_in)
+        ptwi_path = posixpath_converter(path_to_walk_into)
         dirlist = [path.parent
                    for path in ptwi_path
                    for ext in extensions
@@ -334,11 +353,11 @@ def find_ext_file_directories(extensions,
 
 
 def find_fileString_directories(file_string,
-                                path_to_walk_in,
+                                path_to_walk_into,
                                 top_path_only=False):
     
     # Function that searches for directories containing the
-    # provided part of file names, given a path to walk in,
+    # provided part of file names, given a path to walk into,
     # therefore it uses globbing (or main globbing, glob.glob attribute).
     #
     # There are three cases of string globbing inside the main globbing:
@@ -352,13 +371,14 @@ def find_fileString_directories(file_string,
     # Because these reasons and for practical purposes and simplicity,
     # the main globbing does not include any asterisk placement case,
     # so the strings are required already to have asterisks.
-    # This functionality is applied to similar functions in this module.
+    # The functionality and the latter rule applies 
+    # for similar functions in this module.
     # 
     # Parameters
     # ---------- 
     # file_string : str or list
     #       A string of the string to be searched or a list of strings.
-    # path_to_walk_in : str
+    # path_to_walk_into : str
     #       String that contains the path to search for the desired files.
     # top_path_only : bool
     #       Controls whether to search for subdirectories.
@@ -376,7 +396,7 @@ def find_fileString_directories(file_string,
         file_string = [file_string]
     
     if top_path_only:
-        ptwi_path = posixpath_converter(path_to_walk_in, glob_bool=False)
+        ptwi_path = posixpath_converter(path_to_walk_into, glob_bool=False)
         
         # Equivalent to bash command-line: find (path) -maxdepth 2
         dirlist_main = [dirc
@@ -397,8 +417,8 @@ def find_fileString_directories(file_string,
         
     elif not top_path_only:
             
-        ptwi_path = posixpath_converter(path_to_walk_in)
-        ptwi_top = posixpath_converter(path_to_walk_in, glob_bool=False)
+        ptwi_path = posixpath_converter(path_to_walk_into)
+        ptwi_top = posixpath_converter(path_to_walk_into, glob_bool=False)
             
         dirlist_main = [dirc
                         for dirc in ptwi_path
