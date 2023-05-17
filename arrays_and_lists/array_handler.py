@@ -36,8 +36,8 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     # sorted_array : numpy.ndarray
     #       Array containing the sorted values as explained.
     # 
-    # Example
-    # -------
+    # Examples
+    # --------
     # 
     # >>> array=np.random.randint(1,10,size=(3,4))
     # >>> array
@@ -128,8 +128,8 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     # sorted_array : numpy.ndarray
     #       Array containing the sorted values as explained.
     # 
-    # Example
-    # -------
+    # Examples
+    # --------
     # 
     # >>> array=np.random.randint(1,10,size=(3,4))
     # >>> array

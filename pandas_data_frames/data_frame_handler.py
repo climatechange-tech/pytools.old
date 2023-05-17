@@ -278,33 +278,54 @@ def read_table_simple(file_name,
     return df
 
 
+def excel2df_base(sheet_name, dataOfSheet):
+    
+    """
+    Add an extra column to the dataframes containing 
+    the relevant name of the sheet of the corresponding data frame.
+    """        
+    dataOfSheet["dataOfSheet"] = sheet_name
+    
+    """
+    Use the 'rename' method to rename our columns
+    by using a 'lambda', we simply take
+    the final entry of the list obtained by splitting each column name
+    any time there is a new line.
+    If there is no new line, the column name is unchanged.
+    """
+    
+    dataOfSheet_fixed\
+    = dataOfSheet.rename(columns=lambda x: x.split("\n")[-1])
+    
+    return dataOfSheet_fixed
+    
+
+
+def excel2dict(file_name):
+    
+    sheets_dict = pd.read_excel(file_name, sheet_name=None)
+    full_dict = {}
+    
+    for sht_name, sheet_df in sheets_dict.items():
+        sheet_df_fixed = excel2df_base(sht_name, sheet_df)
+        
+        """Append to the 'full dictionary' """
+        sht_dict = {sht_name : sheet_df_fixed}
+        full_dict.update(sht_dict)
+        
+    return full_dict
+    
+
 def excel2df(file_name):
     
-    sheets_dict = pd.read_excel(file_name , sheet_name=None )
+    sheets_dict = pd.read_excel(file_name, sheet_name=None)
     full_df = pd.DataFrame()
     
     for sht_name, sheet_df in sheets_dict.items():
+        sheet_df_fixed = excel2df_base(sht_name, sheet_df)
         
-        """
-        Add an extra column to the dataframes
-        containing the relevant sheet_dfname.
-        """        
-        sheet_df["sheet_df"] = sht_name
-        
-        """
-        Use the 'rename' method to rename our columns
-        by using a 'lambda', we simply take
-        the final entry of the list obtained by splitting each column name
-        any time there is a new line.
-        If there is no new line, the column name is unchanged.
-        """
-        sheet_df = sheet_df.rename(columns=lambda x: x.split("\n")[-1])
-        
-        """
-        Append to the 'full table'
-        """
-        
-        full_df = full_df.append(sheet_df)
+        """Append to the 'full table' """
+        full_df = pd.concat([full_df, sheet_df_fixed])
         full_df.reset_index(inplace=True, drop=True)
         
         """
@@ -314,6 +335,7 @@ def excel2df(file_name):
         full_df = full_df.drop(columns=["sheet"])
         
     return full_df
+
 
 def save2excel(file_name,
                frame_obj,
@@ -326,7 +348,7 @@ def save2excel(file_name,
     # Parameters
     # ----------
     # file_name : str
-    #       String used to give a name to the excel file.
+    #       String used to give a name or full path to the excel file.
     # frame_obj : dict or pandas.DataFrame
     #       Object to introduce data into the excel file.
     #       A dictionary is used to introduce data with custom named tabs.
@@ -401,6 +423,11 @@ def save2excel(file_name,
         raise ValueError("Wrong type of frame. "
                          "It must either be of type dict or"
                          "pd.DataFrame")
+        
+# TODO: garatu
+def merge_excel_files():
+    
+    """do sth"""
         
         
 def json2df(json_file_list):

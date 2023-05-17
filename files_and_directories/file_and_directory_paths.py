@@ -108,12 +108,6 @@ def find_ext_file_paths(extensions, path_to_walk_into, top_path_only=False):
                     and file.suffix == f".{ext}"]
         
     unique_filelist = list(np.unique(filelist))   
-    # luf = len(unique_filelist)
-    
-    # if luf > 1:
-    #     return unique_filelist
-    # elif luf == 1:
-    #     return unique_filelist[0]
     return unique_filelist
     
 
@@ -189,12 +183,6 @@ def find_fileString_paths(file_string, path_to_walk_into, top_path_only=False):
         filelist = filelist_main + filelist_top
         
     unique_filelist = list(np.unique(filelist))
-    # luf = len(unique_filelist)
-    
-    # if luf > 1:
-    #     return unique_filelist
-    # elif luf == 1:
-    #     return unique_filelist[0]
     return unique_filelist
     
 
@@ -225,12 +213,6 @@ def find_allfile_extensions(extensions2skip,
                           and get_obj_specs(file, "ext") not in extensions2skip]
     
     unique_extension_list = list(np.unique(extension_list))
-    # luel = len(unique_extension_list)
-    
-    # if luel > 1:
-    #     return unique_extension_list
-    # elif luel == 1:
-    #     return unique_extension_list[0]
     return unique_extension_list
          
 
@@ -247,26 +229,16 @@ def find_allDirectories(source_directory,
         dirfilelist = [dirc
                        for dirc in sd_path.iterdir()
                        if dirc.is_dir()]        
-        # ld = len(dirfilelist)
         
         if not include_root:
             dirfilelist_noRoot = [dp.name
                                   for dp in dirfilelist]  
             
             list_udn = list(np.unique(dirfilelist_noRoot))
-            # ldn = len(dirfilelist_noRoot)
-            # if ldn > 1:
-            #     return list(np.unique(dirfilelist_noRoot))
-            # elif ldn == 1:
-            #     return list(np.unique(dirfilelist_noRoot))[0]
             return list_udn
             
         else:
             list_ud = list(np.unique(dirfilelist))
-            # if ld > 1:
-            #     return list(np.unique(dirfilelist))
-            # elif ld == 1:
-            #     return list(np.unique(dirfilelist))[0]
             return list_ud
             
             
@@ -275,27 +247,16 @@ def find_allDirectories(source_directory,
         dirfilelist = [dirc
                        for dirc in sd_path
                        if dirc.is_dir()]
-        # ld = len(dirfilelist)
-        
+    
         if not include_root:
             dirfilelist_noRoot = [dp.name
                                   for dp in dirfilelist] 
             
             list_udn = list(np.unique(dirfilelist_noRoot))
-            
-            # ldn = len(dirfilelist_noRoot)
-            # if ldn > 1:
-            #     return list(np.unique(dirfilelist_noRoot))
-            # elif ldn == 1:
-            #     return list(np.unique(dirfilelist_noRoot))[0]
             return list_udn
             
         else:
             list_ud = list(np.unique(dirfilelist))
-            # if ld > 1:
-            #     return list(np.unique(dirfilelist))
-            # elif ld == 1:
-            #     return list(np.unique(dirfilelist))[0]
             return list_ud
         
 
@@ -343,12 +304,6 @@ def find_ext_file_directories(extensions,
                    if f".{ext}" == path.suffix]
             
     unique_dirlist = list(np.unique(dirlist))    
-    # lud = len(unique_dirlist)
-    
-    # if lud > 1:
-    #     return unique_dirlist
-    # elif lud == 1:
-    #     return unique_dirlist[0]
     return unique_dirlist
 
 
@@ -437,10 +392,4 @@ def find_fileString_directories(file_string,
     dirlist = dirlist_main + dirlist_top_parent
 
     unique_dirlist = list(np.unique(dirlist))
-    # lud = len(unique_dirlist)
-    
-    # if lud > 1:
-    #     return unique_dirlist
-    # elif lud == 1:
-    #     return unique_dirlist[0]
     return unique_dirlist
