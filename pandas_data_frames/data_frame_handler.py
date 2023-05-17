@@ -303,38 +303,38 @@ def excel2df_base(sheet_name, dataOfSheet):
 
 def excel2dict(file_name):
     
-    sheets_dict = pd.read_excel(file_name, sheet_name=None)
-    full_dict = {}
+    sheetsDataDict = pd.read_excel(file_name, sheet_name=None)
+    allDataDict = {}
     
-    for sht_name, sheet_df in sheets_dict.items():
+    for sht_name, sheet_df in sheetsDataDict.items():
         sheet_df_fixed = excel2df_base(sht_name, sheet_df)
         
         """Append to the 'full dictionary' """
         sht_dict = {sht_name : sheet_df_fixed}
-        full_dict.update(sht_dict)
+        allDataDict.update(sht_dict)
         
-    return full_dict
+    return allDataDict
     
 
 def excel2df(file_name):
     
-    sheets_dict = pd.read_excel(file_name, sheet_name=None)
-    full_df = pd.DataFrame()
+    sheetsDataDict = pd.read_excel(file_name, sheet_name=None)
+    all_data_df = pd.DataFrame()
     
-    for sht_name, sheet_df in sheets_dict.items():
+    for sht_name, sheet_df in sheetsDataDict.items():
         sheet_df_fixed = excel2df_base(sht_name, sheet_df)
         
         """Append to the 'full table' """
-        full_df = pd.concat([full_df, sheet_df_fixed])
-        full_df.reset_index(inplace=True, drop=True)
+        all_data_df = pd.concat([all_data_df, sheet_df_fixed])
+        all_data_df.reset_index(inplace=True, drop=True)
         
         """
         Delete the 'sheet' named column
         as a result of the application of ´reset_index´
         """
-        full_df = full_df.drop(columns=["sheet"])
+        all_data_df = all_data_df.drop(columns=["sheet"])
         
-    return full_df
+    return all_data_df
 
 
 def save2excel(file_name,
@@ -424,10 +424,73 @@ def save2excel(file_name,
                          "It must either be of type dict or"
                          "pd.DataFrame")
         
-# TODO: garatu
-def merge_excel_files():
+
+def merge_excel_files(input_file_list,
+                      output_file_name,
+                      save_index=False,
+                      save_header=False,
+                      save_merged_file=False):
     
-    """do sth"""
+    # Input_file_list and output_file_name can either be simple names or full paths
+    
+    if not isinstance(input_file_list, list):
+        input_file_list = [input_file_list]
+        
+    lifn = len(input_file_list)
+    
+    if lifn == 1:
+        raise ValueError("At least 2 files must be given "
+                          "in order to perform the merge.")
+        
+    sheet_name_list = []
+    
+    for file in input_file_list:
+        sheet_name_file = list(excel2dict(file).keys())
+        for snf in sheet_name_file:
+            sheet_name_list.append(snf)
+    
+    sheet_names_unique = np.unique(sheet_name_list)
+    
+    lsnl = len(sheet_name_list)
+    lsnu = len(sheet_names_unique)
+    
+    if lsnl != lsnu:
+        raise OSError("Some files have sheet names in common. "
+                      "That would lead to an overwrite of the data.\n"
+                      "Please check the sheet names.")
+    
+    allFileDataDict = {}
+    
+    for file in input_file_list:
+        sheet_name_dict = excel2dict(file)
+        allFileDataDict.update(sheet_name_dict)
+        
+    if save_merged_file:
+        save2excel(output_file_name,
+                   allFileDataDict, 
+                   save_index=save_index, 
+                   save_header=save_header)
+        
+    else:
+        ind_file_df_list = list(allFileDataDict.values())
+        
+        ind_file_df_nrow_list = []
+        all_file_data_df = pd.DataFrame()
+        
+        for file_df in ind_file_df_list:
+            all_file_data_df = pd.concat([all_file_data_df, file_df], axis=1)
+           
+            file_df_shape = file_df.shape
+            ind_file_df_nrow_list.append(file_df_shape[0])
+                
+        ind_file_df_nrow_unique = np.unique(ind_file_df_nrow_list)
+        lifdnu = len(ind_file_df_nrow_unique)
+        
+        if lifdnu > 1:
+            print("Warning: number of rows of data in some files "
+                  "is not common to all data.")
+
+        return all_file_data_df
         
         
 def json2df(json_file_list):
@@ -459,7 +522,7 @@ def save2csv(file_name,
     # Parameters
     # ----------
     # file_name : str
-    #       String of the output file.
+    #       String that identifies the name of the output file.
     # data_frame : pandas.DataFrame
     #       Data frame where data is stored.
     # separator : str
@@ -560,7 +623,7 @@ def csv2df(file_name,
     # Parameters
     # ----------
     # file_name : str
-    #       String that identifies the name of the file to save.
+    #       String that identifies the name of the file to evaluate.
     # separator : str
     #       Delimiter to use.
     # engine : {'c', 'python', 'pyarrow'}, optional
@@ -630,6 +693,69 @@ def csv2df(file_name,
     
     return df
 
+
+def merge_csv_files(input_file_list, 
+                    output_file_name,
+                    separator_in,
+                    separator_out=";",
+                    engine=None,
+                    encoding=None,
+                    header='infer',
+                    parse_dates=False,
+                    infer_dt_format_bool=False,
+                    index_col=None,
+                    decimal=".",                                 
+                    save_index=False,
+                    save_header=False,
+                    save_merged_file=False):
+    
+    # Usage of separator_in applies for all files, which means
+    # that every file must have the same separator.
+    
+    if not isinstance(input_file_list, list):
+        input_file_list = [input_file_list]
+        
+    lifn = len(input_file_list)
+    
+    if lifn == 1:
+        raise ValueError("At least 2 files must be given "
+                          "in order to perform the merge.")
+        
+    ind_file_df_nrow_list = []
+    all_file_data_df = pd.DataFrame()
+        
+    for file in input_file_list:
+        file_df = csv2df(separator=separator_in,
+                         engine=engine,
+                         encoding=encoding,
+                         header=header,
+                         parse_dates=parse_dates,
+                         infer_dt_format_bool=infer_dt_format_bool,
+                         index_col=index_col,
+                         decimal=decimal)
+        
+        all_file_data_df = pd.concat([all_file_data_df, file_df], axis=1)
+        
+        file_df_shape = file_df.shape
+        ind_file_df_nrow_list.append(file_df_shape[0])
+        
+    ind_file_df_nrow_unique = np.unique(ind_file_df_nrow_list)
+    lifdnu = len(ind_file_df_nrow_unique)
+    
+    if lifdnu > 1:
+        print("Warning: number of rows of data in some files "
+              "is not common to all data.")
+        
+    if save_merged_file:
+        save2csv(output_file_name, 
+                 all_file_data_df, 
+                 separator=separator_out, 
+                 save_index=save_index, 
+                 save_header=save_header)
+        
+    else:
+        return all_file_data_df
+    
 
 def insert_column_in_df(df, index_col, column_name, values):
     
