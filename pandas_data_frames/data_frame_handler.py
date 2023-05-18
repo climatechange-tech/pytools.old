@@ -278,14 +278,8 @@ def read_table_simple(file_name,
     return df
 
 
-def excel2df_base(sheet_name, dataOfSheet):
-    
-    """
-    Add an extra column to the dataframes containing 
-    the relevant name of the sheet of the corresponding data frame.
-    """        
-    dataOfSheet["dataOfSheet"] = sheet_name
-    
+def excel2df_base(df):
+      
     """
     Use the 'rename' method to rename our columns
     by using a 'lambda', we simply take
@@ -294,11 +288,8 @@ def excel2df_base(sheet_name, dataOfSheet):
     If there is no new line, the column name is unchanged.
     """
     
-    dataOfSheet_fixed\
-    = dataOfSheet.rename(columns=lambda x: x.split("\n")[-1])
-    
-    return dataOfSheet_fixed
-    
+    df_fixed = df.rename(columns=lambda x: x.split("\n")[-1])
+    return df_fixed
 
 
 def excel2dict(file_name):
@@ -362,12 +353,19 @@ def save2excel(file_name,
     #       Boolean to choose whether to include a row into the excel document
     #       that identifies column numbers. Default value is False.
     
-    file_name += f".{extensions[1]}"
+    name_ext = get_obj_specs(file_name, obj_spec_key="ext")
+    lne = len(name_ext)
+    
+    if lne == 0:
+        file_name += f".{extensions[1]}"
+    
+    file_name_noRelPath = get_obj_specs(file_name, obj_spec_key="name")
     fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
     
-    fileAlreadyExists = bool(len(find_fileString_paths(file_name, 
-                                                       fn_parent,
-                                                       top_path_only=True)))
+    fileAlreadyExists\
+    = bool(len(find_fileString_paths(file_name_noRelPath, 
+                                     fn_parent,
+                                     top_path_only=True)))
     
     if isinstance(frame_obj, dict):
         writer = pd.ExcelWriter(file_name, engine='xlsxwriter')
@@ -382,20 +380,20 @@ def save2excel(file_name,
             overWriteStdIn\
             = input(f"Warning: file '{file_name}' "
                     f"at directory '{fn_parent}' already exists.\n"
-                    "Do you want to overwrite it? (y/n)")
+                    "Do you want to overwrite it? (y/n) ")
             
-            while overWriteStdIn != "y" or overWriteStdIn != "n":
+            while overWriteStdIn != "y" and overWriteStdIn != "n":
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
-                                       "or 'n' for 'no'.")
+                                       "or 'n' for 'no': ")
                 
             if overWriteStdIn == "y":
                 remove_files_byFS(file_name, fn_parent)
-                writer.save() 
+                writer.close() 
             else:
                 pass
         
         else:
-            writer.save()
+            writer.close()
 
 
     elif isinstance(frame_obj, pd.DataFrame):
@@ -404,11 +402,11 @@ def save2excel(file_name,
             overWriteStdIn\
             = input(f"Warning: file '{file_name}' "
                     f"at directory '{fn_parent}' already exists.\n"
-                    "Do you want to overwrite it? (y/n)")
+                    "Do you want to overwrite it? (y/n) ")
             
-            while overWriteStdIn != "y" or overWriteStdIn != "n":
+            while overWriteStdIn != "y" and overWriteStdIn != "n":
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
-                                       "or 'n' for 'no'.")
+                                       "or 'n' for 'no': ")
                 
             if overWriteStdIn == "y":
                 remove_files_byFS(file_name, fn_parent)
@@ -511,11 +509,11 @@ def json2df(json_file_list):
 
 
 def save2csv(file_name,
-             data_frame,
-             separator,
-             save_index,
-             save_header,
-             date_format=None):
+              data_frame,
+              separator,
+              save_index,
+              save_header,
+              date_format=None):
     
     # Function that saves a data frame into a CSV file.
     # 
@@ -539,12 +537,19 @@ def save2csv(file_name,
     
     if isinstance(data_frame, pd.DataFrame):
         
-        file_name += f".{extensions[0]}"
+        name_ext = get_obj_specs(file_name, obj_spec_key="ext")
+        lne = len(name_ext)
+        
+        if lne == 0:
+            file_name += f".{extensions[0]}"
+        
+        file_name_noRelPath = get_obj_specs(file_name, obj_spec_key="name")
         fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
         
-        fileAlreadyExists = bool(len(find_fileString_paths(file_name, 
-                                                           fn_parent,
-                                                           top_path_only=True)))
+        fileAlreadyExists\
+        = bool(len(find_fileString_paths(file_name_noRelPath, 
+                                         fn_parent,
+                                         top_path_only=True)))
         
         if not date_format:
             
@@ -552,11 +557,11 @@ def save2csv(file_name,
                 overWriteStdIn\
                 = input(f"Warning: file '{file_name}' "
                         f"at directory '{fn_parent}' already exists.\n"
-                        "Do you want to overwrite it? (y/n)")
+                        "Do you want to overwrite it? (y/n) ")
                 
-                while overWriteStdIn != "y" or overWriteStdIn != "n":
+                while overWriteStdIn != "y" and overWriteStdIn != "n":
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
-                                           "or 'n' for 'no'.")
+                                            "or 'n' for 'no': ")
                     
                 if overWriteStdIn == "y":
                     remove_files_byFS(file_name, fn_parent)
@@ -580,11 +585,11 @@ def save2csv(file_name,
                 overWriteStdIn\
                 = input(f"Warning: file '{file_name}' "
                         f"at directory '{fn_parent}' already exists.\n"
-                        "Do you want to overwrite it? (y/n)")
+                        "Do you want to overwrite it? (y/n) ")
                 
-                while overWriteStdIn != "y" or overWriteStdIn != "n":
+                while overWriteStdIn != "y" and overWriteStdIn != "n":
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
-                                           "or 'n' for 'no'.")
+                                            "or 'n' for 'no': ")
                     
                 if overWriteStdIn == "y":
                     remove_files_byFS(file_name, fn_parent)
