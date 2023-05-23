@@ -53,3 +53,16 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
     else:
         raise ValueError("Wrong operator sign.")
 
+def merge_dictionaries(dict_list):
+    
+    ldl = len(dict_list)
+    if ldl == 1:
+        raise ValueError("2 dictionaries at least must be passed.")
+    
+    str2eval = "{"
+    for d in dict_list:
+        str2eval += f"**{d},"
+    str2eval += "}"
+    
+    merged_dict = eval(str2eval)
+    return merged_dict

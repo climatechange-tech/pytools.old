@@ -230,21 +230,21 @@ def time_format_tweaker(t,
             t_res = f"{days:.0f} days "\
                     f"{hours:.0f} hours "\
                     f"{minutes:.0f} minutes "\
-                    f"{seconds:5.2f} seconds"
+                    f"{seconds:6.3f} seconds"
                     
         elif print_str == "extended" and not return_days:
             if hours != 0:
                 t_res = f"{hours:.0f} hours "\
                         f"{minutes:.0f} minutes "\
-                        f"{seconds:5.2f} seconds"
+                        f"{seconds:6.3f} seconds"
                 
             else:
                 if minutes != 0:
                     t_res = f"{minutes:.0f} minutes "\
-                            f"{seconds:5.2f} seconds"
+                            f"{seconds:6.3f} seconds"
                   
                 else:
-                    t_res = f"{seconds:5.2f} seconds"
+                    t_res = f"{seconds:6.3f} seconds"
                     
                     
         return t_res
