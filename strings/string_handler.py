@@ -22,9 +22,9 @@ def find_substring_index(string, substring, find_whole_words=False):
     # 
     # It distinguishes two cases, together with another
     # two minor cases.
-    #   1. The string is, as the name indicates, a string.
+    #   1. The input string is, as the name indicates, a string.
     #       Then an attempt to find the substring along the string will be made.
-    #   2. The string is a list of strings.
+    #   2. The input string is a list of strings.
     #       Then the attempt will be made for each string on the list.
     # 
     # find_whole_words : bool
@@ -33,14 +33,24 @@ def find_substring_index(string, substring, find_whole_words=False):
     # Returns
     # -------
     # 
-    # substr_idx_list : list or dict
+    # substr_idx_list : int, list or dict
     #       Object containing matching indices.
-    #       It returns a list in the case of a continuous, single string.
-    #       If the string is a list of string, then returns a dictionary
-    #       containing the result of the search of every substring;
-    #       the position of the string is identified with the keys
-    #       of this dictionary.
-    #       Here whether the substring is continuous or separated is redundant.
+    #   
+    #       Three cases are distinguished
+    #       -----------------------------
+    # 
+    #       1. The string is, as stated, a single string.
+    #           Then the only result will be an integer indicating the
+    #           coincidence position, else it returns -1.
+    # 
+    #       2. The string is actually a list of them.
+    #           2.1 The substring to find is a single string.
+    #               Then the result will be a list of indexes.
+    #           2.2 The substring to find is a list of strings.
+    #               Then the functions returns a dictionary
+    #               containing the result of the search of every substring;
+    #               the position of the string is identified with the keys
+    #               of this dictionary.
     # 
     # Note
     # ----

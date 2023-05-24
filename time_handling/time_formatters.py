@@ -67,6 +67,7 @@ insert_row_in_df = data_frame_handler.insert_row_in_df
 
 modify_obj_specs = string_handler.modify_obj_specs
 find_substring_index = string_handler.find_substring_index
+substring_replacer = string_handler.substring_replacer
 
 count_unique_type_objects = array_handler.count_unique_type_objects
 
@@ -173,7 +174,7 @@ def time_format_tweaker(t,
     t_arg_pos\
     = find_substring_index(arg_names, "t", find_whole_words=True)
     to_pd_dt_arg_pos\
-    = find_substring_index(arg_names, "to_pandas", find_whole_words=True)
+    = find_substring_index(arg_names, "to_pandas", find_whole_words=False)
     
     to_pd_dt_options = ["pandas", "datetime", "model_datetime"]
     print_str_options = [False, "basic", "extended"]
@@ -438,20 +439,30 @@ def time2Timestamp(t, time_fmt_str=None):
     
 def properHourRangeConverter(time_df, time_fmt_str):
 
-    # Function that checks whether some range hours
-    # are 1-24. If it is the case, it converts to 0-23,
-    # otherwise it returns the same data frame.
+    # TODO: birfindu ondoko funtzioa, 24:00 -> 0:00 bihurtzen du, bai
+    #       baina orain edo egun berean ordu guztiak bitan errepikatzen dira
+    #       edo bihurketa hura gauzatu den inguruan egun berean bi ordu berdinak dira
+
+    # Function that checks whether the range of hours
+    # contained in an object (np.ndarray of pd.DataFrame)
+    # is properly defined as 0-23.
+    # 
     # Time 24:00 is assumed to mean the next day,
     # so it is converted to 00:00.
+    # 
+    # For the task, the date and times in the input object 
+    # must only be of type string, otherwise it is not possible
+    # to define non standard hour ranges like 1-24
+    # with Timestamp-like attributes.
     #
     # Parameters
     # ----------
-    # time_df : pd.Series
+    # time_df : pandas.Series (or np.ndarray)
     #       Pandas series containing the date-times to be checked.
     #
     # Returns
     # -------
-    # time_df : pd.Series
+    # time_df : pandas.Series (or np.ndarray)
     #       The necessary changes are reflected onto the same
     #       data frame as the input one.
 
@@ -463,11 +474,11 @@ def properHourRangeConverter(time_df, time_fmt_str):
 
     if records_true > 0:
         for i in twentyFourHour_df_true_idx:
+            time = substring_replacer(time_df.loc[i], "24:00", "00:00")
             
-            time = time_df.loc[i].replace("24:00","00:00")
             time = time_format_tweaker(time,
                                        time_fmt_str=time_fmt_str, 
-                                       to_pandas_datetime=None)
+                                       to_pandas_datetime="datetime")
             time += datetime.timedelta(days=1)
             time_df.loc[i] = time
 

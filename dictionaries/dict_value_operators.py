@@ -1,3 +1,44 @@
+#----------------#
+# Import modules #
+#----------------#
+
+import datetime
+from pathlib import Path
+
+import sys
+
+#-----------------------#
+# Import custom modules #
+#-----------------------#
+
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
+
+import get_pytools_path
+fixed_dirpath = get_pytools_path.return_pytools_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod6_path = f"{fixed_dirpath}/strings"
+                  
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod6_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import string_handler
+
+#----------------------------------------------------#
+# Define imported module(s)´ function call shortcuts #
+#----------------------------------------------------#
+
+substring_replacer = string_handler.substring_replacer
+
 #------------------#
 # Define functions #
 #------------------#
@@ -52,6 +93,7 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
 
     else:
         raise ValueError("Wrong operator sign.")
+        
 
 def merge_dictionaries(dict_list):
     
@@ -59,10 +101,25 @@ def merge_dictionaries(dict_list):
     if ldl == 1:
         raise ValueError("2 dictionaries at least must be passed.")
     
-    str2eval = "{"
-    for d in dict_list:
-        str2eval += f"**{d},"
-    str2eval += "}"
+    dl_str = str(dict_list)
     
-    merged_dict = eval(str2eval)
+    substr1_find = "[{"
+    substr1_replace = "[**{"
+    
+    substr2_find = ", "
+    substr2_replace = ", **"
+    
+    substr3_find = "["
+    substr3_replace = "{"
+    
+    substr4_find = "]"
+    substr4_replace = "}"
+    
+    dl_str = substring_replacer(dl_str, substr1_find, substr1_replace)
+    dl_str = substring_replacer(dl_str, substr2_find, substr2_replace)
+    dl_str = substring_replacer(dl_str, substr3_find, substr3_replace)
+    dl_str = substring_replacer(dl_str, substr4_find, substr4_replace)
+
+    merged_dict = eval(dl_str)
+    
     return merged_dict
