@@ -36,7 +36,7 @@ def arrayOfList_to_array(arrayList):
     return array
 
 
-def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
+def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     
     # Function that sorts the values in a 2D dimension array
     # against a specific column in an ASCENDING order.
@@ -115,16 +115,22 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     if sort_order not in sort_order_ops:
         raise ValueError("Wrong sort order option. "
                          f"Options are {sort_order_ops}.")
+        
+    array_dtype = array.dtype
     
     if sort_order == "ascending":
-        sorted_array_rbc = array[np.argsort(array[:,ncol])]
+        if isinstance(array_dtype, str):    
+            sorted_array_rbc = array[np.argsort(array[:,ncol])]
+        elif isinstance(array_dtype, np.dtype):
+            sorted_array_rbc = np.sort(array, order=order)
+            
     else:
-        sorted_array_rbc = array[np.fliplr([np.argsort(array[:,ncol])])[0]]
+        if isinstance(array_dtype, str):    
+            sorted_array_rbc = array[np.fliplr([np.argsort(array[:,ncol])])[0]]
+        elif isinstance(array_dtype, np.dtype):
+            sorted_array_rbc = np.sort(array, axis=-1, order=order)
         
     return sorted_array_rbc
-
-
-# TODO: def sort_array_rows_by_column_numpythonic ('order' argument)
 
 
 def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
@@ -205,14 +211,18 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     #        [7, 1, 9, 3],
     #        [4, 5, 6, 4]])
     
-    array_tr = array.T
-    sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
-    sorted_array_cbr = sorted_array_cbr_tr.T
+    array_dtype = array.dtype
     
-    return sorted_array_cbr
-
-
-# TODO: def sort_array_columns_by_row_numpythonic ('order' argument)
+    if isinstance(array_dtype, str):
+        array_tr = array.T
+        sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
+        sorted_array_cbr = sorted_array_cbr_tr.T
+        return sorted_array_cbr
+    
+    elif isinstance(array_dtype, np.dtype):
+        raise TypeError("Cannot perform operation with numpy arrays "
+                        f"of data type {array_dtype}.")
+    
 
 
 def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
@@ -265,13 +275,19 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
     #        [5, 4, 4, 6],
     #        [3, 6, 2, 4]])
     
-    sorted_array_rbc = sort_array_rows_by_column(array, ncol, sort_order)
-    sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
-                                                 nrow,
-                                                 sort_order)
-    sorted_array_complete = sorted_array_cbr.copy()
+    array_dtype = array.dtype
     
-    return sorted_array_complete
+    if isinstance(array_dtype, str):
+        sorted_array_rbc = sort_array_rows_by_column(array, ncol, sort_order)
+        sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
+                                                     nrow,
+                                                     sort_order)
+        sorted_array_complete = sorted_array_cbr.copy()
+        return sorted_array_complete
+    
+    elif isinstance(array_dtype, np.dtype):
+        raise TypeError("Cannot perform operation with numpy arrays "
+                        f"of data type {array_dtype}.")
 
 
 def approach_value_in_array(array, given_value):

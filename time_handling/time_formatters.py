@@ -536,7 +536,7 @@ def over24HourFixer(time_obj):
         time_obj_fixed = time2Timestamp(time_obj_no24Hour, method="pandas")
         time_obj_fixed[twentyFourHourIdxFilt] += pd.Timedelta(hours=1)
         
-    # TODO: ondokoa ere garatu
+    # TODO: ondokoa garatu
     # elif isinstance(time_obj, xr.Dataset) or isinstance(time_obj, xr.DataArray):
              
     return time_obj_fixed
