@@ -267,17 +267,38 @@ def join_obj_path_specs(obj_specs_dict):
 
 def fileList2String(obj_list):
 
-    allobj_string = ""
+    allObjStr = ""
     for file in obj_list:
-        allobj_string += f"{file} "
+        allObjStr += f"{file} "
 
-    return allobj_string
+    return allObjStr
 
 
-def substring_replacer(string, string2find, string2replace):
-    string_replaced = string.replace(string2find, string2replace)
+def substring_replacer(string, string2find, string2replace, 
+                       numCoincidences="all"):
+    
+    arg_names = substring_replacer.__code__.co_varnames
+    maxc_arg_pos = find_substring_index(arg_names, 
+                                       "numCoincidences",
+                                       find_whole_words=True)
+    
+    if not isinstance(numCoincidences, int)\
+        and (isinstance(numCoincidences, str)\
+        and numCoincidences != "all"):
+    
+    # if (not isinstance(numCoincidences, int) or (isinstance(numCoincidences, str) and numCoincidences=="all")):
+            
+        raise TypeError(f"Argument '{arg_names[maxc_arg_pos]}' "
+                        "must either be 'all' or an integer.")
+        
+        
+    if numCoincidences == "all":
+        count = -1
+    else:
+        count = numCoincidences
+        
+    string_replaced = string.replace(string2find, string2replace, count)
     return string_replaced
-
 
 #------------------#
 # Local parameters #
@@ -289,5 +310,5 @@ objSpecsKeys = ["obj_path_parent",
                 "obj_path_name_noext_parts",
                 "obj_path_ext"]
 
-objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
+objSpecsKeys_short = [substring_replacer(s, "obj_path_", "","all")
                       for s in objSpecsKeys]

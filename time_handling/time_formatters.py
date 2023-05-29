@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import cftime as cft
 import datetime
 import time
 
@@ -75,33 +74,51 @@ count_unique_type_objects = array_handler.count_unique_type_objects
 # Define functions #
 #------------------#
 
-def get_current_time(Type="datetime", time_fmt_str=None):
+def get_current_datetime(method="datetime", time_fmt_str=None):
     
-    type_options = ["datetime", "str", "timestamp"]
-    arg_names = get_current_time.__code__.co_varnames
+    method_options = ["datetime", "datetime_today", "datetime_date_today",
+                      "str",
+                      "pandas_now", "pandas_today",
+                      "numpy_now", "numpy_today"]
+    
+    arg_names = get_current_datetime.__code__.co_varnames
         
-    type_arg_pos = find_substring_index("Type", arg_names)
+    method_arg_pos = find_substring_index("method", arg_names)
     
-    if Type not in type_options:
-        raise TypeError("Wrong time expression type option "
-                        f"at position {type_arg_pos}. "
-                        f"Options are {type_options}.")
+    if method not in method_options:        
+        raise TypeError(ChoiceErrorStr.format(arg_names[method_arg_pos],
+                                              method_options))
     
-    if Type == "datetime":
+    if method == "datetime":
         current_datetime = datetime.datetime.now()
-    elif Type == "str":
+    elif method == "datetime_today":
+        current_datetime = datetime.datetime.today()
+    elif method == "datetime_date_today":
+        current_datetime = datetime.date.today()
+        
+    elif method == "str":
         current_datetime = time.ctime()
-    else:
-        current_datetime = pd.Timestamp.now()
-        
-    if Type == "str" and time_fmt_str is not None:
-        raise TypeError("Current time is already a string type.")
-        
-        current_datetime_str\
-        = time_format_tweaker(current_datetime, time_fmt_str)
-        return current_datetime_str    
     
-    elif Type == "str" and time_fmt_str is None:
+    elif method == "pandas_now":
+        current_datetime = pd.Timestamp.now()
+    elif method == "pandas_today":
+        current_datetime = pd.Timestamp.today()
+    
+    elif method == "numpy_now":
+        current_datetime = np.datetime64("now")
+    elif method == "numpy_today":
+        current_datetime = np.datetime64("today")
+        
+        
+    if time_fmt_str is not None:
+        if method == "str":
+            raise TypeError("Current time is already a string type.")    
+        else:
+            current_datetime_str\
+            = time_format_tweaker(current_datetime, time_fmt_str)
+            return current_datetime_str    
+
+    else:
         return current_datetime
     
 
@@ -117,16 +134,17 @@ def count_time(mode, return_days=False):
         elapsed_time = abs(ti-tf)
         
         return time_format_tweaker(elapsed_time,
-                                   print_str="extended", 
+                                   return_str="extended", 
                                    return_days=return_days)
         
         
 def time_format_tweaker(t,
                         time_fmt_str=None,
-                        print_str=False,
+                        return_str=False,
                         return_days=False,
-                        to_pandas_datetime="datetime",
-                        std24HourFormat=False):
+                        method="datetime",
+                        infer_dt_format=False, # Only if method=="pandas"
+                        standardizeHourRange=False):
     
     # 
     # 
@@ -137,10 +155,13 @@ def time_format_tweaker(t,
     # ----------
     # t: int, float, str or list of str, tuple, 
     #    time.struct_time or datetime.[datetime, date, time],
-    #    numpy.ndarray, pandas.Series or xarray.DataArray 
-    # In either case, the object containg the date times.
+    #    array-like, pandas.Series or xarray.DataArray 
+    # In either case, the object containg the dates and times.
     # 
-    # to_pandas_datetime : {"pandas", "datetime", "model_datetime"}
+    # TODO: ondoko guztiak hobeto azaldu
+    # method : {"numpy_generic", "numpy_dt64",
+    #           "pandas", 
+    #           "datetime", "model_datetime"}
     # 
     #         Method to use in order to give to the time (t) object.
     # 
@@ -160,7 +181,8 @@ def time_format_tweaker(t,
     # Returns
     # -------
     # t_res : str, tuple, datetime.datetime,
-    #         numpy.ndarray or pandas.DatetimeIndex
+    #         array-like or pandas.[DatetimeIndex, DataFrame, Series]
+    # 
     # Array containg the reformatted date times.
     # If the type of calendar used in the original time array
     # is different of Gregorian, it converts to that one.
@@ -170,24 +192,26 @@ def time_format_tweaker(t,
     arg_names = time_format_tweaker.__code__.co_varnames
     
     print_arg_pos\
-    = find_substring_index(arg_names, "print_str", find_whole_words=True)
+    = find_substring_index(arg_names, "return_str", find_whole_words=True)
     t_arg_pos\
     = find_substring_index(arg_names, "t", find_whole_words=True)
-    to_pd_dt_arg_pos\
-    = find_substring_index(arg_names, "to_pandas", find_whole_words=False)
+    method_arg_pos\
+    = find_substring_index(arg_names, "method", find_whole_words=False)
     
-    to_pd_dt_options = ["pandas", "datetime", "model_datetime"]
-    print_str_options = [False, "basic", "extended"]
+    method_options = ["numpy_generic", "numpy_dt64", 
+                      "pandas", 
+                      "datetime", "model_datetime"]
+    
+    return_str_options = [False, "basic", "extended"]
     
     
-    if print_str not in print_str_options:
-        raise ValueError(f"Wrong '{arg_names[print_arg_pos]}' option. "
-                         f"Options are {print_str_options}.")
+    if return_str not in return_str_options:
+        raise ValueError(ChoiceErrorStr.format(arg_names[print_arg_pos],
+                                               return_str_options))
         
-    if to_pandas_datetime not in to_pd_dt_options:
-        raise ValueError(f"Wrong '{arg_names[to_pd_dt_arg_pos]}' option. "
-                         f"Options are {to_pd_dt_options}.")
-        
+    if method not in method_options:
+        raise ValueError(ChoiceErrorStr.format(arg_names[method_arg_pos],
+                                               method))
 
     if isinstance(t, int) or isinstance(t, float):
         
@@ -212,7 +236,7 @@ def time_format_tweaker(t,
         # Time printing cases #
         #---------------------#
             
-        if print_str == "basic" and not return_days:
+        if return_str == "basic" and not return_days:
             
             if isinstance(t, float):
                 hours = int(hours)
@@ -222,18 +246,18 @@ def time_format_tweaker(t,
             t_res_timetuple = datetime.time(hours, minutes, seconds)
             t_res = str(t_res_timetuple)
             
-        elif print_str == "basic" and return_days:
+        elif return_str == "basic" and return_days:
             time_str_format_specCase\
             = f"{days:d}:{hours:.0f}:{minutes:.0f}:{seconds:.0f}"
             t_res = time_str_format_specCase
             
-        elif print_str == "extended" and return_days:
+        elif return_str == "extended" and return_days:
             t_res = f"{days:.0f} days "\
                     f"{hours:.0f} hours "\
                     f"{minutes:.0f} minutes "\
                     f"{seconds:6.3f} seconds"
                     
-        elif print_str == "extended" and not return_days:
+        elif return_str == "extended" and not return_days:
             if hours != 0:
                 t_res = f"{hours:.0f} hours "\
                         f"{minutes:.0f} minutes "\
@@ -254,21 +278,20 @@ def time_format_tweaker(t,
     elif isinstance(t, str):
 
         if time_fmt_str is None:
-            raise ValueError(mixed_error_string.format(type(t), 
-                                                       arg_names[0],
-                                                       t_arg_pos,
-                                                       method_name))
+            raise ValueError(noStringFormatErrorStr.format(type(t), 
+                                                           arg_names[0],
+                                                           t_arg_pos,
+                                                           method_name))
+
+        particularAllowedMethods = ["pandas", "datetime", "model_datetime"]
+        if method not in particularAllowedMethods:
+            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                            (arg_names[method_arg_pos],
+                             particularAllowedMethods))
         
-        t_res = datetime.datetime.strptime(t, time_fmt_str)
-        
-        if to_pandas_datetime == "datetime":
-            return t_res
-        
-        elif to_pandas_datetime == "pandas":
-            t_timestamp = time2Timestamp(t, time_fmt_str)
-            return t_timestamp
+        t_res = time2Timestamp(t, method, time_fmt_str)
     
-        elif to_pandas_datetime == "model_datetime":
+        if method == "model_datetime":
             if ("%Y" not in time_fmt_str or "%y" not in time_fmt_str)\
                 and "%m" not in time_fmt_str\
                 and "%d" not in time_fmt_str:
@@ -299,30 +322,30 @@ def time_format_tweaker(t,
     not(isinstance(t, tuple) and isinstance(t, time.struct_time)):
         
         if time_fmt_str is None:
-            raise ValueError(mixed_error_string.format(type(t), 
-                                                       arg_names[0],
-                                                       t_arg_pos,
-                                                       method_name))
+            raise ValueError(noStringFormatErrorStr.format(type(t), 
+                                                           arg_names[0],
+                                                           t_arg_pos,
+                                                           method_name))
             
         t_res = datetime.datetime(*t).strftime(time_fmt_str) 
-        if to_pandas_datetime == "pandas":
-            raise Exception(f"'{arg_names[t_arg_pos]}' {type(t)} "
-                            "will not give a satisfactory DatetimeIndex array.")
+        if method == "pandas":            
+            raise Exception(notSatisfactoryDTObjectErrorStr.format\
+                            (arg_names[t_arg_pos], type(t)))
             
         return t_res
         
     
     elif isinstance(t, tuple) and isinstance(t, time.struct_time):
         if time_fmt_str is None:
-            raise ValueError(mixed_error_string.format(type(t), 
-                                                       arg_names[0],
-                                                       t_arg_pos,
-                                                       method_name))
+            raise ValueError(noStringFormatErrorStr.format(type(t), 
+                                                           arg_names[0],
+                                                           t_arg_pos,
+                                                           method_name))
             
         t_res = datetime.datetime(*t[:-4]).strftime(time_fmt_str)
-        if to_pandas_datetime == "pandas":
-            raise Exception(f"'{arg_names[t_arg_pos]}' {type(t)} "
-                            "will not give a satisfactory DatetimeIndex array.")
+        if method == "pandas":
+            raise Exception(notSatisfactoryDTObjectErrorStr.format\
+                            (arg_names[t_arg_pos], type(t)))
             
         return t_res
         
@@ -332,163 +355,191 @@ def time_format_tweaker(t,
         or isinstance(t, datetime.time):
             
         if time_fmt_str is None:
-            raise ValueError(mixed_error_string.format(type(t), 
-                                                       arg_names[0],
-                                                       t_arg_pos,
-                                                       method_name))
+            raise ValueError(noStringFormatErrorStr.format(type(t), 
+                                                           arg_names[0],
+                                                           t_arg_pos,
+                                                           method_name))
             
-        t_res = datetime.datetime.strftime(t, time_fmt_str) 
+        particularAllowedMethods = ["pandas", "datetime"]
+        if method not in particularAllowedMethods:
+            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                            (arg_names[method_arg_pos],
+                             particularAllowedMethods))
+                
+        if method == "pandas":
+            t_res = time2Timestamp(t, method, time_fmt_str)        
+        elif method == "datetime":
+            t_res = datetime.datetime.strftime(t, time_fmt_str)             
+        return t_res
+
+    elif isinstance(t, pd.Timestamp):
         
-        if to_pandas_datetime == "pandas":
-            t_timestamp = time2Timestamp(t, time_fmt_str)
-            return t_timestamp
-        elif to_pandas_datetime == "datetime":
-            return t_res
+        particularAllowedMethods = ["numpy_generic", "numpy_dt64", "datetime_pydt"]
+        if method not in particularAllowedMethods:
+            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                            (arg_names[method_arg_pos],
+                             particularAllowedMethods))
+        
+        if method == "numpy_generic":
+            t_res = time2Timestamp(t, method)
+        elif method == "numpy_dt64":
+            t_res = time2Timestamp(t, method)
+        elif method == "datetime_pydt":
+            t_res = time2Timestamp(t, method)
+        return t_res
     
         
-    elif isinstance(t, cft.datetime):
-        if time_fmt_str is None:
-            raise ValueError(mixed_error_string.format(type(t), 
-                                                        arg_names[0],
-                                                        t_arg_pos,
-                                                        method_name))
-            
-        t_res = cft.datetime.strftime(t, time_fmt_str)
+    elif isinstance(t, np.datetime64):
         
-        if to_pandas_datetime == "pandas":
-            t_timestamp = time2Timestamp(t, time_fmt_str)
-            return t_timestamp
-        elif to_pandas_datetime == "datetime":
-            return t_res
-        
-    elif isinstance(t, pd.DataFrame) or isinstance(t, pd.Series):
-        
-        t_values = t.values
-        
-        if t_values.dtype == "O":
-            if std24HourFormat:
-                try:
-                    t_res = properHourRangeConverter(t, time_fmt_str)
-                except Exception:
-                    raise TypeError("Cannot handle hour range standarization "
-                                    f"with '{arg_names[t_arg_pos]}' {type(t)}.")
+        if method == "datetime_list":
+            # t_res = t.tolist()   
+            t_res = time2Timestamp(t, method)
+        if return_str:
+            t_res = str(t)
+        return t_res
+    
+
+    
+    else:
+                
+        particularAllowedMethod = "datetime_list"
+        if method != particularAllowedMethod:
+            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                            (arg_names[method_arg_pos],
+                             particularAllowedMethod))
+                
+        if standardizeHourRange:
+            try:
+                t_res = over24HourFixer(t)
+            except Exception:                
+                raise TypeError(unhandleableErrorStr.format(arg_names[t_arg_pos],
+                                                            type(t)))
+                
+        else:
                     
+            particularAllowedMethods = ["numpy_dt64_array", "pandas"]
+            if method not in particularAllowedMethods:
+                raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                                (arg_names[method_arg_pos],
+                                 particularAllowedMethods))
+            
+            if method == "pandas":
+                t_res = time2Timestamp(t, method, time_fmt_str)             
+            elif method == "numpy_dt64_array":
+                t_res = time2Timestamp(t, method)
+            
+        if return_str:
+            if isinstance(t_res, pd.DataFrame) or isinstance(t_res, pd.Series):
+                t_res = t_res.dt.strftime(time_fmt_str) 
+            elif isinstance(t_res, np.ndarray):
+                t_res = t_res.astype('U')
             else:
                 try:
-                    t_timestamp = time2Timestamp(t, time_fmt_str)
-                    return t_timestamp
-                except Exception:
-                    raise Exception(f"Cannot convert '{arg_names[t_arg_pos]}' "
-                                    f"{type(t)} to DatetimeIndex array.")
-            
-        else:
-            try:
-                t_res = t.dt.strftime(time_fmt_str)
-            except:
-                t_res_series = t.iloc[:,0]
-                t_res = t_res_series.dt.strftime(time_fmt_str)
-            
+                    t_res  = t_res.strftime(time_fmt_str)
+                except:
+                    raise Exception(unconverteablePandasDTObjectErrorStr.format\
+                                    (arg_names[t_arg_pos, type(t_res)]))
+    
         return t_res
+                
+                
+def time2Timestamp(t,
+                   method=None,
+                   time_fmt_str=None,
+                   infer_dt_format=False):
+    
+    if method == "datetime":
+        dtobj = datetime.datetime.strptime(t, time_fmt_str)
         
-    else:
-        if std24HourFormat:
-            try:
-                t_res = properHourRangeConverter(t, time_fmt_str)
-            except Exception:
-                raise TypeError("Cannot handle hour range standarization "
-                                f"with '{arg_names[t_arg_pos]}' {type(t)}.")
-                
-        else:
-            try:
-                t_timestamp = time2Timestamp(t, time_fmt_str)
-                return t_timestamp
-            except Exception:
-                raise Exception(f"Cannot convert '{arg_names[t_arg_pos]}' "
-                                f"{type(t)} to DatetimeIndex array.")
-                
+    elif method == "datetime_list":
+        dtobj = t.tolist()
+        
+    elif method == "datetime_pydt":
+        dtobj = t.to_pydatetime()
+        
+    elif method == "pandas":
+        try:
+            dtobj = pd.to_datetime(t,
+                                   format=time_fmt_str,
+                                   infer_datetime_format=infer_dt_format)
             
-    
-def time2Timestamp(t, time_fmt_str=None):
-    
-    if not isinstance(t, list)\
-        or not isinstance(t, np.ndarray)\
-        or not isinstance(t, tuple):
-        t_list = [t]
-     
-    else:
-        if hasattr(t_list, "values"):
-            t_list = t.values            
-        else:
-            t_list = list(t)
+        except:        
+            import cftime as cft
+            dtobj\
+            = pd.to_datetime([cft.datetime.strftime(time_el,
+                                                    format=time_fmt_str)
+                              for time_el in t],
+                              format=time_fmt_str,
+                              infer_datetime_format=infer_dt_format)
+            
+    elif method == "numpy_dt64":
+        dtobj = t.to_datetime64()
+            
+    elif method == "numpy_dt64_array":
+        dtobj = np.array(t, dtype=np.datetime64)
         
-    cftime_check = np.all([isinstance(time_el, cft.datetime)
-                           for time_el in t_list])
+    elif method == "numpy_generic":
+        dtobj = t.to_numpy()
         
-    if cftime_check:            
-        t_timestamp\
-        = pd.to_datetime([cft.datetime.strftime(time_el,
-                                                basic_time_format_strs["H"])
-                          for time_el in t],
-                          format=time_fmt_str)
-    
-    else:
-        t_timestamp = pd.to_datetime(t, format=time_fmt_str)
-    
-    return t_timestamp
+    return dtobj
     
     
-def properHourRangeConverter(time_df, time_fmt_str):
-
-    # TODO: birfindu ondoko funtzioa, 24:00 -> 0:00 bihurtzen du, bai
-    #       baina orain edo egun berean ordu guztiak bitan errepikatzen dira
-    #       edo bihurketa hura gauzatu den inguruan egun berean bi ordu berdinak dira
+def over24HourFixer(time_obj):
 
     # Function that checks whether the range of hours
-    # contained in an object (np.ndarray of pd.DataFrame)
-    # is properly defined as 0-23.
-    # 
-    # Time 24:00 is assumed to mean the next day,
-    # so it is converted to 00:00.
+    # contained in an object (numpy's or pandas's) is the 24-hour standard 0-23.
     # 
     # For the task, the date and times in the input object 
     # must only be of type string, otherwise it is not possible
     # to define non standard hour ranges like 1-24
     # with Timestamp-like attributes.
+    # 
+    # Time 24:00 is assumed to mean the next day,
+    # so it is converted to string 23:00 and then 
+    # an hour time delta is added to it.
     #
     # Parameters
     # ----------
-    # time_df : pandas.Series (or np.ndarray)
-    #       Pandas series containing the date-times to be checked.
+    # time_obj : array-like of strings, pandas.DataFrame or pandas.Series
+    #       Object containing the date and times to be checked.
     #
     # Returns
     # -------
-    # time_df : pandas.Series (or np.ndarray)
-    #       The necessary changes are reflected onto the same
-    #       data frame as the input one.
+    # time_obj_fixed : array-like, pandas.DataFrame or pandas.Series
+    #       Object containing fixed dates and times.
 
-    twentyFourHour_df = time_df.str.contains("24")
-    twentyFourHour_df_true = twentyFourHour_df[twentyFourHour_df]
-    twentyFourHour_df_true_idx = twentyFourHour_df_true.index
+    # TODO: hemen behean markatuta dauden 4 puntuak optimizatu, 'find_substring_index'
+    #       garatuago dagoenean
     
-    records_true = len(twentyFourHour_df_true)
-
-    if records_true > 0:
-        for i in twentyFourHour_df_true_idx:
-            time = substring_replacer(time_df.loc[i], "24:00", "00:00")
+    if isinstance(time_obj, np.ndarray):
+        twentyFourHourIdx = np.char.find(time_obj, "24:0")
+        twentyFourHourIdxFilt = twentyFourHourIdx[twentyFourHourIdx != -1]
+        
+        time_obj_no24Hour = np.char.replace(time_obj, "24:0", "23:0")
+        
+        time_obj_fixed = time2Timestamp(time_obj_no24Hour, method="numpy_dt64_array")
+        time_obj_fixed[twentyFourHourIdxFilt] += np.timedelta64(1, "s")
+        
+    elif isinstance(time_obj, pd.DataFrame) or isinstance(time_obj, pd.Series):
+        try:
+            twentyFourHourIdx = time_obj.str.contains("24:0")
+        except:
+            twentyFourHourIdx = time_obj.iloc[:,0].str.contains("24:0")
             
-            time = time_format_tweaker(time,
-                                       time_fmt_str=time_fmt_str, 
-                                       to_pandas_datetime="datetime")
-            time += datetime.timedelta(days=1)
-            time_df.loc[i] = time
-
-        no24hour_idx = np.delete(twentyFourHour_df.index,
-                                 twentyFourHour_df_true_idx)
-
-        time_df.loc[no24hour_idx]\
-        = pd.to_datetime(time_df.loc[no24hour_idx], format=time_fmt_str)
-
-    return time_df
+        twentyFourHourIdxFilt = twentyFourHourIdx[twentyFourHourIdx]
+        
+        try:
+            time_obj_no24Hour = pd.DataFrame.replace(time_obj, "24:0", "23:0")
+        except:
+            time_obj_no24Hour = pd.Series.replace(time_obj, "24:0", "23:0")
+            
+        time_obj_fixed = time2Timestamp(time_obj_no24Hour, method="pandas")
+        time_obj_fixed[twentyFourHourIdxFilt] += pd.Timedelta(hours=1)
+        
+    # TODO: ondokoa ere garatu
+    # elif isinstance(time_obj, xr.Dataset) or isinstance(time_obj, xr.DataArray):
+             
+    return time_obj_fixed
 
 
 def time2seconds(t, time_fmt_str=None):
@@ -534,18 +585,17 @@ def time2seconds(t, time_fmt_str=None):
         return(t_secs)
     
 
-def get_obj_operation_datetime(objList,
-                               attr="modification", 
-                               time_fmt_str=None):
+def get_obj_attribution_datetime(objList,
+                                 attr="modification", 
+                                 time_fmt_str=None):
     
     attr_options = ["creation", "modification", "access"]
-    arg_names = get_obj_operation_datetime.__code__.co_varnames
+    arg_names = get_obj_attribution_datetime.__code__.co_varnames
     
     attr_arg_pos = find_substring_index(arg_names, "attr")
     
     if attr not in attr_options:
-        raise ValueError(f"Wrong attribute option at position {attr_arg_pos}. "
-                         f"Options are {attr_options}.")
+        raise AttributeError(AttributeErrorStr.format(attr_arg_pos, attr_options))
         
     if isinstance(objList, str):
         objList = [objList]
@@ -576,8 +626,24 @@ def get_obj_operation_datetime(objList,
 # Local parameters #
 #------------------#
 
+# Extension list #
 extensions = ["csv", "xlsx", "nc"]
 
-mixed_error_string = """For {} of argument {} at position {}, 
-function '{} is designed to output a time string.
-Please provide a time string format identifier."""
+# Error message strings #
+noStringFormatErrorStr = \
+"""For {} of argument {} at position {}, 
+function '{}' is designed to output a time string.
+Please provide a time string format identifier.
+"""
+
+ChoiceErrorStr = """Wrong {} option. Options are {}."""
+ChoiceErrorForTypeSpecStr = """Wrong {} option with type {}. Options are {}."""
+AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
+
+notSatisfactoryDTObjectErrorStr = \
+"""{} of type {} will not give a satisfactory pandas's timestamp containing object."""
+
+unhandleableErrorStr = """Cannot handle hour range standarization with {} of type {}."""
+
+unconverteablePandasDTObjectErrorStr = \
+"""Cannot convert {} of type {} to pandas's timestamp containing object."""

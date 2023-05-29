@@ -41,8 +41,8 @@
 default_filename="files_to_perform_changes.txt"
 
 # Set the old syntax and the one to substitute with #
-old_syntax='relative pat'
-new_syntax='absolute pat'
+old_syntax='get_current_time'
+new_syntax='get_current_datetime'
 
 # Write every result to the default file #
 grep -irl --include="*.py" $old_syntax > $default_filename 

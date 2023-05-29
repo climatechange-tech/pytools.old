@@ -63,8 +63,8 @@ modify_obj_specs = string_handler.modify_obj_specs
 
 rename_objects = file_and_directory_handler.rename_objects
 
-get_current_time = time_formatters.get_current_time
-get_obj_operation_datetime = time_formatters.get_obj_operation_datetime
+get_current_datetime = time_formatters.get_current_datetime
+get_obj_attribution_datetime = time_formatters.get_obj_operation_datetime
 
 basic_time_format_strs = global_parameters.basic_time_format_strs
 basic_object_types = global_parameters.basic_object_types
@@ -268,15 +268,15 @@ def reorder_objs(path,
             rf = open(report_file_path, "w")                    
          
             timestamp_str_fu\
-            = get_obj_operation_datetime(objList_uneven,
+            = get_obj_attribution_datetime(objList_uneven,
                                          "modification", 
                                          time_format_str)
             
             timestamp_str_nff_dR2\
-            = get_current_time(time_fmt_string=ctime_format_str)
+            = get_current_datetime(time_fmt_str=ctime_format_str)
             
             timestamp_str_cf\
-            = get_obj_operation_datetime(conflicting_objs,
+            = get_obj_attribution_datetime(conflicting_objs,
                                          "modification", 
                                          time_format_str)
             
@@ -379,15 +379,15 @@ def reorder_objs(path,
             rf = open(report_file_path, "w")                    
               
             timestamp_str_fus\
-            = get_obj_operation_datetime(objList_uneven_slice,
+            = get_obj_attribution_datetime(objList_uneven_slice,
                                           "modification", 
                                           time_format_str)
             
             timestamp_str_nff_dR\
-            = get_current_time(time_fmt_string=ctime_format_str)
+            = get_current_datetime(time_fmt_str=ctime_format_str)
             
             timestamp_str_cf\
-            = get_obj_operation_datetime(conflicting_objs,
+            = get_obj_attribution_datetime(conflicting_objs,
                                           "modification", 
                                           time_format_str)
             

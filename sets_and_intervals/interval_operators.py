@@ -130,3 +130,16 @@ def basic_interval_operator(interval_array,
     
     """do sth"""
 
+def cut_obj_into_bins(obj, bins, right=False, 
+                      labels=None, retbins=False, 
+                      precision=3, 
+                      include_lowest=False, 
+                      duplicates="raise", ordered=True):
+    
+    obj_binned = pd.cut(obj, bins, right=right,
+                        labels=labels, retbins=retbins,
+                        precision=precision,
+                        include_lowest=include_lowest,
+                        duplicates=duplicates, ordered=ordered)
+    
+    return obj_binned

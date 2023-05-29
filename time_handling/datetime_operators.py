@@ -318,6 +318,10 @@ def standardize_calendar(obj,
         # elif isinstance(obj[0], xr.Dataset)\
         # or isinstance(obj[0], xr.DataArray):
             
+            
+# TODO: dt_objs (pandas, datetime edo np.datetime64)
+# def datetime_obj_basic_operations():
+            
 def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
     # Quality control #

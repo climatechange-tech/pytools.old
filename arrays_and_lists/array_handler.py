@@ -9,6 +9,33 @@ import pandas as pd
 # Define functions # 
 #------------------#
 
+def df_to_structured_array(df):
+    records = df.to_records(index=False)
+    data = np.array(records, dtype=records.dtype.descr)
+    return data
+
+
+def arrayOfList_to_array(arrayList):
+    
+    dimList = np.unique([len(arr.shape) for arr in arrayList])
+    ld = len(dimList)
+    
+    if ld == 1:
+        dims = dimList[0]
+        
+        if dims == 2:
+            array = np.vstack(arrayList)
+        elif dims == 3:
+            array = np.stack(arrayList)
+        else:
+            raise Exception("Cannot handle lists containing D > 3 arrays.")
+            
+    else:
+        array = np.concatenate(arrayList, axis=None)
+        
+    return array
+
+
 def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     
     # Function that sorts the values in a 2D dimension array
@@ -84,13 +111,12 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending"):
     # and last time access columns, but the mechanism remains exactly the same.
     
     sort_order_ops = ["ascending", "descending"]
-    default = sort_array_rows_by_column.__defaults__[0]
     
     if sort_order not in sort_order_ops:
         raise ValueError("Wrong sort order option. "
                          f"Options are {sort_order_ops}.")
     
-    if sort_order == default:
+    if sort_order == "ascending":
         sorted_array_rbc = array[np.argsort(array[:,ncol])]
     else:
         sorted_array_rbc = array[np.fliplr([np.argsort(array[:,ncol])])[0]]
@@ -500,4 +526,3 @@ def remove_elements_from_array(array, idx2access, axis=None):
     array_filtered = np.delete(array, idx2access, axis=axis)
     
     return array_filtered
-
