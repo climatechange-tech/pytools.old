@@ -22,9 +22,9 @@ def find_substring_index(string, substring, find_whole_words=False):
     # 
     # It distinguishes two cases, together with another
     # two minor cases.
-    #   1. The input string is, as the name indicates, a string.
+    #   1. The string is, as the name indicates, a string.
     #       Then an attempt to find the substring along the string will be made.
-    #   2. The input string is a list of strings.
+    #   2. The string is a list of strings.
     #       Then the attempt will be made for each string on the list.
     # 
     # find_whole_words : bool
@@ -33,24 +33,14 @@ def find_substring_index(string, substring, find_whole_words=False):
     # Returns
     # -------
     # 
-    # substr_idx_list : int, list or dict
+    # substr_idx_list : list or dict
     #       Object containing matching indices.
-    #   
-    #       Three cases are distinguished
-    #       -----------------------------
-    # 
-    #       1. The string is, as stated, a single string.
-    #           Then the only result will be an integer indicating the
-    #           coincidence position, else it returns -1.
-    # 
-    #       2. The string is actually a list of them.
-    #           2.1 The substring to find is a single string.
-    #               Then the result will be a list of indexes.
-    #           2.2 The substring to find is a list of strings.
-    #               Then the functions returns a dictionary
-    #               containing the result of the search of every substring;
-    #               the position of the string is identified with the keys
-    #               of this dictionary.
+    #       It returns a list in the case of a continuous, single string.
+    #       If the string is a list of string, then returns a dictionary
+    #       containing the result of the search of every substring;
+    #       the position of the string is identified with the keys
+    #       of this dictionary.
+    #       Here whether the substring is continuous or separated is redundant.
     # 
     # Note
     # ----
@@ -267,38 +257,17 @@ def join_obj_path_specs(obj_specs_dict):
 
 def fileList2String(obj_list):
 
-    allObjStr = ""
+    allobj_string = ""
     for file in obj_list:
-        allObjStr += f"{file} "
+        allobj_string += f"{file} "
 
-    return allObjStr
+    return allobj_string
 
 
-def substring_replacer(string, string2find, string2replace, 
-                       numCoincidences="all"):
-    
-    arg_names = substring_replacer.__code__.co_varnames
-    maxc_arg_pos = find_substring_index(arg_names, 
-                                       "numCoincidences",
-                                       find_whole_words=True)
-    
-    if not isinstance(numCoincidences, int)\
-        and (isinstance(numCoincidences, str)\
-        and numCoincidences != "all"):
-    
-    # if (not isinstance(numCoincidences, int) or (isinstance(numCoincidences, str) and numCoincidences=="all")):
-            
-        raise TypeError(f"Argument '{arg_names[maxc_arg_pos]}' "
-                        "must either be 'all' or an integer.")
-        
-        
-    if numCoincidences == "all":
-        count = -1
-    else:
-        count = numCoincidences
-        
-    string_replaced = string.replace(string2find, string2replace, count)
+def substring_replacer(string, string2find, string2replace):
+    string_replaced = string.replace(string2find, string2replace)
     return string_replaced
+
 
 #------------------#
 # Local parameters #
@@ -310,5 +279,5 @@ objSpecsKeys = ["obj_path_parent",
                 "obj_path_name_noext_parts",
                 "obj_path_ext"]
 
-objSpecsKeys_short = [substring_replacer(s, "obj_path_", "","all")
+objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
                       for s in objSpecsKeys]

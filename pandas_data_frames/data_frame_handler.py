@@ -131,9 +131,6 @@ def find_date_key(df):
     
     df_cols = df.columns
     
-    # TODO: ondokoa 'startswith'-ekin hasi beharrean, ea 'find_substring_index'
-    #       funtzioaz balia naitekeen
-    
     date_key = [key
                 for key in df_cols
                 if key.lower().startswith("da")

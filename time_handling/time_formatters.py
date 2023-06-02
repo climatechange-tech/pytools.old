@@ -7,7 +7,7 @@ import time
 
 import inspect
 from pathlib import Path
-import os
+
 import sys
 
 import numpy as np
@@ -27,28 +27,18 @@ fixed_dirpath = get_pytools_path.return_pytools_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_dirpath}/arrays_and_lists"
-custom_mod2_path = f"{fixed_dirpath}/files_and_directories" 
-custom_mod3_path = f"{fixed_dirpath}/parameters_and_constants"
-custom_mod4_path = f"{fixed_dirpath}/pandas_data_frames" 
-custom_mod5_path = f"{fixed_dirpath}/strings"
-custom_mod6_path = f"{fixed_dirpath}/weather_and_climate"
+custom_mod1_path = f"{fixed_dirpath}/files_and_directories" 
+custom_mod2_path = f"{fixed_dirpath}/strings"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
-sys.path.append(custom_mod3_path)
-sys.path.append(custom_mod4_path)
-sys.path.append(custom_mod5_path)
-sys.path.append(custom_mod6_path)
 
 # Perform the module importations #
 #---------------------------------#
 
-import array_handler
-import data_frame_handler
 import global_parameters
 import string_handler
 
@@ -58,85 +48,11 @@ import string_handler
 
 basic_time_format_strs = global_parameters.basic_time_format_strs
 
-infer_time_frequency = data_frame_handler.infer_time_frequency
-find_date_key = data_frame_handler.find_date_key
-save2csv = data_frame_handler.save2csv
-save2excel = data_frame_handler.save2excel
-insert_row_in_df = data_frame_handler.insert_row_in_df
-
-modify_obj_specs = string_handler.modify_obj_specs
 find_substring_index = string_handler.find_substring_index
-substring_replacer = string_handler.substring_replacer
-
-count_unique_type_objects = array_handler.count_unique_type_objects
 
 #------------------#
 # Define functions #
 #------------------#
-
-def get_current_datetime(method="datetime", time_fmt_str=None):
-    
-    method_options = ["datetime", "datetime_today", "datetime_date_today",
-                      "str",
-                      "pandas_now", "pandas_today",
-                      "numpy_now", "numpy_today"]
-    
-    arg_names = get_current_datetime.__code__.co_varnames
-        
-    method_arg_pos = find_substring_index("method", arg_names)
-    
-    if method not in method_options:        
-        raise TypeError(ChoiceErrorStr.format(arg_names[method_arg_pos],
-                                              method_options))
-    
-    if method == "datetime":
-        current_datetime = datetime.datetime.now()
-    elif method == "datetime_today":
-        current_datetime = datetime.datetime.today()
-    elif method == "datetime_date_today":
-        current_datetime = datetime.date.today()
-        
-    elif method == "str":
-        current_datetime = time.ctime()
-    
-    elif method == "pandas_now":
-        current_datetime = pd.Timestamp.now()
-    elif method == "pandas_today":
-        current_datetime = pd.Timestamp.today()
-    
-    elif method == "numpy_now":
-        current_datetime = np.datetime64("now")
-    elif method == "numpy_today":
-        current_datetime = np.datetime64("today")
-        
-        
-    if time_fmt_str is not None:
-        if method == "str":
-            raise TypeError("Current time is already a string type.")    
-        else:
-            current_datetime_str\
-            = time_format_tweaker(current_datetime, time_fmt_str)
-            return current_datetime_str    
-
-    else:
-        return current_datetime
-    
-
-def count_time(mode, return_days=False):
-    
-    global ti
-    
-    if mode == "start":  
-        ti = time.time()
-        
-    elif mode == "stop":
-        tf = time.time()
-        elapsed_time = abs(ti-tf)
-        
-        return time_format_tweaker(elapsed_time,
-                                   return_str="extended", 
-                                   return_days=return_days)
-        
         
 def time_format_tweaker(t,
                         time_fmt_str=None,
@@ -585,43 +501,6 @@ def time2seconds(t, time_fmt_str=None):
         return(t_secs)
     
 
-def get_obj_attribution_datetime(objList,
-                                 attr="modification", 
-                                 time_fmt_str=None):
-    
-    attr_options = ["creation", "modification", "access"]
-    arg_names = get_obj_attribution_datetime.__code__.co_varnames
-    
-    attr_arg_pos = find_substring_index(arg_names, "attr")
-    
-    if attr not in attr_options:
-        raise AttributeError(AttributeErrorStr.format(attr_arg_pos, attr_options))
-        
-    if isinstance(objList, str):
-        objList = [objList]
-    
-    elif isinstance(objList, list):
-        
-        obj_timestamp_arr = []
-        
-        for obj in objList:    
-            if attr == "creation":
-                structTime_attr_obj = time.gmtime(os.path.getctime(obj))
-            elif attr == "modification":
-                structTime_attr_obj = time.gmtime(os.path.getmtime(obj))
-            else:
-                structTime_attr_obj = time.gmtime(os.path.getatime(obj))
-                
-            timestamp_str_attr_obj\
-            = time_format_tweaker(structTime_attr_obj, time_fmt_str)
-            
-            info_list = [obj, timestamp_str_attr_obj]
-            obj_timestamp_arr.append(info_list)
-            
-        obj_timestamp_arr = np.array(obj_timestamp_arr)
-        return obj_timestamp_arr
-            
-        
 #------------------#
 # Local parameters #
 #------------------#

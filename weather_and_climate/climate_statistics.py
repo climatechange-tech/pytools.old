@@ -79,10 +79,6 @@ time_format_tweaker = time_formatters.time_format_tweaker
 # Define functions #
 #------------------#
 
-def df_summarizer(df, df_cols, operator):
-    dataOp = eval(f"df.groupby(df_cols).{operator}()")
-    return dataOp
-
 def periodic_statistics(obj, statistic, freq,
                         groupby_dates=False,
                         drop_date_idx_col=False,
@@ -93,7 +89,8 @@ def periodic_statistics(obj, statistic, freq,
     # 
     # Parameters
     # ----------
-    # obj : pandas.DataFrame or xarray.Dataset or xarray.DataArray
+    # obj : pandas.DataFrame or xarray.Dataset
+    #       or xarray.DataArray
     #       Object containing data.
     # statistic : {"max", "min", "mean", "std", "sum"}
     #       String that defines which statistic to compute.

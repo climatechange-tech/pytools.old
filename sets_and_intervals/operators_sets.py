@@ -8,8 +8,6 @@ import inspect
 # Define functions #
 #------------------#
 
-# TODO: GARATU AUKERAK
-
 def operations_with_sets(array_of_sets, operation="union"):
 
     operation_opt_array = ["union", 
