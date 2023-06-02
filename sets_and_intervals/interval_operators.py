@@ -86,7 +86,7 @@ def basic_interval_operator(interval_array,
     #-----------------#
     
     # Main argument names and their position on the function's definition #    
-    arg_names = define_interval.__code__.co_varnames
+    arg_names = basic_interval_operator.__code__.co_varnames
     
     op_arg_pos = find_substring_index(arg_names, "operation", find_whole_words=True)
     obj_type_pos = find_substring_index(arg_names, "obj_type", find_whole_words=True)

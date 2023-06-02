@@ -115,19 +115,17 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     if sort_order not in sort_order_ops:
         raise ValueError("Wrong sort order option. "
                          f"Options are {sort_order_ops}.")
-        
-    array_dtype = array.dtype
     
     if sort_order == "ascending":
-        if isinstance(array_dtype, str):    
+        try:
             sorted_array_rbc = array[np.argsort(array[:,ncol])]
-        elif isinstance(array_dtype, np.dtype):
+        except:
             sorted_array_rbc = np.sort(array, order=order)
             
     else:
-        if isinstance(array_dtype, str):    
+        try:    
             sorted_array_rbc = array[np.fliplr([np.argsort(array[:,ncol])])[0]]
-        elif isinstance(array_dtype, np.dtype):
+        except:
             sorted_array_rbc = np.sort(array, axis=-1, order=order)
         
     return sorted_array_rbc
@@ -213,13 +211,13 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     
     array_dtype = array.dtype
     
-    if isinstance(array_dtype, str):
+    try:
         array_tr = array.T
         sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
         sorted_array_cbr = sorted_array_cbr_tr.T
         return sorted_array_cbr
     
-    elif isinstance(array_dtype, np.dtype):
+    except:
         raise TypeError("Cannot perform operation with numpy arrays "
                         f"of data type {array_dtype}.")
     
@@ -277,7 +275,7 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
     
     array_dtype = array.dtype
     
-    if isinstance(array_dtype, str):
+    try:
         sorted_array_rbc = sort_array_rows_by_column(array, ncol, sort_order)
         sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
                                                      nrow,
@@ -285,7 +283,7 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
         sorted_array_complete = sorted_array_cbr.copy()
         return sorted_array_complete
     
-    elif isinstance(array_dtype, np.dtype):
+    except:
         raise TypeError("Cannot perform operation with numpy arrays "
                         f"of data type {array_dtype}.")
 

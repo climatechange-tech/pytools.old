@@ -26,10 +26,11 @@ fixed_dirpath = get_pytools_path.return_pytools_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_dirpath}/parameters_and_constants"
-custom_mod2_path = f"{fixed_dirpath}/pandas_data_frames" 
-custom_mod3_path = f"{fixed_dirpath}/strings"
-custom_mod4_path = f"{fixed_dirpath}/time_handling"
+custom_mod1_path = f"{fixed_dirpath}/pandas_data_frames" 
+custom_mod2_path = f"{fixed_dirpath}/parameters_and_constants"
+custom_mod3_path = f"{fixed_dirpath}/sets_and_intervals" 
+custom_mod4_path = f"{fixed_dirpath}/strings"
+custom_mod5_path = f"{fixed_dirpath}/time_handling"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -38,13 +39,13 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
+sys.path.append(custom_mod5_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import data_frame_handler
 import global_parameters
-import interval_operators
 import string_handler
 import time_formatters
 
@@ -54,7 +55,6 @@ import time_formatters
 
 mathematical_year_days = global_parameters.mathematical_year_days
 find_date_key = data_frame_handler.find_date_key
-define_interval = interval_operators.define_interval
 find_substring_index = string_handler.find_substring_index
 time_format_tweaker = time_formatters.time_format_tweaker
 
@@ -117,7 +117,7 @@ def get_obj_operation_datetime(objList,
     attr_options = ["creation", "modification", "access"]
     arg_names = get_obj_operation_datetime.__code__.co_varnames
     
-    attr_arg_pos = find_substring_index(arg_names, "attr")
+    attr_arg_pos = find_substring_index(arg_names, "attr", find_whole_words=True)
     
     if attr not in attr_options:
         raise ValueError(f"Wrong attribute option at position {attr_arg_pos}. "
@@ -126,26 +126,24 @@ def get_obj_operation_datetime(objList,
     if isinstance(objList, str):
         objList = [objList]
     
-    elif isinstance(objList, list):
-        
-        obj_timestamp_arr = []
-        
-        for obj in objList:    
-            if attr == "creation":
-                structTime_attr_obj = time.gmtime(os.path.getctime(obj))
-            elif attr == "modification":
-                structTime_attr_obj = time.gmtime(os.path.getmtime(obj))
-            else:
-                structTime_attr_obj = time.gmtime(os.path.getatime(obj))
-                
-            timestamp_str_attr_obj\
-            = time_format_tweaker(structTime_attr_obj, time_fmt_str)
+    obj_timestamp_arr = []
+    
+    for obj in objList:    
+        if attr == "creation":
+            structTime_attr_obj = time.gmtime(os.path.getctime(obj))
+        elif attr == "modification":
+            structTime_attr_obj = time.gmtime(os.path.getmtime(obj))
+        else:
+            structTime_attr_obj = time.gmtime(os.path.getatime(obj))
             
-            info_list = [obj, timestamp_str_attr_obj]
-            obj_timestamp_arr.append(info_list)
-            
-        obj_timestamp_arr = np.array(obj_timestamp_arr)
-        return obj_timestamp_arr
+        timestamp_str_attr_obj\
+        = time_format_tweaker(structTime_attr_obj, time_fmt_str)
+        
+        info_list = [obj, timestamp_str_attr_obj]
+        obj_timestamp_arr.append(info_list)
+        
+    obj_timestamp_arr = np.array(obj_timestamp_arr)
+    return obj_timestamp_arr
 
 def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
@@ -216,6 +214,16 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
 def natural_year(dt_start, dt_end, time_fmt_str=None,
                  strict=False, exact_year=False,
                  return_format="str"):
+    
+    # Conveniently import the custom module here #
+    #--------------------------------------------#
+    
+    import interval_operators
+    
+    # Conveniently define here the imported module's function call shortcut #
+    #-----------------------------------------------------------------------#
+    
+    define_interval = interval_operators.define_interval
     
     # Quality control #
     #-----------------#
