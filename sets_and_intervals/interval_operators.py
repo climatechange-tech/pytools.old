@@ -7,8 +7,6 @@ from pathlib import Path
 import sys
 
 import pandas as pd
-import piso
-piso.register_accessors()
 
 #-----------------------#
 # Import custom modules #
@@ -78,6 +76,9 @@ def basic_interval_operator(interval_array,
                             obj_type="pandas",
                             operation="union", 
                             force_union=False):
+    
+    import piso
+    piso.register_accessors()
 
     # TODO: diseinatu pd.arrays.IntervalArray motako matrizea,
     #       "interval_array" zerrenda edo numpy matrize bat izanik

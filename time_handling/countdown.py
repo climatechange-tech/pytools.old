@@ -50,11 +50,17 @@ time_format_tweaker = time_formatters.time_format_tweaker
 # Define functions #
 #------------------#
 
-def countdown(t, time_fmt_str=None, print_str=False):
+def countdown(t, string_arr1, string_arr2, 
+              time_fmt_str=None, print_str=False):
     
-    if isinstance(t, str) or isinstance(t, tuple):
+    # if isinstance(t, str) or isinstance(t, tuple):
+    if isinstance(t, str):
         time_dt = time_format_tweaker(t, time_fmt_str=time_fmt_str)
-            
+      
+        if "%Y" not in time_fmt_str:
+            time_dt = time_format_tweaker(t, method="model_datetime",
+                                          time_fmt_str=time_fmt_str)
+        
         for s2find_1, s2replace_1 in zip(string_arr1[:,0], string_arr1[:,1]):
             time_fmt_str = substring_replacer(time_fmt_str, 
                                               s2find_1, 
@@ -80,7 +86,7 @@ def countdown(t, time_fmt_str=None, print_str=False):
                 
                 time.sleep(1)
                 time_dt -= datetime.timedelta(seconds=1)
-                
+           
         except OverflowError:
             print("Time up!")
             
@@ -101,6 +107,19 @@ def countdown(t, time_fmt_str=None, print_str=False):
 # Local parameters #
 #------------------#
 
+# Additional parameters #
+#-----------------------#
+
+string_arr1 = np.array([["%d", "%d-1"],
+                        ["%m", "%m-1"],
+                        ["%Y", "%Y-1"],
+                        ["%y", "%y-1"]])
+
+string_arr2 = np.array([["%d", "%-d"],
+                        ["%m", "%-m"],
+                        ["%Y", "%-Y"],
+                        ["%y", "%-y"]])
+
 # Function gear #
 #---------------#
 
@@ -115,23 +134,11 @@ try:
     while print_str != "y" and print_str != "n":
         print_str = input("Please write 'y' for 'yes' or 'n' for 'no' ")
             
-    countdown(t, print_str)    
+    countdown(t, string_arr1, string_arr2, print_str=print_str)    
     
 except:
     time_fmt_str = input("String format detected. "
                          "Introduce the formatting string without quotes: ")
-    countdown(t, time_fmt_str)
+    countdown(t, string_arr1, string_arr2, time_fmt_str=time_fmt_str)
     
     
-# Additional parameters #
-#-----------------------#
-
-string_arr1 = np.array([["%d", "%d-1"],
-                        ["%m", "%m-1"],
-                        ["%Y", "%Y-1"],
-                        ["%y", "%y-1"]])
-
-string_arr2 = np.array([["%d", "%-d"],
-                        ["%m", "%-m"],
-                        ["%Y", "%-Y"],
-                        ["%y", "%-y"]])

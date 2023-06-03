@@ -11,30 +11,37 @@ import numpy as np
 import pandas as pd
 
 
+string="foijwqj83d3of8fewof" 
+substring="of"  # EDO regex bat izan daiteke (ez da beharrezkoa 'regex'=True,
+                # edo halakorik definitzea, hori 're' moduluarekin baitoa)
+
+# Bilaketa aurreratuaren modua #
+
+# Ondoko argumentuak maiusk./minusk, kasu guztiak edota hitz osoak
+# bilatzeko modua aktibatu edo ez agintzen du
+advanced_search = False
+
 case_sensitive = False
 all_cases = False
 find_whole_words = False
 
-bilaketa_sinplea = False
-
-s="foijwqj83d3of8fewof" 
-s1="of"  # EDO regex bat izan daiteke.
-
 # return_span=False
-
-
 
 # =============================================================================
 # FUNTZIOAK DEFINITU
 # =============================================================================
 
-def string_VS_string_search(s, s1, case_sensitive, all_cases, find_whole_words):
+def string_VS_string_search(s,
+                            substring,
+                            case_sensitive,
+                            all_cases, 
+                            find_whole_words):
     
     #%% TRUE BAT ERE EZ
     
     if not case_sensitive and not all_cases and not find_whole_words:
         
-        firstOnlyMatch = re.search(s1, s, re.IGNORECASE)
+        firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
         substrLowestIdx = firstOnlyMatch.start(0)
         
         print(substrLowestIdx)
@@ -43,21 +50,21 @@ def string_VS_string_search(s, s1, case_sensitive, all_cases, find_whole_words):
         
     elif case_sensitive and not all_cases and not find_whole_words:
         
-        firstOnlyMatch = re.search(s1, s)
+        firstOnlyMatch = re.search(substring, string)
         substrLowestIdx = firstOnlyMatch.start(0)
         
         print(substrLowestIdx)
         
     elif not case_sensitive and all_cases and not find_whole_words:
         
-        allMatchesIterator = re.finditer(s1,s, re.IGNORECASE)
+        allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
         substrLowestIdx = [m.start(0) for m in allMatchesIterator]
         
         print(substrLowestIdx)
     
     elif not case_sensitive and not all_cases and find_whole_words:
         
-        exactMatch = re.fullmatch(s1,s, re.IGNORECASE)
+        exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
         substrLowestIdx = exactMatch.start(0)
 
         print(substrLowestIdx)
@@ -65,7 +72,7 @@ def string_VS_string_search(s, s1, case_sensitive, all_cases, find_whole_words):
     #%% BI TRUE    
     
     elif case_sensitive and all_cases and not find_whole_words:
-        allMatchesIterator = re.finditer(s1,s)
+        allMatchesIterator = re.finditer(substring, string)
         substrLowestIdx = [m.start(0) for m in allMatchesIterator]
         print(substrLowestIdx)
         
@@ -74,7 +81,7 @@ def string_VS_string_search(s, s1, case_sensitive, all_cases, find_whole_words):
     # elif not case_sensitive and all_cases and find_whole_words:
         
     elif case_sensitive and not all_cases and find_whole_words:
-        exactMatch = re.fullmatch(s1, s)
+        exactMatch = re.fullmatch(substring, string)
         substrLowestIdx = exactMatch.start(0)
         print(substrLowestIdx)
         
@@ -83,25 +90,30 @@ def string_VS_string_search(s, s1, case_sensitive, all_cases, find_whole_words):
     # elif case_sensitive and all_cases and find_whole_words
     
     return substrLowestIdx
-#%%
+
+
+def stringList_VS_stringList_search_wholeWords(strList, 
+                                               substrList, 
+                                               start=0, 
+                                               end=None):
     
-def stringList_VS_stringList_search_wholeWords(s_list, s1_list, start=0, end=None):
+    substrLowestIdxNoFilt = [np.char.find(str_el, substr_el, start=0, end=None)
+                             for str_el in strList
+                             for substr_el in substrList]
     
-    substrLowestIdxNoFilt = [np.char.find(s_el, s1_el, start=0, end=None)
-                             for s_el in s
-                             for s1_el in s1]
-    
+    # TODO: eman begirada bat ondokoari, np.where erabili beharko litzake ta
     substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt != -1]
     
     return substrLowestIdx
-
+#%%
+    
 # =============================================================================
 # INPUT: KARAKTERE SOILA
 # =============================================================================
 
-if isinstance(s, str):
+if isinstance(string, str):
     
-    substrLowestIdx = string_VS_string_search(s, s1, 
+    substrLowestIdx = string_VS_string_search(string, substring, 
                                               case_sensitive, all_cases, 
                                               find_whole_words)
     
@@ -111,41 +123,52 @@ if isinstance(s, str):
 # INPUT: karaktere kateen ZERRENDA, REGEXik gabe. --> EZIN DA re ERABILI --> REGEXak zentzugabeak
 # =============================================================================
 
-elif isinstance(s, list) or isinstance(s, np.ndarray):
+elif isinstance(string, list) or isinstance(string, np.ndarray):
     
-    if bilaketa_sinplea:
-        if isinstance(s1, str):
-            substrLowestIdxNoFilt = np.char.find(s, s1, start=0, end=None)
+    if not advanced_search:
+        if isinstance(substring, str):
+            substrLowestIdxNoFilt = np.char.find(string, 
+                                                 substring, 
+                                                 start=0,
+                                                 end=None)
+            
+            # TODO: eman begirada bat ondokoari, np.where erabili beharko litzake ta
             substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt != -1]
             print(substrLowestIdx)
             
        
-        elif isinstance(s1, list) or isinstance(s1, np.ndarray):
+        elif isinstance(substring, list) or isinstance(substring, np.ndarray):
             substrLowestIdx\
-            = stringList_VS_stringList_search_wholeWords(s, s1, start=0, end=None)
+            = stringList_VS_stringList_search_wholeWords(string,
+                                                         substring, 
+                                                         start=0,
+                                                         end=None)
             print(substrLowestIdx)
                 
             
     else:
-        if isinstance(s1, str):
-            substrLowestIdx = [string_VS_string_search(s_el, s1,
+        if isinstance(substring, str):
+            substrLowestIdx = [string_VS_string_search(s_el, substring,
                                                        case_sensitive, 
                                                        all_cases, 
                                                        find_whole_words)
-                               for s_el in s]
+                               for s_el in string]
             
-        elif isinstance(s1, list) or isinstance(s1, np.ndarray):
+        elif isinstance(substring, list) or isinstance(substring, np.ndarray):
             
             substrLowestIdx\
-            = stringList_VS_stringList_search_wholeWords(s, s1, start=0, end=None)
+            = stringList_VS_stringList_search_wholeWords(string, 
+                                                         substring,
+                                                         start=0, 
+                                                         end=None)
             print(substrLowestIdx)
             
         
-elif isinstance(s, pd.DataFrame) or isinstance(s, pd.Series):
+elif isinstance(string, pd.DataFrame) or isinstance(string, pd.Series):
     try:
-        substrLowestIdxNoFilt = s.str.contains[s1].index
+        substrLowestIdxNoFilt = string.str.contains[substring].index
     except:
-        substrLowestIdxNoFilt = s.iloc[:,0].str.contains[s1].index
+        substrLowestIdxNoFilt = string.iloc[:,0].str.contains[substring].index
     
     substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
     print(substrLowestIdx)

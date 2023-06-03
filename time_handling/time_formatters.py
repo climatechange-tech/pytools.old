@@ -112,11 +112,7 @@ def time_format_tweaker(t,
     t_arg_pos\
     = find_substring_index(arg_names, "t", find_whole_words=True)
     method_arg_pos\
-    = find_substring_index(arg_names, "method", find_whole_words=False)
-    
-    method_options = ["numpy_generic", "numpy_dt64", 
-                      "pandas", 
-                      "datetime", "model_datetime"]
+    = find_substring_index(arg_names, "method", find_whole_words=True)
     
     return_str_options = [False, "basic", "extended"]
     
@@ -127,7 +123,7 @@ def time_format_tweaker(t,
         
     if method not in method_options:
         raise ValueError(ChoiceErrorStr.format(arg_names[method_arg_pos],
-                                               method))
+                                               method_options))
 
     if isinstance(t, int) or isinstance(t, float):
         
@@ -204,10 +200,10 @@ def time_format_tweaker(t,
             raise TypeError(ChoiceErrorForTypeSpecStr.format\
                             (arg_names[method_arg_pos],
                              particularAllowedMethods))
-        
-        t_res = time2Timestamp(t, method, time_fmt_str)
     
         if method == "model_datetime":
+            t_res = time2Timestamp(t, method="datetime", time_fmt_str=time_fmt_str)
+            
             if ("%Y" not in time_fmt_str or "%y" not in time_fmt_str)\
                 and "%m" not in time_fmt_str\
                 and "%d" not in time_fmt_str:
@@ -231,6 +227,10 @@ def time_format_tweaker(t,
                                               t_res.hour, t_res.minute, t_res.second)
                 t_res = t_res_aux
                 
+            return t_res
+        
+        else:
+            t_res = time2Timestamp(t, method, time_fmt_str)
             return t_res
                   
       
@@ -258,7 +258,7 @@ def time_format_tweaker(t,
                                                            t_arg_pos,
                                                            method_name))
             
-        t_res = datetime.datetime(*t[:-4]).strftime(time_fmt_str)
+        t_res = datetime.datetime(*t[:-3]).strftime(time_fmt_str)
         if method == "pandas":
             raise Exception(notSatisfactoryDTObjectErrorStr.format\
                             (arg_names[t_arg_pos], type(t)))
@@ -266,9 +266,10 @@ def time_format_tweaker(t,
         return t_res
         
         
-    elif isinstance(t, datetime.datetime)\
+    elif (isinstance(t, datetime.datetime)\
         or isinstance(t, datetime.date)\
-        or isinstance(t, datetime.time):
+        or isinstance(t, datetime.time))\
+        and not isinstance(t, pd.Timestamp):
             
         if time_fmt_str is None:
             raise ValueError(noStringFormatErrorStr.format(type(t), 
@@ -363,6 +364,15 @@ def time2Timestamp(t,
                    method=None,
                    time_fmt_str=None,
                    infer_dt_format=False):
+    
+    arg_names = time2Timestamp.__code__.co_varnames
+    
+    method_arg_pos\
+    = find_substring_index(arg_names, "method", find_whole_words=False)
+    
+    if method not in method_options:
+        raise ValueError(ChoiceErrorStr.format(arg_names[method_arg_pos], 
+                                               method_options))
     
     if method == "datetime":
         dtobj = datetime.datetime.strptime(t, time_fmt_str)
@@ -505,18 +515,22 @@ def time2seconds(t, time_fmt_str=None):
 # Local parameters #
 #------------------#
 
+# Global method options #
+method_options = ["datetime", "datetime_list", "datetime_pydt",
+                  "pandas", "numpy_dt64", "numpy_dt64_array", "numpy_generic"]
+
 # Extension list #
 extensions = ["csv", "xlsx", "nc"]
 
 # Error message strings #
 noStringFormatErrorStr = \
-"""For {} of argument {} at position {}, 
+"""For {} of argument '{}' at position {}, 
 function '{}' is designed to output a time string.
 Please provide a time string format identifier.
 """
 
-ChoiceErrorStr = """Wrong {} option. Options are {}."""
-ChoiceErrorForTypeSpecStr = """Wrong {} option with type {}. Options are {}."""
+ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
+ChoiceErrorForTypeSpecStr = """Wrong '{} 'option with type {}. Options are {}."""
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
 
 notSatisfactoryDTObjectErrorStr = \

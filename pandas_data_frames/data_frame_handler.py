@@ -131,6 +131,7 @@ def find_date_key(df):
     
     df_cols = df.columns
     
+    # TODO: ea ondokoak ongi garatutako 'find_substring_index' funtzioakin topa daitezkeen
     date_key = [key
                 for key in df_cols
                 if key.lower().startswith("da")
@@ -330,6 +331,7 @@ def excel2df(file_name):
 
 def save2excel(file_name,
                frame_obj,
+               indiv_sheet_name="Sheet1",
                save_index=False,
                save_header=False):
     
@@ -346,6 +348,9 @@ def save2excel(file_name,
     #       Keys are tab or sheet names and values are pandas data frames.
     #       A pandas data frame is used to introduce
     #       single default name tab data.
+    # indiv_sheet_name : str
+    #       Relevant only if 'frame_obj' is a data frame. Name of the single sheet
+    #       in which to store the object.
     # save_index : bool
     #       Boolean to choose whether to include a column into the excel document
     #       that identifies row numbers. Default value is False.
@@ -387,7 +392,6 @@ def save2excel(file_name,
                                        "or 'n' for 'no': ")
                 
             if overWriteStdIn == "y":
-                remove_files_byFS(file_name, fn_parent)
                 writer.close() 
             else:
                 pass
@@ -410,7 +414,10 @@ def save2excel(file_name,
                 
             if overWriteStdIn == "y":
                 remove_files_byFS(file_name, fn_parent)
-                frame_obj.to_excel(file_name, save_index, save_header) 
+                frame_obj.to_excel(file_name, 
+                                   sheet_name=indiv_sheet_name,
+                                   index=save_index,
+                                   header=save_header)
             else:
                 pass
             
@@ -431,7 +438,7 @@ def merge_excel_files(input_file_list,
     
     # Input_file_list and output_file_name can either be simple names or full paths
     
-    if not isinstance(input_file_list, list):
+    if isinstance(input_file_list, str):
         input_file_list = [input_file_list]
         
     lifn = len(input_file_list)
@@ -717,7 +724,7 @@ def merge_csv_files(input_file_list,
     # Usage of separator_in applies for all files, which means
     # that every file must have the same separator.
     
-    if not isinstance(input_file_list, list):
+    if isinstance(input_file_list, str):
         input_file_list = [input_file_list]
         
     lifn = len(input_file_list)

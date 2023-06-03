@@ -145,6 +145,7 @@ def get_obj_operation_datetime(objList,
     obj_timestamp_arr = np.array(obj_timestamp_arr)
     return obj_timestamp_arr
 
+
 def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
     # Quality control #
@@ -162,7 +163,7 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     operator_arg_pos\
     = find_substring_index(arg_names, "operator", find_whole_words=True)
     
-    operators = ["merge", "intersect", "cross", "left", "right"]
+    operators = ["inner", "outer", "cross", "left", "right"]
     
     # Operator argument choice #    
     if operator not in operators:
@@ -172,12 +173,12 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     # Right input argument types #
     if not isinstance(df1, pd.DataFrame):
         raise ValueError(f"Argument '{arg_names[df1_arg_pos]}' "
-                         "must be of type pd.DataFrame")
+                         "must be of type pd.DataFrame or pd.Series")
         
     if not isinstance(df2, pd.DataFrame)\
-    or not isinstance(df2, pd.Series):
+    and not isinstance(df2, pd.Series):
         raise ValueError(f"Argument '{arg_names[df2_arg_pos]}' "
-                         "must be of type pd.DataFrame")
+                         "must be of type pd.DataFrame or pd.Seriess")
         
         
     elif isinstance(df2, pd.Series):
@@ -193,18 +194,37 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
     res_dts = pd.merge(df1, df2, how=operator)
     
+    std_date_colName = "Date"
+    
     # Sort values by the time-column #
     try:
         dt_colname = find_date_key(df1)
     except:
-        try:
-            dt_colname = find_date_key(df2)
-        except:
-            raise ValueError("Could not find a common time column name.")
+        print("Standard time column name not found on object "
+              f"'{arg_names[df1_arg_pos]}. "
+              "Setting default name 'Date' to column number 0.")
+        
+        df1_cols = list(df1.columns)
+        df1_cols[0] = std_date_colName
+        df1.columns = df1_cols
+        
+    try:
+        dt_colname = find_date_key(df2)
+    except:
+        print("Standard time column name not found on object "
+              f"'{arg_names[df2_arg_pos]}. "
+              "Setting default name 'Date' to column number 0.")
+        
+        df2_cols = list(df2.columns)
+        df2_cols[0] = std_date_colName
+        df2.columns = df2_cols
     
-    res_dts = res_dts.sort_values(by=dt_colname)
+    try:
+        res_dts = res_dts.sort_values(by=dt_colname)
+    except UnboundLocalError:
+        res_dts = res_dts.sort_values(by=std_date_colName)
     
-    # Choose whether to customize ll times' format #
+    # Choose whether to customize times' format #
     if time_fmt_str is not None:
         res_dts = time_format_tweaker(res_dts, time_fmt_str)
         
@@ -213,7 +233,8 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
 def natural_year(dt_start, dt_end, time_fmt_str=None,
                  strict=False, exact_year=False,
-                 return_format="str"):
+                 method="pandas",
+                 return_format="pandas"):
     
     # Conveniently import the custom module here #
     #--------------------------------------------#
@@ -223,53 +244,17 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
     # Conveniently define here the imported module's function call shortcut #
     #-----------------------------------------------------------------------#
     
-    define_interval = interval_operators.define_interval
-    
-    # Quality control #
-    #-----------------#
-    
-    # Main argument names and their position on the function's definition #    
-    arg_names = natural_year.__code__.co_varnames
-    
-    dt_start_arg_pos\
-    = find_substring_index(arg_names, "dt_start", find_whole_words=True)
-    
-    dt_end_arg_pos\
-    = find_substring_index(arg_names, "dt_end", find_whole_words=True)
-    
-    return_fmt_arg_pos\
-    = find_substring_index(arg_names, "return_format", find_whole_words=True)
-    
-    return_fmt_options = ["str", "pandas", "datetime"]
-    
-    # Result printing format's argument choice #    
-    if return_format not in return_fmt_options:
-        raise ValueError(f"Wrong '{arg_names[return_fmt_arg_pos]}' option. "
-                         f"Options are {return_fmt_options}.")
-        
+    define_interval = interval_operators.define_interval 
       
-    # String to string format conversion checker #
-    try:     
-        dt_start_std = time_format_tweaker(dt_start, time_fmt_str,
-                                           to_pandas_datetime=return_format)
+    # String to string format conversion checker #   
+    dt_start_std = time_format_tweaker(dt_start, 
+                                       time_fmt_str, 
+                                       method=method)                    
+    
+    dt_end_std = time_format_tweaker(dt_end,
+                                     time_fmt_str, 
+                                     method=method)
         
-    except ValueError:
-        print(f"Please set the argument '{arg_names[return_fmt_arg_pos]}' to "
-              f"'{return_fmt_options[1]}' or '{return_fmt_options[-1]}', "
-              f"else make the argument '{arg_names[dt_start_arg_pos]}' to be of type "
-              "'pd.Timestamp' or 'datetime.datetime'")
-        
-    try:
-        dt_end_std = time_format_tweaker(dt_end, time_fmt_str,
-                                         to_pandas_datetime=return_format)
-        
-    except ValueError:
-        print(f"Please set the argument {return_format} to "
-              f"'{return_fmt_options[1]}' or '{return_fmt_options[-1]}', "
-              f"else make the argument '{arg_names[dt_end_arg_pos]}' to be of type "
-              "'pd.Timestamp' or 'datetime.datetime'")
-
-
     # Operations #    
     timeDelta = abs(dt_start_std - dt_end_std)
     
@@ -388,7 +373,7 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         |
         v
         
-        {dt_start_natural} --{dt_end_natural}
+        {dt_start_natural} -- {dt_end_natural}
         """
            
         print(natural_year_range_table.format(dt_start_std, dt_end_std))
@@ -396,3 +381,12 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
     else:
         return dt_start_natural, dt_end_natural
 
+
+
+#------------------#
+# Local parameters #
+#------------------#
+
+# Error message strings #
+ChoiceErrorStr = """Wrong {} option. Options are {}."""
+AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
