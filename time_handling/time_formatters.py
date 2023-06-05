@@ -39,14 +39,11 @@ sys.path.append(custom_mod2_path)
 # Perform the module importations #
 #---------------------------------#
 
-import global_parameters
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
-
-basic_time_format_strs = global_parameters.basic_time_format_strs
 
 find_substring_index = string_handler.find_substring_index
 
@@ -197,12 +194,14 @@ def time_format_tweaker(t,
 
         particularAllowedMethods = ["pandas", "datetime", "model_datetime"]
         if method not in particularAllowedMethods:
-            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+            raise TypeError(ChoiceErrorStr.format\
                             (arg_names[method_arg_pos],
                              particularAllowedMethods))
     
         if method == "model_datetime":
-            t_res = time2Timestamp(t, method="datetime", time_fmt_str=time_fmt_str)
+            t_res = frequentTimeFormatConverter(t,
+                                                method="datetime",
+                                                time_fmt_str=time_fmt_str)
             
             if ("%Y" not in time_fmt_str or "%y" not in time_fmt_str)\
                 and "%m" not in time_fmt_str\
@@ -230,7 +229,7 @@ def time_format_tweaker(t,
             return t_res
         
         else:
-            t_res = time2Timestamp(t, method, time_fmt_str)
+            t_res = frequentTimeFormatConverter(t, method, time_fmt_str)
             return t_res
                   
       
@@ -271,46 +270,41 @@ def time_format_tweaker(t,
         or isinstance(t, datetime.time))\
         and not isinstance(t, pd.Timestamp):
             
-        if time_fmt_str is None:
-            raise ValueError(noStringFormatErrorStr.format(type(t), 
-                                                           arg_names[0],
-                                                           t_arg_pos,
-                                                           method_name))
-            
-        particularAllowedMethods = ["pandas", "datetime"]
-        if method not in particularAllowedMethods:
-            raise TypeError(ChoiceErrorForTypeSpecStr.format\
-                            (arg_names[method_arg_pos],
-                             particularAllowedMethods))
-                
-        if method == "pandas":
-            t_res = time2Timestamp(t, method, time_fmt_str)        
-        elif method == "datetime":
-            t_res = datetime.datetime.strftime(t, time_fmt_str)             
+        if not return_days:
+            method = "pandas"
+            t_res = frequentTimeFormatConverter(t, method, time_fmt_str) 
+        else:
+            t_res = datetime.datetime.strftime(t, time_fmt_str)
+        
         return t_res
+
 
     elif isinstance(t, pd.Timestamp):
         
-        particularAllowedMethods = ["numpy_generic", "numpy_dt64", "datetime_pydt"]
-        if method not in particularAllowedMethods:
-            raise TypeError(ChoiceErrorForTypeSpecStr.format\
-                            (arg_names[method_arg_pos],
-                             particularAllowedMethods))
+        if not return_str:
         
-        if method == "numpy_generic":
-            t_res = time2Timestamp(t, method)
-        elif method == "numpy_dt64":
-            t_res = time2Timestamp(t, method)
-        elif method == "datetime_pydt":
-            t_res = time2Timestamp(t, method)
+            particularAllowedMethods = ["numpy_generic", "numpy_dt64", "datetime_pydt"]
+            if method not in particularAllowedMethods:
+                raise TypeError(ChoiceErrorStr.format\
+                                (arg_names[method_arg_pos],
+                                 particularAllowedMethods))
+            
+            if method == "numpy_generic":
+                t_res = frequentTimeFormatConverter(t, method)
+            elif method == "numpy_dt64":
+                t_res = frequentTimeFormatConverter(t, method)
+            elif method == "datetime_pydt":
+                t_res = frequentTimeFormatConverter(t, method)
+                
+        else:
+            t_res = t_res.strftime(time_fmt_str)
+            
         return t_res
-    
         
     elif isinstance(t, np.datetime64):
         
         if method == "datetime_list":
-            # t_res = t.tolist()   
-            t_res = time2Timestamp(t, method)
+            t_res = frequentTimeFormatConverter(t, method)
         if return_str:
             t_res = str(t)
         return t_res
@@ -321,7 +315,7 @@ def time_format_tweaker(t,
                 
         particularAllowedMethod = "datetime_list"
         if method != particularAllowedMethod:
-            raise TypeError(ChoiceErrorForTypeSpecStr.format\
+            raise TypeError(ChoiceErrorStr.format\
                             (arg_names[method_arg_pos],
                              particularAllowedMethod))
                 
@@ -336,14 +330,14 @@ def time_format_tweaker(t,
                     
             particularAllowedMethods = ["numpy_dt64_array", "pandas"]
             if method not in particularAllowedMethods:
-                raise TypeError(ChoiceErrorForTypeSpecStr.format\
+                raise TypeError(ChoiceErrorStr.format\
                                 (arg_names[method_arg_pos],
                                  particularAllowedMethods))
             
             if method == "pandas":
-                t_res = time2Timestamp(t, method, time_fmt_str)             
+                t_res = frequentTimeFormatConverter(t, method, time_fmt_str)             
             elif method == "numpy_dt64_array":
-                t_res = time2Timestamp(t, method)
+                t_res = frequentTimeFormatConverter(t, method)
             
         if return_str:
             if isinstance(t_res, pd.DataFrame) or isinstance(t_res, pd.Series):
@@ -360,12 +354,12 @@ def time_format_tweaker(t,
         return t_res
                 
                 
-def time2Timestamp(t,
-                   method=None,
-                   time_fmt_str=None,
-                   infer_dt_format=False):
+def frequentTimeFormatConverter(t,
+                                method=None,
+                                time_fmt_str=None,
+                                infer_dt_format=False):
     
-    arg_names = time2Timestamp.__code__.co_varnames
+    arg_names = frequentTimeFormatConverter.__code__.co_varnames
     
     method_arg_pos\
     = find_substring_index(arg_names, "method", find_whole_words=False)
@@ -443,7 +437,8 @@ def over24HourFixer(time_obj):
         
         time_obj_no24Hour = np.char.replace(time_obj, "24:0", "23:0")
         
-        time_obj_fixed = time2Timestamp(time_obj_no24Hour, method="numpy_dt64_array")
+        time_obj_fixed = frequentTimeFormatConverter(time_obj_no24Hour, 
+                                                     method="numpy_dt64_array")
         time_obj_fixed[twentyFourHourIdxFilt] += np.timedelta64(1, "s")
         
     elif isinstance(time_obj, pd.DataFrame) or isinstance(time_obj, pd.Series):
@@ -459,7 +454,8 @@ def over24HourFixer(time_obj):
         except:
             time_obj_no24Hour = pd.Series.replace(time_obj, "24:0", "23:0")
             
-        time_obj_fixed = time2Timestamp(time_obj_no24Hour, method="pandas")
+        time_obj_fixed = frequentTimeFormatConverter(time_obj_no24Hour,
+                                                     method="pandas")
         time_obj_fixed[twentyFourHourIdxFilt] += pd.Timedelta(hours=1)
         
     # TODO: ondokoa garatu
@@ -530,7 +526,6 @@ Please provide a time string format identifier.
 """
 
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
-ChoiceErrorForTypeSpecStr = """Wrong '{} 'option with type {}. Options are {}."""
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
 
 notSatisfactoryDTObjectErrorStr = \

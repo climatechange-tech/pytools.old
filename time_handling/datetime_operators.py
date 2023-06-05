@@ -72,9 +72,8 @@ def get_current_time(Type="datetime", time_fmt_str=None):
     type_arg_pos = find_substring_index("Type", arg_names)
     
     if Type not in type_options:
-        raise TypeError("Wrong time expression type option "
-                        f"at position {type_arg_pos}. "
-                        f"Options are {type_options}.")
+        raise ValueError(ChoiceErrorStr.format(arg_names[type_arg_pos],
+                                               type_options))
     
     if Type == "datetime":
         current_datetime = datetime.datetime.now()
@@ -120,8 +119,8 @@ def get_obj_operation_datetime(objList,
     attr_arg_pos = find_substring_index(arg_names, "attr", find_whole_words=True)
     
     if attr not in attr_options:
-        raise ValueError(f"Wrong attribute option at position {attr_arg_pos}. "
-                         f"Options are {attr_options}.")
+        raise AttributeError(AttributeErrorStr.format(attr_arg_pos,
+                                                      attr_options))
         
     if isinstance(objList, str):
         objList = [objList]
@@ -167,36 +166,34 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
     # Operator argument choice #    
     if operator not in operators:
-        raise ValueError(f"Wrong '{arg_names[operator_arg_pos]}' option. "
-                         f"Options are {operators}.")
+        raise ValueError(ChoiceErrorStr.format(arg_names[operator_arg_pos],
+                                               operators))
         
     # Right input argument types #
     if not isinstance(df1, pd.DataFrame):
-        raise ValueError(f"Argument '{arg_names[df1_arg_pos]}' "
-                         "must be of type pd.DataFrame or pd.Series")
+        raise TypeError(TypeErrorStr.format(arg_names[df1_arg_pos],
+                                            'pandas.DataFrame',
+                                            'pandas.Series'))
         
     if not isinstance(df2, pd.DataFrame)\
     and not isinstance(df2, pd.Series):
-        raise ValueError(f"Argument '{arg_names[df2_arg_pos]}' "
-                         "must be of type pd.DataFrame or pd.Seriess")
+        raise TypeError(TypeErrorStr.format(arg_names[df2_arg_pos],
+                                            'pandas.DataFrame',
+                                            'pandas.Series'))
         
         
     elif isinstance(df2, pd.Series):
         if not hasattr(df2, "name"):
-            raise ValueError(f"Argument '{arg_names[df2_arg_pos]}' "
-                             "is of type pd.Series but it is unnamed. "
-                             "Please set a name using "
-                             f"{arg_names[df2_arg_pos]}.name attribute.")
-            
+            raise AttributeError(AttributeErrorStr.format(arg_names[df2_arg_pos],
+                                                          'pandas.Series',
+                                                          arg_names[df2_arg_pos]))            
             
     # Operations #
     #------------#
     
-    res_dts = pd.merge(df1, df2, how=operator)
-    
     std_date_colName = "Date"
     
-    # Sort values by the time-column #
+    # Check whether both objects have a standard date and time (column) name #
     try:
         dt_colname = find_date_key(df1)
     except:
@@ -218,10 +215,14 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
         df2_cols = list(df2.columns)
         df2_cols[0] = std_date_colName
         df2.columns = df2_cols
+        
+    # Perform the merge #
+    res_dts = pd.merge(df1, df2, how=operator)
     
+    # Sort values by the time-column #
     try:
         res_dts = res_dts.sort_values(by=dt_colname)
-    except UnboundLocalError:
+    except:
         res_dts = res_dts.sort_values(by=std_date_colName)
     
     # Choose whether to customize times' format #
@@ -247,13 +248,18 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
     define_interval = interval_operators.define_interval 
       
     # String to string format conversion checker #   
-    dt_start_std = time_format_tweaker(dt_start, 
-                                       time_fmt_str, 
-                                       method=method)                    
-    
-    dt_end_std = time_format_tweaker(dt_end,
-                                     time_fmt_str, 
-                                     method=method)
+    if time_fmt_str is not None:
+        dt_start_std = time_format_tweaker(dt_start, 
+                                           time_fmt_str=time_fmt_str, 
+                                           method=method)                    
+        
+        dt_end_std = time_format_tweaker(dt_end,
+                                         time_fmt_str=time_fmt_str, 
+                                         method=method)
+        
+    else:
+        dt_start_std = dt_start
+        dt_end_std = dt_end
         
     # Operations #    
     timeDelta = abs(dt_start_std - dt_end_std)
@@ -388,5 +394,10 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
 #------------------#
 
 # Error message strings #
-ChoiceErrorStr = """Wrong {} option. Options are {}."""
+ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
+TypeErrorStr = """Argument '{}' must be of type {} or {}."""
+AttributeErrorStr =\
+"""Argument '{}' is of type '{}' but it is
+unnamed. Please set a name using {}.name attribute."""
+
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
