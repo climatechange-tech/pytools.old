@@ -98,9 +98,9 @@ def find_substring_index(string,
 
 def string_VS_string_search(s,
                             substring,
+                            find_whole_words,
                             case_sensitive,
-                            all_cases, 
-                            find_whole_words):
+                            all_cases):
     
     #%% TRUE BAT ERE EZ
     
