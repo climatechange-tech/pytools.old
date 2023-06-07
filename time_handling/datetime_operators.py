@@ -145,7 +145,7 @@ def get_obj_operation_datetime(objList,
     return obj_timestamp_arr
 
 
-def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
+def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=False):
     
     # Quality control #
     #-----------------#
@@ -227,14 +227,14 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None):
     
     # Choose whether to customize times' format #
     if time_fmt_str is not None:
-        res_dts = time_format_tweaker(res_dts, time_fmt_str)
+        res_dts = time_format_tweaker(res_dts, time_fmt_str, return_str=return_str)
         
     return res_dts
 
     
 def natural_year(dt_start, dt_end, time_fmt_str=None,
                  strict=False, exact_year=False,
-                 method="pandas",
+                 method="datetime_pydt",
                  return_format="pandas"):
     
     # Conveniently import the custom module here #

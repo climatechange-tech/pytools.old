@@ -115,12 +115,12 @@ def time_format_tweaker(t,
     
     
     if return_str not in return_str_options:
-        raise ValueError(ChoiceErrorStr.format(arg_names[print_arg_pos],
-                                               return_str_options))
+        raise ValueError(ValueErrorStr.format(arg_names[print_arg_pos],
+                                              return_str_options))
         
     if method not in method_options:
-        raise ValueError(ChoiceErrorStr.format(arg_names[method_arg_pos],
-                                               method_options))
+        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos],
+                                              method_options))
 
     if isinstance(t, int) or isinstance(t, float):
         
@@ -194,9 +194,13 @@ def time_format_tweaker(t,
 
         particularAllowedMethods = ["pandas", "datetime", "model_datetime"]
         if method not in particularAllowedMethods:
-            raise TypeError(ChoiceErrorStr.format\
-                            (arg_names[method_arg_pos],
-                             particularAllowedMethods))
+            raise ValueError(ValueErrorForTypeCaseStr.format\
+                             (arg_names[method_arg_pos],
+                              method,
+                              arg_names[t_arg_pos],
+                              type(eval(arg_names[t_arg_pos])),
+                              particularAllowedMethods))
+        
     
         if method == "model_datetime":
             t_res = frequentTimeFormatConverter(t,
@@ -284,10 +288,13 @@ def time_format_tweaker(t,
         if not return_str:
         
             particularAllowedMethods = ["numpy_generic", "numpy_dt64", "datetime_pydt"]
-            if method not in particularAllowedMethods:
-                raise TypeError(ChoiceErrorStr.format\
-                                (arg_names[method_arg_pos],
-                                 particularAllowedMethods))
+            if method not in particularAllowedMethods:                    
+                raise ValueError(ValueErrorForTypeCaseStr.format\
+                                 (arg_names[method_arg_pos],
+                                  method,
+                                  arg_names[t_arg_pos],
+                                  type(eval(arg_names[t_arg_pos])),
+                                  particularAllowedMethods))
             
             if method == "numpy_generic":
                 t_res = frequentTimeFormatConverter(t, method)
@@ -295,11 +302,20 @@ def time_format_tweaker(t,
                 t_res = frequentTimeFormatConverter(t, method)
             elif method == "datetime_pydt":
                 t_res = frequentTimeFormatConverter(t, method)
-                
-        else:
-            t_res = t_res.strftime(time_fmt_str)
             
-        return t_res
+            return t_res
+        
+        elif return_str == "extended":
+            raise ValueError(ValueErrorForTypeCaseStr.format\
+                             (arg_names[print_arg_pos],
+                              return_days,
+                              arg_names[t_arg_pos],
+                              type(eval(arg_names[t_arg_pos])),
+                              particularAllowedMethods))
+            
+        elif return_str == "basic" :
+            t_res = t.strftime(time_fmt_str)
+            return t_res
         
     elif isinstance(t, np.datetime64):
         
@@ -315,9 +331,12 @@ def time_format_tweaker(t,
                 
         particularAllowedMethod = "datetime_list"
         if method != particularAllowedMethod:
-            raise TypeError(ChoiceErrorStr.format\
-                            (arg_names[method_arg_pos],
-                             particularAllowedMethod))
+            raise ValueError(ValueErrorForTypeCaseStr.format\
+                             (arg_names[method_arg_pos],
+                              method,
+                              arg_names[t_arg_pos],
+                              type(eval(arg_names[t_arg_pos])),
+                              particularAllowedMethod))
                 
         if standardizeHourRange:
             try:
@@ -330,9 +349,12 @@ def time_format_tweaker(t,
                     
             particularAllowedMethods = ["numpy_dt64_array", "pandas"]
             if method not in particularAllowedMethods:
-                raise TypeError(ChoiceErrorStr.format\
-                                (arg_names[method_arg_pos],
-                                 particularAllowedMethods))
+                raise ValueError(ValueErrorForTypeCaseStr.format\
+                                 (arg_names[method_arg_pos],
+                                  method,
+                                  arg_names[t_arg_pos],
+                                  type(eval(arg_names[t_arg_pos])),
+                                  particularAllowedMethods))
             
             if method == "pandas":
                 t_res = frequentTimeFormatConverter(t, method, time_fmt_str)             
@@ -365,8 +387,8 @@ def frequentTimeFormatConverter(t,
     = find_substring_index(arg_names, "method", find_whole_words=False)
     
     if method not in method_options:
-        raise ValueError(ChoiceErrorStr.format(arg_names[method_arg_pos], 
-                                               method_options))
+        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos], 
+                                              method_options))
     
     if method == "datetime":
         dtobj = datetime.datetime.strptime(t, time_fmt_str)
@@ -525,7 +547,10 @@ function '{}' is designed to output a time string.
 Please provide a time string format identifier.
 """
 
-ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
+ValueErrorStr = """Wrong '{}' option. Options are {}."""
+ValueErrorForTypeCaseStr = """'{}'=='{}' not allowed for argument '{}' of type {}.
+Options are {}."""
+
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
 
 notSatisfactoryDTObjectErrorStr = \

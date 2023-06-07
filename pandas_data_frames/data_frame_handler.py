@@ -136,7 +136,7 @@ def find_date_key(df):
                 for key in df_cols
                 if key.lower().startswith("da")
                 or key.lower().startswith("fe")
-                or key.lower().startswith("ti")
+                or key.lower().startswith("tim")
                 or key.lower().startswith("yy")
                 ]
                 
