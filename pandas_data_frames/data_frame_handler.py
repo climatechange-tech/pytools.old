@@ -54,6 +54,7 @@ find_fileString_paths = file_and_directory_paths.find_fileString_paths
 remove_files_byFS = file_and_directory_handler.remove_files_byFS
 
 get_obj_specs = string_handler.get_obj_specs
+find_substring_index = string_handler.find_substring_index
 
 #------------------#
 # Define functions #
@@ -129,20 +130,15 @@ def find_date_key(df):
     # date_key : str
     #       String which date key is identified with.
     
-    df_cols = df.columns
+    df_cols = np.char.lower(df.columns.tolist())
+    time_kws = ["da", "fe", "tim", "yy"]
     
-    # TODO: ea ondokoak ongi garatutako 'find_substring_index' funtzioakin topa daitezkeen
-    date_key = [key
-                for key in df_cols
-                if key.lower().startswith("da")
-                or key.lower().startswith("fe")
-                or key.lower().startswith("tim")
-                or key.lower().startswith("yy")
-                ]
-                
-    if len(date_key) > 0:
+    date_key_idx = find_substring_index(df_cols, time_kws)
+    
+    try:
+        date_key = df_cols[date_key_idx]
         return date_key[0]
-    else:
+    except:
         raise ValueError("Grouper name 'date' or similar not found")
 
 def read_table_and_split_bywhitespaces(file_name,

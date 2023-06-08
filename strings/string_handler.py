@@ -5,122 +5,130 @@
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
+import re
 
 #------------------#
 # Define functions #
 #------------------#
 
-def find_substring_index(string, substring, find_whole_words=False):
+def find_substring_index(string,
+                         substring, 
+                         find_whole_words=False,
+                         advanced_search=False,
+                         case_sensitive=False,
+                         all_cases=False):
     
-    # Function that finds substrings in a given string.
-    # 
-    # Parameters
-    # ----------
-    # string : str or list of strings
-    # substring : str or list
-    #       Part of the string to be found. 
-    # 
-    # It distinguishes two cases, together with another
-    # two minor cases.
-    #   1. The string is, as the name indicates, a string.
-    #       Then an attempt to find the substring along the string will be made.
-    #   2. The string is a list of strings.
-    #       Then the attempt will be made for each string on the list.
-    # 
-    # find_whole_words : bool
-    #       Determines whether to find only whole words. Defaults to False.
-    # 
-    # Returns
-    # -------
-    # 
-    # substr_idx_list : list or dict
-    #       Object containing matching indices.
-    #       It returns a list in the case of a continuous, single string.
-    #       If the string is a list of string, then returns a dictionary
-    #       containing the result of the search of every substring;
-    #       the position of the string is identified with the keys
-    #       of this dictionary.
-    #       Here whether the substring is continuous or separated is redundant.
-    # 
-    # Note
-    # ----
-    # The substring can be a continuous string, separated
-    # with whitespaces or a list. In any case,
-    # unless it is already a list, it will be splitted,
-    # even if the substring is continuous.
-    # Whatever the case it is, for a True output,
-    # every substring must be found at the string.
-    
+    # substring: str or list of str
+    #       If 'str' then it can either be as is or a regex.
+    #       In the latter case, there is no need to explicitly define as so,
+    #       because it connects with Python's built-in 're' module.
+
     if isinstance(string, str):
+        substrLowestIdx = string_VS_string_search(string, substring, 
+                                                  case_sensitive, all_cases, 
+                                                  find_whole_words)
+
+    elif isinstance(string, list) or isinstance(string, np.ndarray):
         
-        if isinstance(substring, str):
-            substring = substring.split(" ")   
-            
-        if not find_whole_words:
-            substr_idx_list = [var_idx
-                               for el in substring
-                               if (var_idx := string.find(el)) != -1]
-            
+        if not advanced_search:
+            if isinstance(substring, str):
+                substrLowestIdxNoFilt = np.char.find(string, 
+                                                     substring, 
+                                                     start=0,
+                                                     end=None)
+                
+                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
+           
+            elif isinstance(substring, list) or isinstance(substring, np.ndarray):
+                substrLowestIdx\
+                = stringList_VS_stringList_search_wholeWords(string,
+                                                             substring, 
+                                                             start=0,
+                                                             end=None)
+                
         else:
-            substr_idx_list = [var_idx
-                               for el in substring
-                               if (var_idx := string.find(el)) != -1
-                               and "" in string.split(el)]
+            if isinstance(substring, str):
+                substrLowestIdx = [string_VS_string_search(s_el, substring,
+                                                           case_sensitive, 
+                                                           all_cases, 
+                                                           find_whole_words)
+                                   for s_el in string]
+                
+            elif isinstance(substring, list) or isinstance(substring, np.ndarray):
+                
+                substrLowestIdx\
+                = stringList_VS_stringList_search_wholeWords(string, 
+                                                             substring,
+                                                             start=0, 
+                                                             end=None)
+                
             
+    elif isinstance(string, pd.DataFrame) or isinstance(string, pd.Series):
+        try:
+            substrLowestIdxNoFilt = string.str.contains[substring].index
+        except:
+            substrLowestIdxNoFilt = string.iloc[:,0].str.contains[substring].index
+        
+        substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
+        print(substrLowestIdx)
+        
+    return substrLowestIdx
             
-        # Assume that every substring must be found at the string #
-        lsil = len(substr_idx_list)
-        if lsil == 1:
-            return substr_idx_list[0]
-        elif lsil > 1 :
-            return substr_idx_list
-        else:
-            return -1
+
+def string_VS_string_search(string,
+                            substring,
+                            find_whole_words,
+                            case_sensitive,
+                            all_cases):
+    
+    # No option selected #
+    #--------------------#
+    
+    if not case_sensitive and not all_cases and not find_whole_words:
+        firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
+        substrLowestIdx = firstOnlyMatch.start(0)
         
-    else:
+    # One option selected #
+    #---------------------#
         
-        if isinstance(substring, str):
-            substring = substring.split(" ")
+    elif case_sensitive and not all_cases and not find_whole_words:
+        firstOnlyMatch = re.search(substring, string)
+        substrLowestIdx = firstOnlyMatch.start(0)
         
-        # Assume that every substring must be found at the string #
-        lstr = len(string)
-        lsbtr = len(substring)
+    elif not case_sensitive and all_cases and not find_whole_words:
+        allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
+        substrLowestIdx = [m.start(0) for m in allMatchesIterator]
         
-        if not find_whole_words:
-            if lsbtr == 1:
-                substr_idx_list = [strng[0]
-                                   for strng in enumerate(string)
-                                   for el in substring
-                                   if (var_idx := strng[-1].find(el)) != -1]
-            else:
-                substr_idx_list = {i :
-                                   tuple(var_idx
-                                         for el in substring
-                                         if (var_idx := string[i].find(el)) != -1)
-                                   for i in range(lstr)}
-                    
-        else:
-            if lsbtr == 1:
-                substr_idx_list = [strng[0]
-                                   for strng in enumerate(string)
-                                   for el in substring
-                                   if (var_idx := strng[-1].find(el)) != -1
-                                   and len(np.unique(strng[-1].split(el))) == 1]
-            else:
-                substr_idx_list = {i :
-                                   tuple(var_idx
-                                         for el in substring
-                                         if (var_idx := string[i].find(el)) != -1
-                                         and len(np.unique(string[i].split(el))) == 1)
-                                   for i in range(lstr)}
-                    
-        lsil = len(substr_idx_list)
-        if lsil == 1:
-            return substr_idx_list[0]
-        elif lsil > 1 :
-            return substr_idx_list
-        else:
-            return -1
+    elif not case_sensitive and not all_cases and find_whole_words:
+        exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
+        substrLowestIdx = exactMatch.start(0)
+
+    # Two options selected #
+    #----------------------# 
+    
+    elif case_sensitive and all_cases and not find_whole_words:
+        allMatchesIterator = re.finditer(substring, string)
+        substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+        
+    elif case_sensitive and not all_cases and find_whole_words:
+        exactMatch = re.fullmatch(substring, string)
+        substrLowestIdx = exactMatch.start(0)
+    
+    return substrLowestIdx
+
+
+def stringList_VS_stringList_search_wholeWords(strList, 
+                                               substrList, 
+                                               start=0, 
+                                               end=None):
+    
+    substrLowestIdxNoFilt\
+    = np.array([np.char.find(strList, substr_el, start=0, end=None)
+                for substr_el in substrList])
+    
+    substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
+    return substrLowestIdx
 
     
 def obj_path_specs(obj_path, splitchar=None):
@@ -264,8 +272,22 @@ def fileList2String(obj_list):
     return allobj_string
 
 
-def substring_replacer(string, string2find, string2replace):
-    string_replaced = string.replace(string2find, string2replace)
+def substring_replacer(string, string2find, string2replace, count=-1):
+    
+    if isinstance(string, str):
+        string_replaced = string.replace(string2find, string2replace, count)
+        
+    elif isinstance(string, list) or isinstance(string, np.ndarray):
+        if isinstance(string, list):
+            string = np.array(string)
+        string_replaced = np.char.replace(string, string2find, string2replace)
+        
+    elif isinstance(string, pd.DataFrame):
+        string_replaced = pd.DataFrame.replace(string, string2find, string2replace)
+        
+    elif isinstance(string, pd.Series):
+        string_replaced = pd.Series.replace(string, string2find, string2replace)
+    
     return string_replaced
 
 

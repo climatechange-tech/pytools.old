@@ -46,6 +46,7 @@ import string_handler
 #----------------------------------------------------#
 
 find_substring_index = string_handler.find_substring_index
+substring_replacer = string_handler.substring_replacer
 
 #------------------#
 # Define functions #
@@ -449,19 +450,14 @@ def over24HourFixer(time_obj):
     # -------
     # time_obj_fixed : array-like, pandas.DataFrame or pandas.Series
     #       Object containing fixed dates and times.
-
-    # TODO: hemen behean markatuta dauden 4 puntuak optimizatu, 'find_substring_index'
-    #       garatuago dagoenean
-    
+   
     if isinstance(time_obj, np.ndarray):
-        twentyFourHourIdx = np.char.find(time_obj, "24:0")
-        twentyFourHourIdxFilt = twentyFourHourIdx[twentyFourHourIdx != -1]
-        
-        time_obj_no24Hour = np.char.replace(time_obj, "24:0", "23:0")
+        twentyFourHourIdx = find_substring_index(time_obj, "24:0")
+        time_obj_no24Hour = substring_replacer(time_obj, "24:0", "23:0")
         
         time_obj_fixed = frequentTimeFormatConverter(time_obj_no24Hour, 
                                                      method="numpy_dt64_array")
-        time_obj_fixed[twentyFourHourIdxFilt] += np.timedelta64(1, "s")
+        time_obj_fixed[twentyFourHourIdx] += np.timedelta64(1, "s")
         
     elif isinstance(time_obj, pd.DataFrame) or isinstance(time_obj, pd.Series):
         try:
@@ -469,12 +465,8 @@ def over24HourFixer(time_obj):
         except:
             twentyFourHourIdx = time_obj.iloc[:,0].str.contains("24:0")
             
-        twentyFourHourIdxFilt = twentyFourHourIdx[twentyFourHourIdx]
-        
-        try:
-            time_obj_no24Hour = pd.DataFrame.replace(time_obj, "24:0", "23:0")
-        except:
-            time_obj_no24Hour = pd.Series.replace(time_obj, "24:0", "23:0")
+        twentyFourHourIdxFilt = twentyFourHourIdx[twentyFourHourIdx]  
+        time_obj_no24Hour = substring_replacer(time_obj, "24:0", "23:0")
             
         time_obj_fixed = frequentTimeFormatConverter(time_obj_no24Hour,
                                                      method="pandas")

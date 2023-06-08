@@ -52,9 +52,7 @@ def define_interval(left_limit, right_limit, method="pandas", closed="both"):
     # Main argument names and their position on the function's definition #    
     arg_names = define_interval.__code__.co_varnames
     
-    method_arg_pos\
-    = find_substring_index(arg_names, "method", find_whole_words=True)
-    
+    method_arg_pos = find_substring_index(arg_names, "method")
     method_options = ["pandas", "intervaltree"]
     
     # Method argument choice #    
@@ -62,26 +60,24 @@ def define_interval(left_limit, right_limit, method="pandas", closed="both"):
         raise ValueError(f"Wrong '{arg_names[method_arg_pos]}' option. "
                          f"Options are {method_options}.")
     
-    
     if method == "pandas":
+        import piso
+        piso.register_accessors()
         itv = pd.Interval(left_limit, right_limit, closed=closed)
         
-    # TODO: garatu 'intervaltree' metodoaren eragiketak
-    # elif method == "intervaltree":
+    elif method == "intervaltree":
+        from intervaltree import Interval
+        print(f"WARNING: method {method} does not include upper bound.")
+        itv = Interval(left_limit, right_limit)
         
     return itv
     
 
 def basic_interval_operator(interval_array,
                             obj_type="pandas",
+                            closed="left",
                             operation="union", 
                             force_union=False):
-    
-    import piso
-    piso.register_accessors()
-
-    # TODO: diseinatu pd.arrays.IntervalArray motako matrizea,
-    #       "interval_array" zerrenda edo numpy matrize bat izanik
     
     # Quality control #
     #-----------------#
@@ -105,29 +101,55 @@ def basic_interval_operator(interval_array,
     if obj_type not in obj_type_options:
         raise ValueError(f"Wrong '{arg_names[obj_type_pos]}' option. "
                          f"Options are {obj_type_options}.")
+        
+    if obj_type == "pandas":
+        import piso
+        piso.register_accessors()
+         
+        itv_pdArray = pd.arrays.IntervalArray(interval_array,
+                                              closed=closed)
+        
+        # TODO: garatu bost kasuak, denak web-orrialde ofizialetik
+        
+        if operation == "union":
+            merged_bin = itv_pdArray.piso.union()[0]
+            
+            if not force_union:
+                return merged_bin
+               
+            else:
+                merged_bin_left = merged_bin.left
+                merged_bin_right = merged_bin.right
+                
+                min_num_interval = itv_pdArray.min()
+                min_num_interval_left = min_num_interval.left
+                
+                max_num_interval = itv_pdArray.max()
+                max_num_interval_right = max_num_interval.right
+                
+                if merged_bin_left != min_num_interval_left\
+                or merged_bin_right != max_num_interval_right:
+
+                    merged_bin = define_interval(min_num_interval_left,
+                                                 max_num_interval_right,
+                                                 closed=closed)
+                    
+                    return merged_bin
+                    
+                else:
+                    return merged_bin
+                
+        elif operation == "intersection":
+            """do sth"""
+            
+        
+
     
-    
-    
-    # Ideia orokorra mantentzeko, laneko programa nagusitik hartutako zatia #
-    
-    # intervals = pd.arrays.IntervalArray(df_slice_bins,
-    #                                     closed="left")
-    
-    # min_num_interval = intervals.min()
-    # min_num_interval_left = min_num_interval.left
-    
-    # max_num_interval = intervals.max()
-    # max_num_interval_right = max_num_interval.right
-    
-    # merged_bin = intervals.piso.union()[0]
-    # merged_bin_left = merged_bin.left
-    # merged_bin_right = merged_bin.right
-    
-    # if merged_bin_left != min_num_interval_left\
-    #     or merged_bin_right != max_num_interval_right:
-    #         merged_bin = pd.Interval(min_num_interval_left,
-    #                                  max_num_interval_right,
-    #                                  closed="left")
-    
-    """do sth"""
+    elif obj_type == "intervaltree":
+        print(f"WARNING: method {obj_type} does not include upper bound.")
+        
+        from intervaltree import Interval, IntervalTree
+        itv_ItvArray = IntervalTree(Interval(*itv) for itv in interval_array)
+        
+        # TODO: garatu bost kasuak, denak web-orrialde ofizialetik
 

@@ -18,7 +18,6 @@ import pandas as pd
 # Define functions #
 #------------------#
 
-
 def find_substring_index(string,
                          substring, 
                          find_whole_words=False,
@@ -26,21 +25,15 @@ def find_substring_index(string,
                          case_sensitive=False,
                          all_cases=False):
     
-    # =============================================================================
-    # INPUT: KARAKTERE SOILA
-    # =============================================================================
+    # substring: str or list of str
+    #       If 'str' then it can either be as is or a regex.
+    #       In the latter case, there is no need to explicitly define as so,
+    #       because it connects with Python's built-in 're' module.
 
     if isinstance(string, str):
-        
         substrLowestIdx = string_VS_string_search(string, substring, 
                                                   case_sensitive, all_cases, 
                                                   find_whole_words)
-        
-        print(substrLowestIdx)
-
-    # =============================================================================
-    # INPUT: karaktere kateen ZERRENDA, REGEXik gabe. --> EZIN DA 're' ERABILI --> REGEXak zentzugabeak
-    # =============================================================================
 
     elif isinstance(string, list) or isinstance(string, np.ndarray):
         
@@ -51,8 +44,7 @@ def find_substring_index(string,
                                                      start=0,
                                                      end=None)
                 
-                # TODO: eman begirada bat ondokoari, np.where erabili beharko litzake ta
-                substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt != -1]
+                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
                 print(substrLowestIdx)
                 
            
@@ -62,8 +54,6 @@ def find_substring_index(string,
                                                              substring, 
                                                              start=0,
                                                              end=None)
-                print(substrLowestIdx)
-                    
                 
         else:
             if isinstance(substring, str):
@@ -91,68 +81,48 @@ def find_substring_index(string,
         
         substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
         print(substrLowestIdx)
+        
+    return substrLowestIdx
             
-    
-    #%%
 
-
-def string_VS_string_search(s,
+def string_VS_string_search(string,
                             substring,
                             find_whole_words,
                             case_sensitive,
                             all_cases):
     
-    #%% TRUE BAT ERE EZ
+    # No option selected #
+    #--------------------#
     
     if not case_sensitive and not all_cases and not find_whole_words:
-        
         firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
         substrLowestIdx = firstOnlyMatch.start(0)
         
-        print(substrLowestIdx)
-        
-    #%% TRUE BAKARRA
+    # One option selected #
+    #---------------------#
         
     elif case_sensitive and not all_cases and not find_whole_words:
-        
         firstOnlyMatch = re.search(substring, string)
         substrLowestIdx = firstOnlyMatch.start(0)
         
-        print(substrLowestIdx)
-        
     elif not case_sensitive and all_cases and not find_whole_words:
-        
         allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
         substrLowestIdx = [m.start(0) for m in allMatchesIterator]
         
-        print(substrLowestIdx)
-    
     elif not case_sensitive and not all_cases and find_whole_words:
-        
         exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
         substrLowestIdx = exactMatch.start(0)
 
-        print(substrLowestIdx)
-        
-    #%% BI TRUE    
+    # Two options selected #
+    #----------------------# 
     
     elif case_sensitive and all_cases and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string)
         substrLowestIdx = [m.start(0) for m in allMatchesIterator]
-        print(substrLowestIdx)
-        
-    # Ondokoa zentzugabea da karaktere soilentzat, gako osoak topatu nahi badira, 
-    # kasu bakarra izango baita.
-    # elif not case_sensitive and all_cases and find_whole_words:
         
     elif case_sensitive and not all_cases and find_whole_words:
         exactMatch = re.fullmatch(substring, string)
         substrLowestIdx = exactMatch.start(0)
-        print(substrLowestIdx)
-        
-    #%% TRUE GUZTIAK EZINEZKOAK DIRA
-    
-    # elif case_sensitive and all_cases and find_whole_words
     
     return substrLowestIdx
 
@@ -162,38 +132,9 @@ def stringList_VS_stringList_search_wholeWords(strList,
                                                start=0, 
                                                end=None):
     
-    substrLowestIdxNoFilt = [np.char.find(str_el, substr_el, start=0, end=None)
-                             for str_el in strList
-                             for substr_el in substrList]
+    substrLowestIdxNoFilt\
+    = np.array([np.char.find(strList, substr_el, start=0, end=None)
+                for substr_el in substrList])
     
-    # TODO: eman begirada bat ondokoari, np.where erabili beharko litzake ta
-    substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt != -1]
-    
+    substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
     return substrLowestIdx
-
-#%%
-    
-#------------------------#
-# Global TEST parameters #
-#------------------------#
-
-string="foijwqj83d3of8fewof" 
-substring="of"  # EDO regex bat izan daiteke (ez da beharrezkoa 'regex'=True,
-                # edo halakorik definitzea, hori 're' moduluarekin baitoa)
-
-# Bilaketa aurreratuaren modua #
-
-# Ondoko argumentuak maiusk./minusk, kasu guztiak edota hitz osoak
-# bilatzeko modua aktibatu edo ez agintzen du
-advanced_search = False
-
-case_sensitive = False
-all_cases = False
-find_whole_words = False
-
-idx = find_substring_index(string, 
-                           substring,
-                           find_whole_words=find_whole_words,
-                           advanced_search=advanced_search,
-                           all_cases=all_cases, 
-                           case_sensitive=case_sensitive)
