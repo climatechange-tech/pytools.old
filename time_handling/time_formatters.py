@@ -473,7 +473,8 @@ def over24HourFixer(time_obj):
         time_obj_fixed[twentyFourHourIdxFilt] += pd.Timedelta(hours=1)
         
     # TODO: ondokoa garatu
-    # elif isinstance(time_obj, xr.Dataset) or isinstance(time_obj, xr.DataArray):
+    # else:
+    #     import xarray as xr
              
     return time_obj_fixed
 

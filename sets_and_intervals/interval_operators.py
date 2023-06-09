@@ -149,7 +149,7 @@ def basic_interval_operator(interval_array,
         print(f"WARNING: method {obj_type} does not include upper bound.")
         
         from intervaltree import Interval, IntervalTree
-        itv_ItvArray = IntervalTree(Interval(*itv) for itv in interval_array)
+        itv_ItvArray = IntervalTree.from_tuples(interval_array)
         
         # TODO: garatu bost kasuak, denak web-orrialde ofizialetik
 

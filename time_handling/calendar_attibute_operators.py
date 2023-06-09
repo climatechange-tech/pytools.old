@@ -63,6 +63,7 @@ insert_row_in_df = data_frame_handler.insert_row_in_df
 save2csv = data_frame_handler.save2csv
 save2excel = data_frame_handler.save2excel
 
+find_substring_index = string_handler.find_substring_index
 modify_obj_specs = string_handler.modify_obj_specs
 
 time_format_tweaker = time_formatters.time_format_tweaker
@@ -73,6 +74,7 @@ time_format_tweaker = time_formatters.time_format_tweaker
 
 def standardize_calendar(obj,
                          file_path,
+                         obj_type="pandas",
                          interpolation_method=None,
                          order=None,
                          save_as_new_obj=False, 
@@ -93,19 +95,6 @@ def standardize_calendar(obj,
     # the 'netcdf_handler' module will only be imported here
     # together with xarray.
     
-    # Import module and custom modules here by convenience #
-    #------------------------------------------------------#
-    
-    import xarray as xr
-    import netcdf_handler
-    
-    # Define imported module(s)´ function call shortcuts by convenience #
-    #-------------------------------------------------------------------#
-        
-    find_time_dimension = netcdf_handler.find_time_dimension
-    get_file_dimensions = netcdf_handler.get_file_dimensions
-    
-    #--------------------------------------------------------------------#
     
     # This function standardizes the given calendar of an object to gregorian
     # and makes an interpolation ALONG ROWS (axis=0) to find the missing data.
@@ -160,8 +149,17 @@ def standardize_calendar(obj,
     # as can be donde with Excel files, because CSV is rough, old format
     # but mainly for data transport used.
     
-    if isinstance(obj, pd.Dataframe):
+    obj_types = ["pandas", "xarray"]
+
+    arg_names = standardize_calendar.__code__.co_varnames
+    obj_type_arg_pos = find_substring_index(arg_names, "obj_type")
+    
+    if obj_type not in obj_types:
+        raise ValueError(f"Wrong '{arg_names[obj_type_arg_pos]}' argument. "
+                         f"Options are {obj_types}.")
         
+    if obj_type == "pandas":
+
         if not isinstance(obj, list) and not isinstance(obj, np.ndarray):
             obj = [obj]
             
@@ -301,9 +299,20 @@ def standardize_calendar(obj,
                             
         return obj_stdCalendar
     
-    # elif isinstance(obj, xr.Dataset) \
-    #     or isinstance(obj, xr.DataArray):
+    elif obj_type == "xarray":
+        
+        # Import module and custom modules here by convenience #
+        #------------------------------------------------------#
+        
+        import xarray as xr
+        import netcdf_handler
+        
+        # Define imported module(s)´ function call shortcuts by convenience #
+        #-------------------------------------------------------------------#
             
+        find_time_dimension = netcdf_handler.find_time_dimension
+        get_file_dimensions = netcdf_handler.get_file_dimensions
+ 
         # TODO: develop the case for xarray.Dataset objects #
         # elif isinstance(obj[0], xr.Dataset)\
         # or isinstance(obj[0], xr.DataArray):

@@ -29,7 +29,12 @@ def find_substring_index(string,
                                                   case_sensitive, all_cases, 
                                                   find_whole_words)
 
-    elif isinstance(string, list) or isinstance(string, np.ndarray):
+    elif isinstance(string, list)\
+    or isinstance(string, tuple)\
+    or isinstance(string, np.ndarray):
+        
+        if isinstance(string, tuple):
+            string = list(string)
         
         if not advanced_search:
             if isinstance(substring, str):
@@ -40,7 +45,13 @@ def find_substring_index(string,
                 
                 substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
            
-            elif isinstance(substring, list) or isinstance(substring, np.ndarray):
+            elif isinstance(substring, list)\
+            or isinstance(substring, tuple)\
+            or isinstance(substring, np.ndarray):
+                
+                if isinstance(substring, tuple):
+                    substring = list(substring)
+                
                 substrLowestIdx\
                 = stringList_VS_stringList_search_wholeWords(string,
                                                              substring, 
@@ -55,7 +66,12 @@ def find_substring_index(string,
                                                            find_whole_words)
                                    for s_el in string]
                 
-            elif isinstance(substring, list) or isinstance(substring, np.ndarray):
+            elif isinstance(substring, list)\
+            or isinstance(substring, tuple)\
+            or isinstance(substring, np.ndarray):
+                
+                if isinstance(substring, tuple):
+                    substring = list(substring)
                 
                 substrLowestIdx\
                 = stringList_VS_stringList_search_wholeWords(string, 
