@@ -26,8 +26,14 @@ def return_pytools_path():
         basic_path= joinchar.join(basic_PATH_parts)[1:]
         basic_PATH = Path(basic_path)
         
-    main_PATH = basic_PATH.glob("*/*")
+    # main_PATH = basic_PATH.glob("*/*")
     
+    # pytools_PATH = str([PATH
+    #                     for PATH in main_PATH
+    #                     if pytools_dir in str(PATH).lower()
+    #                     and len(PATH.stem) == lpd][0])
+    
+    main_PATH = basic_PATH.glob("**/*")
     pytools_PATH = str([PATH
                         for PATH in main_PATH
                         if pytools_dir in str(PATH).lower()
