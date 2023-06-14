@@ -34,7 +34,7 @@ custom_path_establisher_func = """def return_custom_path():
     return custom_path
 """
 # Repo path retriever file attrs. #
-custom_path_retriever_name = "get_custom_path.py"
+custom_path_retriever_name = "get_pytools_path.py"
 custom_path_retriever_path = f"{home_path}/{custom_path_retriever_name}"
 
 #----------------#
