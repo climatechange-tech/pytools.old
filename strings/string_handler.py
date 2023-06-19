@@ -90,6 +90,16 @@ def find_substring_index(string,
                                                              substring,
                                                              start=0, 
                                                              end=None)
+             
+                substrLowestIdxNoFilt\
+                = np.array([[string_VS_string_search(s_el, sb_el,
+                                                     find_whole_words,
+                                                     case_sensitive,
+                                                     all_cases)
+                             for s_el in string]
+                            for sb_el in substring])
+                
+                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
                 
             
     elif isinstance(string, pd.DataFrame) or isinstance(string, pd.Series):
