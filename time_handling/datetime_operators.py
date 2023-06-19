@@ -21,7 +21,7 @@ home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
 import get_pytools_path
-fixed_dirpath = get_pytools_path.return_pytools_path()
+fixed_dirpath = get_pytools_path.return_custom_path()
 
 # Enumerate custom modules and their paths #
 #------------------------------------------#
@@ -69,7 +69,10 @@ def get_current_time(Type="datetime", time_fmt_str=None):
     type_options = ["datetime", "str", "timestamp"]
     arg_names = get_current_time.__code__.co_varnames
         
-    type_arg_pos = find_substring_index("Type", arg_names)
+    type_arg_pos = find_substring_index("Type", 
+                                        arg_names,
+                                        advanced_search=True,
+                                        find_whole_words=True)
     
     if Type not in type_options:
         raise ValueError(ChoiceErrorStr.format(arg_names[type_arg_pos],
@@ -116,7 +119,10 @@ def get_obj_operation_datetime(objList,
     attr_options = ["creation", "modification", "access"]
     arg_names = get_obj_operation_datetime.__code__.co_varnames
     
-    attr_arg_pos = find_substring_index(arg_names, "attr", find_whole_words=True)
+    attr_arg_pos = find_substring_index(arg_names,
+                                        "attr", 
+                                        advanced_search=True,
+                                        find_whole_words=True)
     
     if attr not in attr_options:
         raise AttributeError(AttributeErrorStr.format(attr_arg_pos,
@@ -154,13 +160,22 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
     arg_names = datetime_range_operator.__code__.co_varnames
     
     df1_arg_pos\
-    = find_substring_index(arg_names, "df1", find_whole_words=True)
+    = find_substring_index(arg_names,
+                           "df1",
+                           advanced_search=True,
+                           find_whole_words=True)
     
     df2_arg_pos\
-    = find_substring_index(arg_names, "df2", find_whole_words=True)
+    = find_substring_index(arg_names,
+                           "df2",
+                           advanced_search=True,
+                           find_whole_words=True)
     
     operator_arg_pos\
-    = find_substring_index(arg_names, "operator", find_whole_words=True)
+    = find_substring_index(arg_names,
+                           "operator", 
+                           advanced_search=True,
+                           find_whole_words=True)
     
     operators = ["inner", "outer", "cross", "left", "right"]
     
@@ -171,13 +186,15 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
         
     # Right input argument types #
     if not isinstance(df1, pd.DataFrame):
-        raise TypeError(TypeErrorStr.format(arg_names[df1_arg_pos],
+        raise TypeError(TypeErrorStr2.format(arg_names[df1_arg_pos],
+                                             df1_arg_pos,
                                             'pandas.DataFrame',
                                             'pandas.Series'))
         
     if not isinstance(df2, pd.DataFrame)\
     and not isinstance(df2, pd.Series):
-        raise TypeError(TypeErrorStr.format(arg_names[df2_arg_pos],
+        raise TypeError(TypeErrorStr2.format(arg_names[df2_arg_pos],
+                                             df2_arg_pos,
                                             'pandas.DataFrame',
                                             'pandas.Series'))
         
@@ -231,21 +248,30 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
         
     return res_dts
 
-    
+#%%
+
 def natural_year(dt_start, dt_end, time_fmt_str=None,
-                 strict=False, exact_year=False,
-                 method="datetime_pydt",
-                 return_format="pandas"):
+                 months_shift=0,
+                 method="pandas",
+                 print_str=False):
     
-    # Conveniently import the custom module here #
-    #--------------------------------------------#
+    # Quality control #
+    #-----------------#
     
-    import interval_operators
+    # Main argument names and their position on the function's definition #    
+    arg_names = natural_year.__code__.co_varnames 
+    shift_mon_arg_pos = find_substring_index(arg_names,
+                                             "months_shift",
+                                             advanced_search=True,
+                                             find_whole_words=True)
     
-    # Conveniently define here the imported module's function call shortcut #
-    #-----------------------------------------------------------------------#
+    if not isinstance(months_shift, int):
+        raise ValueError(TypeErrorStr1(arg_names[shift_mon_arg_pos],
+                                       shift_mon_arg_pos,
+                                       'int'))
     
-    define_interval = interval_operators.define_interval 
+    # Case study #
+    #------------#
       
     # String to string format conversion checker #   
     if time_fmt_str is not None:
@@ -259,119 +285,33 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         
     else:
         dt_start_std = dt_start
-        dt_end_std = dt_end
+        dt_end_std = dt_end  
         
-    # Operations #    
-    timeDelta = abs(dt_start_std - dt_end_std)
+  
+    # Get the final natural time's year and month #
+    tf_nat_year = dt_end_std.year
+    tf_nat_month = dt_end_std.month
     
-    try:
-        timeDelta_days = timeDelta.days
-    except:
-        timeDelta_days = timeDelta.to_pytimedelta().days
+    # Shift months by convenience, if necessary #
+    tf_nat_month += months_shift
     
-    n = timeDelta_days // mathematical_year_days    
+    # Get the last day of the resulting final time's day #
+    tf_nat_ym0 = f"{tf_nat_year}-{tf_nat_month}"
+    tf_nat_ym1 = f"{tf_nat_year}-{tf_nat_month+1}"
     
-    # Intervals #    
-    ndays_oneYear_upper_half\
-    = define_interval(mathematical_year_days*n + mathematical_year_days/2,
-                      mathematical_year_days*(n+1),
-                      closed="left")
-
+    tf_month_date_range = pd.date_range(tf_nat_ym0,
+                                        tf_nat_ym1,
+                                        inclusive="left")
     
-    #%%
+    tf_nat_day = tf_month_date_range[-1].day
     
-    tf_natural_day = dt_end_std.day
-    
-    if n > 0:
-        ti_natural_month = dt_end_std.month
-        tf_natural_month = ti_natural_month
-        
-        if strict:
-            tf_natural_year = dt_end_std.year
-            ti_natural_year = tf_natural_year - 1
-            
-            if exact_year:
-                ti_natural_day = dt_end_std.day 
-                
-                if return_format == "pandas":
-                    dt_start_natural\
-                    = pd.Timestamp(ti_natural_year, 
-                                   ti_natural_month,
-                                   ti_natural_day) + pd.Timedelta(days=1)
-                    
-                else:
-                    dt_start_natural\
-                    = datetime.datetime(ti_natural_year, 
-                                        ti_natural_month,
-                                        ti_natural_day)+ datetime.timedelta(days=1)
-        
-            
-            else:
-                ti_natural_day = 1
-                
-                if return_format == "pandas":
-                    dt_start_natural = pd.Timestamp(ti_natural_year, 
-                                                    ti_natural_month,
-                                                    ti_natural_day)
-                elif return_format == "datetime":
-                    dt_start_natural = datetime.datetime(ti_natural_year, 
-                                                         ti_natural_month,
-                                                         ti_natural_day)
-                    
-        else:
-            tf_natural_year = dt_end_std.year
-            ti_natural_year = tf_natural_year - n
-            
-            
-            if timeDelta_days in ndays_oneYear_upper_half:
-                ti_natural_month = dt_start_std.month
-                    
-            elif timeDelta_days not in ndays_oneYear_upper_half:
-                ti_natural_month = dt_end_std.month
-                
-            if exact_year:
-                ti_natural_day = tf_natural_day
-                dt_start_natural\
-                = pd.Timestamp(ti_natural_year, 
-                               ti_natural_month,
-                               ti_natural_day) + pd.Timedelta(days=1)
-    
-            else:
-                ti_natural_day = 1
-                dt_start_natural = pd.Timestamp(ti_natural_year, 
-                                                ti_natural_month,
-                                                ti_natural_day)
-                
-    elif n == 0:
-        
-        ti_natural_year = dt_start_std.year
-        ti_natural_month = dt_start_std.month
-        ti_natural_day = dt_start_std.day
-        
-        tf_natural_year = dt_end_std.year
-        tf_natural_month = dt_end_std.month
-        
-        if return_format == "pandas":
-            dt_start_natural = pd.Timestamp(ti_natural_year, 
-                                            ti_natural_month,
-                                            ti_natural_day)        
-        elif return_format == "datetime":
-            dt_start_natural = datetime.datetime(ti_natural_year, 
-                                                 ti_natural_month,
-                                                 ti_natural_day)  
-            
-    if return_format == "pandas":
-        dt_end_natural = pd.Timestamp(tf_natural_year, 
-                                      tf_natural_month,
-                                      tf_natural_day)
-        
-    elif return_format == "datetime":
-        dt_end_natural = datetime.datetime(tf_natural_year, 
-                                           tf_natural_month,
-                                           tf_natural_day)
+    # Convert the final natural date and time string to datetime object #
+    tf_nat_ymd = f"{tf_nat_year}-{tf_nat_month}-{tf_nat_day}"
+    dt_end_natural = time_format_tweaker(tf_nat_ymd, method="pandas")
+    dt_start_natural = dt_end_natural + pd.Timedelta(days=1)
         
     # Choose between returning the results as strings or datetime objects #     
-    if return_format == "str":
+    if print_str:
         natural_year_range_table ="""
         {} -- {}
         
@@ -386,8 +326,8 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
     
     else:
         return dt_start_natural, dt_end_natural
-
-
+  
+#%%
 
 #------------------#
 # Local parameters #
@@ -395,7 +335,8 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
 
 # Error message strings #
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
-TypeErrorStr = """Argument '{}' must be of type {} or {}."""
+TypeErrorStr1 = """Argument '{}' at position {} must be of type {}."""
+TypeErrorStr2 = """Argument '{}' at position {} must be of type {} or {}."""
 AttributeErrorStr =\
 """Argument '{}' is of type '{}' but it is
 unnamed. Please set a name using {}.name attribute."""

@@ -329,7 +329,9 @@ def checkEssentialProgInstallStatus():
     
     for kw, ess_prog in zip(keyword_list, essential_program_list):
         progInstalledStatusString = os.popen(f"apt-cache policy {ess_prog}").read()
-        kw_idx = find_substring_index(progInstalledStatusString, kw, 
+        kw_idx = find_substring_index(progInstalledStatusString, 
+                                      kw, 
+                                      advanced_search=True,
                                       find_whole_words=True)
         
         if kw_idx == -1:

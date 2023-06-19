@@ -22,7 +22,7 @@ home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
 import get_pytools_path
-fixed_dirpath = get_pytools_path.return_pytools_path()
+fixed_dirpath = get_pytools_path.return_custom_path()
 
 # Enumerate custom modules and their paths #
 #------------------------------------------#
@@ -105,12 +105,21 @@ def time_format_tweaker(t,
     method_name = inspect.currentframe().f_code.co_name
     arg_names = time_format_tweaker.__code__.co_varnames
     
-    print_arg_pos\
-    = find_substring_index(arg_names, "return_str", find_whole_words=True)
-    t_arg_pos\
-    = find_substring_index(arg_names, "t", find_whole_words=True)
-    method_arg_pos\
-    = find_substring_index(arg_names, "method", find_whole_words=True)
+    print_arg_pos = find_substring_index(arg_names,
+                                         "return_str",
+                                         advanced_search=True,
+                                         find_whole_words=True)
+    
+    t_arg_pos = find_substring_index(arg_names,
+                                     "t",
+                                     advanced_search=True,
+                                     find_whole_words=True)
+    
+    method_arg_pos = find_substring_index(arg_names,
+                                          "method",  
+                                          advanced_search=True,
+                                          find_whole_words=True,
+                                          case_sensitive=True)
     
     return_str_options = [False, "basic", "extended"]
     
@@ -383,9 +392,10 @@ def frequentTimeFormatConverter(t,
                                 infer_dt_format=False):
     
     arg_names = frequentTimeFormatConverter.__code__.co_varnames
-    
-    method_arg_pos\
-    = find_substring_index(arg_names, "method", find_whole_words=False)
+    method_arg_pos = find_substring_index(arg_names, 
+                                          "method", 
+                                          advanced_search=True,
+                                          find_whole_words=False)
     
     if method not in method_options:
         raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos], 

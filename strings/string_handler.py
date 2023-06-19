@@ -14,8 +14,8 @@ import re
 
 def find_substring_index(string,
                          substring, 
-                         find_whole_words=False,
                          advanced_search=False,
+                         find_whole_words=False,
                          case_sensitive=False,
                          all_cases=False):
     
@@ -24,10 +24,18 @@ def find_substring_index(string,
     #       In the latter case, there is no need to explicitly define as so,
     #       because it connects with Python's built-in 're' module.
 
-    if isinstance(string, str):
-        substrLowestIdx = string_VS_string_search(string, substring, 
-                                                  case_sensitive, all_cases, 
-                                                  find_whole_words)
+    if isinstance(string, str):        
+        if advanced_search:
+            substrLowestIdx = string_VS_string_search(string, substring, 
+                                                      find_whole_words,
+                                                      case_sensitive,
+                                                      all_cases)
+        else:
+            substrLowestIdx = np.char.find(string,
+                                           substring,
+                                           start=0,
+                                           end=None)
+            
 
     elif isinstance(string, list)\
     or isinstance(string, tuple)\
@@ -42,7 +50,7 @@ def find_substring_index(string,
                                                      substring, 
                                                      start=0,
                                                      end=None)
-                
+
                 substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
            
             elif isinstance(substring, list)\
@@ -60,11 +68,15 @@ def find_substring_index(string,
                 
         else:
             if isinstance(substring, str):
-                substrLowestIdx = [string_VS_string_search(s_el, substring,
-                                                           case_sensitive, 
-                                                           all_cases, 
-                                                           find_whole_words)
-                                   for s_el in string]
+                substrLowestIdxNoFilt\
+                = np.array([string_VS_string_search(s_el, substring,
+                                                    find_whole_words,
+                                                    case_sensitive, 
+                                                    all_cases)
+                            for s_el in string])
+                
+                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
+                
                 
             elif isinstance(substring, list)\
             or isinstance(substring, tuple)\
@@ -89,7 +101,10 @@ def find_substring_index(string,
         substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
         print(substrLowestIdx)
         
-    return substrLowestIdx
+    if (isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 1):
+        return substrLowestIdx[0]
+    else:
+        return substrLowestIdx
             
 
 def string_VS_string_search(string,
@@ -103,36 +118,58 @@ def string_VS_string_search(string,
     
     if not case_sensitive and not all_cases and not find_whole_words:
         firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
-        substrLowestIdx = firstOnlyMatch.start(0)
+        try:
+            substrLowestIdx = firstOnlyMatch.start(0)
+            return substrLowestIdx
+        except:
+            return -1
         
     # One option selected #
     #---------------------#
         
     elif case_sensitive and not all_cases and not find_whole_words:
         firstOnlyMatch = re.search(substring, string)
-        substrLowestIdx = firstOnlyMatch.start(0)
+        try:
+            substrLowestIdx = firstOnlyMatch.start(0)
+            return substrLowestIdx
+        except:
+            return -1
         
     elif not case_sensitive and all_cases and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
-        substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+        try:
+            substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+            return substrLowestIdx
+        except:
+            return -1
         
     elif not case_sensitive and not all_cases and find_whole_words:
         exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
-        substrLowestIdx = exactMatch.start(0)
+        try:
+            substrLowestIdx = exactMatch.start(0)
+            return substrLowestIdx
+        except:
+            return -1
 
     # Two options selected #
     #----------------------# 
     
     elif case_sensitive and all_cases and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string)
-        substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+        try:
+            substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+            return substrLowestIdx
+        except:
+            return -1
         
     elif case_sensitive and not all_cases and find_whole_words:
         exactMatch = re.fullmatch(substring, string)
-        substrLowestIdx = exactMatch.start(0)
+        try:
+            substrLowestIdx = exactMatch.start(0)
+            return substrLowestIdx
+        except:
+            return -1
     
-    return substrLowestIdx
-
 
 def stringList_VS_stringList_search_wholeWords(strList, 
                                                substrList, 
