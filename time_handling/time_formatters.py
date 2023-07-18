@@ -67,7 +67,7 @@ def time_format_tweaker(t,
     # 
     # Parameters
     # ----------
-    # t: int, float, str or list of str, tuple, 
+    # t: int, float, str or tuple, 
     #    time.struct_time or datetime.[datetime, date, time],
     #    array-like, pandas.Series or xarray.DataArray 
     # In either case, the object containg the dates and times.
@@ -337,17 +337,7 @@ def time_format_tweaker(t,
     
 
     
-    else:
-                
-        particularAllowedMethod = "datetime_list"
-        if method != particularAllowedMethod:
-            raise ValueError(ValueErrorForTypeCaseStr.format\
-                             (arg_names[method_arg_pos],
-                              method,
-                              arg_names[t_arg_pos],
-                              type(eval(arg_names[t_arg_pos])),
-                              particularAllowedMethod))
-                
+    else:                
         if standardizeHourRange:
             try:
                 t_res = over24HourFixer(t)
@@ -355,36 +345,61 @@ def time_format_tweaker(t,
                 raise TypeError(unhandleableErrorStr.format(arg_names[t_arg_pos],
                                                             type(t)))
                 
-        else:
-                    
-            particularAllowedMethods = ["numpy_dt64_array", "pandas"]
-            if method not in particularAllowedMethods:
-                raise ValueError(ValueErrorForTypeCaseStr.format\
-                                 (arg_names[method_arg_pos],
-                                  method,
-                                  arg_names[t_arg_pos],
-                                  type(eval(arg_names[t_arg_pos])),
-                                  particularAllowedMethods))
-            
-            if method == "pandas":
-                t_res = frequentTimeFormatConverter(t, method, time_fmt_str)             
-            elif method == "numpy_dt64_array":
-                t_res = frequentTimeFormatConverter(t, method)
-            
-        if return_str:
-            if isinstance(t_res, pd.DataFrame) or isinstance(t_res, pd.Series):
-                t_res = t_res.dt.strftime(time_fmt_str) 
-            elif isinstance(t_res, np.ndarray):
-                t_res = t_res.astype('U')
-            else:
-                try:
-                    t_res  = t_res.strftime(time_fmt_str)
-                except:
-                    raise Exception(unconverteablePandasDTObjectErrorStr.format\
-                                    (arg_names[t_arg_pos, type(t_res)]))
-    
-        return t_res
+        else:   
+            try:
+                particularAllowedMethods = ["numpy_dt64_array", "pandas"]
+                if method not in particularAllowedMethods:
+                    raise ValueError(ValueErrorForTypeCaseStr.format\
+                                     (arg_names[method_arg_pos],
+                                      method,
+                                      arg_names[t_arg_pos],
+                                      type(eval(arg_names[t_arg_pos])),
+                                      particularAllowedMethods))
                 
+                if method == "pandas":
+                    t_res = frequentTimeFormatConverter(t, method, time_fmt_str)             
+                elif method == "numpy_dt64_array":
+                    t_res = frequentTimeFormatConverter(t, method)
+                    
+                return t_res
+            
+            except:
+                if isinstance(t, pd.DataFrame) or isinstance(t, pd.Series):
+                    t_res = t.dt.strftime(time_fmt_str) 
+                    if len(t_res) == 1:
+                        return t_res[0]
+                    else:
+                        return t_res
+                    
+                elif isinstance(t_res, np.ndarray):
+                    t_res = t.astype('U')
+                    if len(t_res) == 1:
+                        return t_res[0]
+                    else:
+                        return t_res
+                else:
+                    try:
+                        t_res  = t.strftime(time_fmt_str)
+                        return t_res
+                    except:
+                        raise Exception(unconverteablePandasDTObjectErrorStr.format\
+                                        (arg_names[t_arg_pos, type(t_res)]))
+                            
+            
+    if return_str:
+        if isinstance(t_res, pd.DataFrame) or isinstance(t_res, pd.Series):
+            t_res = t_res.dt.strftime(time_fmt_str) 
+        elif isinstance(t_res, np.ndarray):
+            t_res = t_res.astype('U')
+        else:
+            try:
+                t_res  = t_res.strftime(time_fmt_str)
+            except:
+                raise Exception(unconverteablePandasDTObjectErrorStr.format\
+                                (arg_names[t_arg_pos, type(t_res)]))
+                    
+        return t_res
+                    
                 
 def frequentTimeFormatConverter(t,
                                 method=None,

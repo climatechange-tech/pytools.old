@@ -111,7 +111,10 @@ def find_substring_index(string,
         substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
         print(substrLowestIdx)
         
-    if (isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 1):
+    
+    if isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 0:
+        return -1
+    elif isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 1:
         return substrLowestIdx[0]
     else:
         return substrLowestIdx
@@ -191,7 +194,11 @@ def stringList_VS_stringList_search_wholeWords(strList,
                 for substr_el in substrList])
     
     substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
-    return substrLowestIdx
+    
+    if len(substrLowestIdx) == 0:
+        return -1
+    else:
+        return substrLowestIdx
 
     
 def obj_path_specs(obj_path, splitchar=None):

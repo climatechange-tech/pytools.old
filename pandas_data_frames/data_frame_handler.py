@@ -137,7 +137,7 @@ def find_date_key(df):
     
     try:
         date_key = df_cols[date_key_idx]
-        return date_key[0]
+        return date_key
     except:
         raise ValueError("Grouper name 'date' or similar not found")
 
@@ -512,11 +512,12 @@ def json2df(json_file_list):
 
 
 def save2csv(file_name,
-              data_frame,
-              separator,
-              save_index,
-              save_header,
-              date_format=None):
+             data_frame,
+             separator,
+             save_index,
+             save_header,
+             decimal=".",
+             date_format=None):
     
     # Function that saves a data frame into a CSV file.
     # 
