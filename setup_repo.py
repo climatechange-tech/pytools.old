@@ -72,7 +72,7 @@ else:
     shutil.rmtree(default_path, ignore_errors=True)
     
     print(f"Deleted default path '{default_path}', but"
-          f"Git version controller directory '.git' will still be present.\n"
+          "Git version controller directory '.git' will still be present.\n"
           "Please delete the mentioned path manually.")
     
 #------------------------------------------------------------------------------#
