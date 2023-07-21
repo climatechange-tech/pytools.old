@@ -119,23 +119,25 @@ def saveXarrayDSAsNetCDF(xarray_ds,
                          file_name,
                          attrs_dict=None):
     
-    # Function that writes a xarray data set directly into a netCDF,
-    # with the option of updating attributes.
-    # 
-    # Parameters
-    # ----------
-    # xarray_ds : xarray.Dataset
-    #       OPENED xarray data set.
-    # file_name : str
-    #       String for the resulting netCDF file name.
-    # attrs_dict : dict
-    #       Dictionary containing attributes, such as source,
-    #       version, date of creation, etc.
-    #       If not given, attributes will remain the same as the input file.
-    # 
-    # Returns
-    # -------
-    # netCDF file
+    """
+    Function that writes a xarray data set directly into a netCDF,
+    with the option of updating attributes.
+    
+    Parameters
+    ----------
+    xarray_ds : xarray.Dataset
+          OPENED xarray data set.
+    file_name : str
+          String for the resulting netCDF file name.
+    attrs_dict : dict
+          Dictionary containing attributes, such as source,
+          version, date of creation, etc.
+          If not given, attributes will remain the same as the input file.
+    
+    Returns
+    -------
+    netCDF file
+    """
     
     file_name += ".nc"
     
@@ -151,23 +153,25 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
     
     import xesmf as xe
     
-    # Function that regrids an xarray Dataset to that of the
-    # desired Dataset. It is similar to CDO but more intuitive and
-    # easier to understand, supported by Python.
-    # 
-    # Parameters
-    # ----------
-    # ds_in : xarray.Dataset
-    #       Input xarray data set
-    # ds_image : xarray.Dataset
-    #       Xarray data set with grid specifications to which apply on ds_in.
-    # method : {'bilinear', 'conservative', 'nearest_s2d', 'nearest_d2s', 'patch'}
-    #       Regridding method. Defaults 'bilinear'.
-    # 
-    # Returns
-    # -------
-    # ds_out : xarray.Dataset
-    #       Output data set regridded according to the grid specs of ds_in.
+    """
+    Function that regrids an xarray Dataset to that of the
+    desired Dataset. It is similar to CDO but more intuitive and
+    easier to understand, supported by Python.
+    
+    Parameters
+    ----------
+    ds_in : xarray.Dataset
+          Input xarray data set
+    ds_image : xarray.Dataset
+          Xarray data set with grid specifications to which apply on ds_in.
+    method : {'bilinear', 'conservative', 'nearest_s2d', 'nearest_d2s', 'patch'}
+          Regridding method. Defaults 'bilinear'.
+    
+    Returns
+    -------
+    ds_out : xarray.Dataset
+          Output data set regridded according to the grid specs of ds_in.
+    """
     
     method_list = [
         "bilinear",
@@ -201,68 +205,70 @@ def saveNCdataAsCSV(nc_file,
                     latitude_point=None,
                     longitude_point=None):
     
-    # Function that saves netCDF data into a CSV file AS IT IS, where data variables
-    # may originally be 3D, usually dependent on (time, latitude, longitude).
-    # It is intended to speed up further data processes,
-    # especially when opening very large netCDF files with xarray,
-    # which can take a long time.
-    # Saving data into a CSV, it can then be read very rapidly so as to
-    # load data for post-processing.
-    # 
-    # For that, it seeks for essential variables,
-    # together with 'time' dimension, if present.
-    # It then concatenates whole data into a data frame and then
-    # saves it into a CSV file.
-    # 
-    # Parameters
-    # ----------
-    # nc_file : str or xarray.Dataset or 
-    #                xarray.DataArray
-    #       String of the xarray data set containing file or
-    #       the already opened data array or set.
-    # columns_to_drop : str or list of str
-    #       Names of the columns to drop, if desired, from the
-    #       resultant data frame of xarray.to_pandas() method.
-    #       If None, then the function will not drop any column.
-    #       To drop only coordinate labels, select "coords".
-    #       Else, the function will drop the custom labels passed.
-    # separator : str
-    #       String used to separate data columns.
-    # save_index : bool
-    #       Boolean to choose whether to include a column into the excel document
-    #       that identifies row numbers. Default value is False.
-    # save_header : bool
-    #       Boolean to choose whether to include a row into the excel document
-    #       that identifies column numbers. Default value is False.
-    # csv_file_name : str, optional
-    #       If nc_file is a string and "default" option is chosen,
-    #       then the function will attempt to extract a location name.
-    #       If nc_file is a xarray object, a custom name must be provided.    #       
-    # date_format : str
-    #       In case the data frame contains a time column,
-    #       use to give format thereof when storing the data frame.
-    # approximate_coords : str
-    #       If both latitude and longitude arrays are length higher than 1,
-    #       determines whether to select a coordinate point and then
-    #       perform the saving. If true and both lengths are 1,
-    #       throws and error telling that data is already located at a point.
-    # latitude_point : float
-    #       Valid only if approximate_coords is True.
-    # longitude_point : float
-    #       Valid only if approximate_coords is True.
-    # 
-    # Returns
-    # -------
-    # CSV file containing data as arranged on the data frame.
-    # 
-    # Notes
-    # -----
-    # Remember that this function serves as a direct copy of netCDF4 data,
-    # if data modifications are required, then it cannot be used.
-    # Data frames are only 2D, so that those
-    # can only reflect a specific point multi-variable netCDF data along time
-    # or several grid points' data for a specific time position.
-    # Data frame column names will be the same as those on netCDF data file.
+    """
+    Function that saves netCDF data into a CSV file AS IT IS, where data variables
+    may originally be 3D, usually dependent on (time, latitude, longitude).
+    It is intended to speed up further data processes,
+    especially when opening very large netCDF files with xarray,
+    which can take a long time.
+    Saving data into a CSV, it can then be read very rapidly so as to
+    load data for post-processing.
+    
+    For that, it seeks for essential variables,
+    together with 'time' dimension, if present.
+    It then concatenates whole data into a data frame and then
+    saves it into a CSV file.
+    
+    Parameters
+    ----------
+    nc_file : str or xarray.Dataset or 
+                    xarray.DataArray
+          String of the xarray data set containing file or
+          the already opened data array or set.
+    columns_to_drop : str or list of str
+          Names of the columns to drop, if desired, from the
+          resultant data frame of xarray.to_pandas() method.
+          If None, then the function will not drop any column.
+          To drop only coordinate labels, select "coords".
+          Else, the function will drop the custom labels passed.
+    separator : str
+          String used to separate data columns.
+    save_index : bool
+          Boolean to choose whether to include a column into the excel document
+          that identifies row numbers. Default value is False.
+    save_header : bool
+          Boolean to choose whether to include a row into the excel document
+          that identifies column numbers. Default value is False.
+    csv_file_name : str, optional
+          If nc_file is a string and "default" option is chosen,
+          then the function will attempt to extract a location name.
+          If nc_file is a xarray object, a custom name must be provided.    #       
+    date_format : str
+          In case the data frame contains a time column,
+          use to give format thereof when storing the data frame.
+    approximate_coords : str
+          If both latitude and longitude arrays are length higher than 1,
+          determines whether to select a coordinate point and then
+          perform the saving. If true and both lengths are 1,
+          throws and error telling that data is already located at a point.
+    latitude_point : float
+          Valid only if approximate_coords is True.
+    longitude_point : float
+          Valid only if approximate_coords is True.
+    
+    Returns
+    -------
+    CSV file containing data as arranged on the data frame.
+    
+    Notes
+    -----
+    Remember that this function serves as a direct copy of netCDF4 data,
+    if data modifications are required, then it cannot be used.
+    Data frames are only 2D, so that those
+    can only reflect a specific point multi-variable netCDF data along time
+    or several grid points' data for a specific time position.
+    Data frame column names will be the same as those on netCDF data file.
+    """
     
     # Open netCDF data file if passed a string #
     if isinstance(nc_file, str):
@@ -376,34 +382,36 @@ def saveDataArrayAsCSV(data_array,
                        new_columns="default",
                        date_format=None):
     
-    # Function that saves a xr.DataArray object into a CSV file AS IT IS,
-    # where data variables may originally be 3D, 
-    # usually dependent on (time, latitude, longitude).
-    # This function works exactly as 'saveNCdataAsCSV' function does,
-    # so the docstrings also apply.
-    # Parameters
-    # ----------
-    # data_array : xarray.DataArray
-    # new_columns : str or list of str
-    #       Names of the columns for the data frame created from the object.
-    #       Default ones include 'time' and variable name label.
-    # separator : str
-    #       String used to separate data columns.
-    # save_index : bool
-    #       Boolean to choose whether to include a column into the excel document
-    #       that identifies row numbers. Default value is False.
-    # save_header : bool
-    #       Boolean to choose whether to include a row into the excel document
-    #       that identifies column numbers. Default value is False.
-    # csv_file_name : str, optional
-    #       If nc_file is a string and "default" option is chosen,
-    #       then the function will attempt to extract a location name.
-    #       If nc_file is a xarray object, a custom name must be provided.    #       
-    # date_format : str
-    # 
-    # Returns
-    # -------
-    # CSV file containing data as arranged on the data frame.
+    """
+    Function that saves a xr.DataArray object into a CSV file AS IT IS,
+    where data variables may originally be 3D, 
+    usually dependent on (time, latitude, longitude).
+    This function works exactly as 'saveNCdataAsCSV' function does,
+    so the docstrings also apply.
+    Parameters
+    ----------
+    data_array : xarray.DataArray
+    new_columns : str or list of str
+          Names of the columns for the data frame created from the object.
+          Default ones include 'time' and variable name label.
+    separator : str
+          String used to separate data columns.
+    save_index : bool
+          Boolean to choose whether to include a column into the excel document
+          that identifies row numbers. Default value is False.
+    save_header : bool
+          Boolean to choose whether to include a row into the excel document
+          that identifies column numbers. Default value is False.
+    csv_file_name : str, optional
+          If nc_file is a string and "default" option is chosen,
+          then the function will attempt to extract a location name.
+          If nc_file is a xarray object, a custom name must be provided.    #       
+    date_format : str
+    
+    Returns
+    -------
+    CSV file containing data as arranged on the data frame.
+    """
     
     # Drop information to a data frame #
     data_frame = data_array.to_pandas().reset_index(drop=False)        
@@ -490,20 +498,6 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
     
     ofile_name = "latlon_bounds.txt"
     
-    latlon_table = '''=========================================================
-·File: {}
-
-·Latitudes:
- {}
-
-·Longitudes:
- {}
-
--Latitude-longitude array dimensions = {} x {}
--Latitude-longitude array delta = {} x {}
-    
-'''
-
     netcdf_files_dirs = get_netcdf_file_dirList(cwd)
     lncfd = len(netcdf_files_dirs)
     
@@ -594,14 +588,7 @@ def extract_and_store_period_bounds():
     #---------------------------------------------------#
 
     ofile_name = "period_bounds.txt"
-    
-    period_table = '''=========================================================
-·File: {}
-·Time range: {} -- {}
-·Array length = {}
-
-'''
-    
+ 
     netcdf_files_dirs = get_netcdf_file_dirList(cwd)
     lncfd = len(netcdf_files_dirs)
     
@@ -660,17 +647,7 @@ def extract_and_store_time_formats():
     
     
     ofile_name = "time_formats.txt"
-    
-    time_format_table = '''====================================================
-·File: {}
-    
-·Time array:
- {}
 
--Array length = {}
-
-'''
-    
     netcdf_files_dirs = get_netcdf_file_dirList(cwd)
     lncfd = len(netcdf_files_dirs)
     
@@ -727,26 +704,28 @@ def extract_and_store_time_formats():
 
 def find_time_dimension(nc_file_name):
     
-    # Function that searches for time dimension names.
-    # It should always be located among dimensions,
-    # but it can happen that it either located only among variables
-    # or be duplicated among those.
-    # This function is designed to try both cases.
-    # 
-    # Parameters
-    # ----------
-    # nc_file_name : str or xarray.Dataset
-    #       String of the data file or the data set itself.
-    # 
-    # Returns
-    # -------
-    # time_varlist : list
-    #       List containing the strings that identify
-    #       the time dimension.
-    # time_varlist_retry : list
-    #       List containing the strings that identify
-    #       the time variable.
-    #       It is returned only if the previous case is not satisfied.
+    """
+    Function that searches for time dimension names.
+    It should always be located among dimensions,
+    but it can happen that it either located only among variables
+    or be duplicated among those.
+    This function is designed to try both cases.
+    
+    Parameters
+    ----------
+    nc_file_name : str or xarray.Dataset
+          String of the data file or the data set itself.
+    
+    Returns
+    -------
+    time_varlist : list
+          List containing the strings that identify
+          the time dimension.
+    time_varlist_retry : list
+          List containing the strings that identify
+          the time variable.
+          It is returned only if the previous case is not satisfied.
+    """
     
     # Open the netCDF file if necessary #
     if isinstance(nc_file_name, str):
@@ -791,26 +770,28 @@ def find_time_dimension(nc_file_name):
             
 def find_time_dimension_raiseNone(nc_file_name):
     
-    # Function that searches for time dimension names.
-    # It should always be located among dimensions,
-    # but it can happen that it either located only among variables
-    # or be duplicated among those.
-    # This function is designed to try both cases.
-    # 
-    # Parameters
-    # ----------
-    # nc_file_name : str or xarray.Dataset
-    #       String of the data file or the data set itself.
-    # 
-    # Returns
-    # -------
-    # time_varlist : list
-    #       List containing the strings that identify
-    #       the time dimension.
-    # time_varlist_retry : list
-    #       List containing the strings that identify
-    #       the time variable.
-    #       It is returned only if the previous case is not satisfied.
+    """
+    Function that searches for time dimension names.
+    It should always be located among dimensions,
+    but it can happen that it either located only among variables
+    or be duplicated among those.
+    This function is designed to try both cases.
+    
+    Parameters
+    ----------
+    nc_file_name : str or xarray.Dataset
+          String of the data file or the data set itself.
+    
+    Returns
+    -------
+    time_varlist : list
+          List containing the strings that identify
+          the time dimension.
+    time_varlist_retry : list
+          List containing the strings that identify
+          the time variable.
+          It is returned only if the previous case is not satisfied.
+    """
     
     # Open the netCDF file if necessary #
     if isinstance(nc_file_name, str):
@@ -855,25 +836,27 @@ def find_time_dimension_raiseNone(nc_file_name):
             
 def find_coordinate_variables(nc_file_name):
     
-    # Function that searches for coordinate variable names.
-    # Usually those are located inside the dimension list,
-    # but it can happen that in some cases are among variables.
-    # This function is designed to try both cases.
-    # 
-    # Parameters
-    # ----------
-    # nc_file_name : str or xarray.Dataset
-    #       String of the data file or the data set itself.
-    # 
-    # Returns
-    # -------
-    # coord_varlist : list
-    #       List containing the strings that identify
-    #       the 'latitude' and 'longitude' dimensions.
-    # coord_varlist_retry : list
-    #       List containing the strings that identify
-    #       the 'latitude' and 'longitude' variables.
-    #       It is returned only if the previous case is not satisfied.
+    """
+    Function that searches for coordinate variable names.
+    Usually those are located inside the dimension list,
+    but it can happen that in some cases are among variables.
+    This function is designed to try both cases.
+    
+    Parameters
+    ----------
+    nc_file_name : str or xarray.Dataset
+          String of the data file or the data set itself.
+    
+    Returns
+    -------
+    coord_varlist : list
+          List containing the strings that identify
+          the 'latitude' and 'longitude' dimensions.
+    coord_varlist_retry : list
+          List containing the strings that identify
+          the 'latitude' and 'longitude' variables.
+          It is returned only if the previous case is not satisfied.
+    """
     
     # Open the netCDF file if necessary #
     if isinstance(nc_file_name, str):
@@ -920,25 +903,27 @@ def find_coordinate_variables(nc_file_name):
             
 def find_coordinate_variables_raiseNone(nc_file_name):
     
-    # Function that searches for coordinate variable names.
-    # Usually those are located inside the dimension list,
-    # but it can happen that in some cases are among variables.
-    # This function is designed to try both cases.
-    # 
-    # Parameters
-    # ----------
-    # nc_file_name : str or xarray.Dataset
-    #       String of the data file or the data set itself.
-    # 
-    # Returns
-    # -------
-    # coord_varlist : list
-    #       List containing the strings that identify
-    #       the 'latitude' and 'longitude' dimensions.
-    # coord_varlist_retry : list
-    #       List containing the strings that identify
-    #       the 'latitude' and 'longitude' variables.
-    #       It is returned only if the previous case is not satisfied.
+    """
+    Function that searches for coordinate variable names.
+    Usually those are located inside the dimension list,
+    but it can happen that in some cases are among variables.
+    This function is designed to try both cases.
+    
+    Parameters
+    ----------
+    nc_file_name : str or xarray.Dataset
+          String of the data file or the data set itself.
+    
+    Returns
+    -------
+    coord_varlist : list
+          List containing the strings that identify
+          the 'latitude' and 'longitude' dimensions.
+    coord_varlist_retry : list
+          List containing the strings that identify
+          the 'latitude' and 'longitude' variables.
+          It is returned only if the previous case is not satisfied.
+    """
     
     # Open the netCDF file if necessary #
     if isinstance(nc_file_name, str):
@@ -982,26 +967,28 @@ def find_coordinate_variables_raiseNone(nc_file_name):
         
 def get_model_list(path_list, split_pos):
 
-    # Function that searches for model names present
-    # in the given relative file path list.
-    # Paths can either be absolute, relative or only file names,
-    # but they should, as a matter of unification, contain low bars.
-    # If paths are relative or absolute, i.e. contain forward slashes,
-    # the function selects only the file name.
-    # Then it splits the file name and select the position, defined by the user
-    # taking the low bar as the separator.
-    #
-    # Parameters
-    # ----------
-    # path_list : list
-    #       List of relative/absolute paths or file names.
-    # split_pos : int
-    #       Integer that defines which position 
-    #
-    # Returns
-    # -------
-    # unique_model_list : list
-    #       Unique list containing model names found in the path list.
+    """
+    Function that searches for model names present
+    in the given relative file path list.
+    Paths can either be absolute, relative or only file names,
+    but they should, as a matter of unification, contain low bars.
+    If paths are relative or absolute, i.e. contain forward slashes,
+    the function selects only the file name.
+    Then it splits the file name and select the position, defined by the user
+    taking the low bar as the separator.
+    
+    Parameters
+    ----------
+    path_list : list
+          List of relative/absolute paths or file names.
+    split_pos : int
+          Integer that defines which position 
+    
+    Returns
+    -------
+    unique_model_list : list
+          Unique list containing model names found in the path list.
+    """
     
     fwd_slash_containing_files = [path
                                   for path in path_list
@@ -1022,20 +1009,22 @@ def get_model_list(path_list, split_pos):
 
 def get_file_dimensions(nc_file):
     
-    # Function that extracts dimensions names from a netCDF file.
-    # There are some cases in which variables are also among dimensions,
-    # so it is convenient to eliminate those.
-    # 
-    # Parameters
-    # ----------
-    # nc_file : str or xarray.Dataset, throws an error otherwise.
-    #       String or already opened file
-    #       that identifies the netCDF file to work with.
-    # 
-    # Returns
-    # -------
-    # dimension_names = list
-    #       List containing the names of the dimensions.
+    """
+    Function that extracts dimensions names from a netCDF file.
+    There are some cases in which variables are also among dimensions,
+    so it is convenient to eliminate those.
+    
+    Parameters
+    ----------
+    nc_file : str or xarray.Dataset, throws an error otherwise.
+          String or already opened file
+          that identifies the netCDF file to work with.
+    
+    Returns
+    -------
+    dimension_names = list
+          List containing the names of the dimensions.
+    """
     
     if isinstance(nc_file, str):
         
@@ -1079,20 +1068,22 @@ def get_file_dimensions(nc_file):
 
 def get_file_variables(nc_file):
     
-    # Function that extracts variable names from a netCDF file.
-    # Usually some dimensions are also inside the variable list,
-    # so it is convenient to eliminate those.
-    # 
-    # Parameters
-    # ----------
-    # nc_file : str or xarray.Dataset, throws an error otherwise.
-    #       String or already opened file
-    #       that identifies the netCDF file to work with.
-    # 
-    # Returns
-    # -------
-    # variable_names = list
-    #       List containing the names of the variables
+    """
+    Function that extracts variable names from a netCDF file.
+    Usually some dimensions are also inside the variable list,
+    so it is convenient to eliminate those.
+    
+    Parameters
+    ----------
+    nc_file : str or xarray.Dataset, throws an error otherwise.
+          String or already opened file
+          that identifies the netCDF file to work with.
+    
+    Returns
+    -------
+    variable_names = list
+          List containing the names of the variables.
+    """
     
     if isinstance(nc_file, str):
         
@@ -1209,10 +1200,48 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
 # Local parameters #
 #------------------#
 
+# Directory from where this code is being called #
+cwd = Path.cwd()
+
+# File extensions #
 extensions = ["nc", "csv"]
+
+# File name separator character #
 file_path_splitchar = "_"
 
-# Directory from where this code is being called #
-#------------------------------------------------#
+# Information output tables #
 
-cwd = Path.cwd()
+latlon_table = \
+'''=========================================================
+·File: {}
+
+·Latitudes:
+ {}
+
+·Longitudes:
+ {}
+
+-Latitude-longitude array dimensions = {} x {}
+-Latitude-longitude array delta = {} x {}
+    
+'''
+
+period_table = \
+'''=========================================================
+·File: {}
+·Time range: {} -- {}
+·Array length = {}
+
+'''
+    
+time_format_table = \
+'''====================================================
+·File: {}
+    
+·Time array:
+ {}
+
+-Array length = {}
+
+'''
+    

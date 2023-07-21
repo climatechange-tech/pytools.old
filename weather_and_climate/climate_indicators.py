@@ -125,24 +125,25 @@ def calculate_biovars(tmax_monthly_climat,
                       tmin_monthly_climat, 
                       prec_monthly_climat):
     
-    # Function that calculates 19 bioclimatic variables
-    # based on already monthly climatologic data, for every horizontal grid point.
-    # 
-    # Parameters
-    # ----------
-    # tmax_monthly_climat : numpy.ndarray
-    #       Array containing the monthly climatologic maximum temperature data.
-    # tmin_monthly_climat : numpy.ndarray
-    #       Array containing the monthly climatologic minimum temperature data.
-    # precip_dataset : numpy.ndarray
-    #       Array containing the monthly climatologic precipitation data.
-    # 
-    # Returns
-    # -------
-    # p : numpy.ndarray
-    #       Array containing the bioclimatic data for the considered period.
-    #       structured as (biovariable, lat, lon).
+    """
+    Function that calculates 19 bioclimatic variables
+    based on already monthly climatologic data, for every horizontal grid point.
     
+    Parameters
+    ----------
+    tmax_monthly_climat : numpy.ndarray
+          Array containing the monthly climatologic maximum temperature data.
+    tmin_monthly_climat : numpy.ndarray
+          Array containing the monthly climatologic minimum temperature data.
+    precip_dataset : numpy.ndarray
+          Array containing the monthly climatologic precipitation data.
+    
+    Returns
+    -------
+    p : numpy.ndarray
+          Array containing the bioclimatic data for the considered period.
+          structured as (biovariable, lat, lon).
+    """
 
     dimensions = tmax_monthly_climat.shape
     bioclim_var_array = np.zeros((19, dimensions[1], dimensions[2]))
@@ -233,22 +234,24 @@ def calculate_biovars(tmax_monthly_climat,
 
 def calculate_WSDI(season_daily_tmax, tmax_threshold, min_consec_days):
     
-    # Function that calculates the WSDI (Warm Spell Duration Index),
-    # 
-    # Input data
-    # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.Series
-    #       Daily maximum temperature data of the corresponding season in units ºC.
-    # tmax_threshold : float
-    #       Upper limit of the maximum temperature.
-    # min_consec_days : int
-    #       Minimum consecutive days number.
-    # 
-    # Returns
-    # -------
-    # WSDI : int
-    #       Number of total days where at least a specified number of
-    #       consecutive days exceeds certain percentile as a threshold.
+    """
+    Function that calculates the WSDI (Warm Spell Duration Index),
+    
+    Input data
+    ----------
+    season_daily_tmax : numpy.ndarray or pandas.Series
+          Daily maximum temperature data of the corresponding season in units ºC.
+    tmax_threshold : float
+          Upper limit of the maximum temperature.
+    min_consec_days : int
+          Minimum consecutive days number.
+    
+    Returns
+    -------
+    WSDI : int
+          Number of total days where at least a specified number of
+          consecutive days exceeds certain percentile as a threshold.
+    """
 
     WSDI = count_consecutive_days_maxdata(season_daily_tmax,
                                           tmax_threshold,
@@ -259,22 +262,24 @@ def calculate_WSDI(season_daily_tmax, tmax_threshold, min_consec_days):
 
 def calculate_SU(season_daily_tmax, tmax_threshold):
     
-    # Function that calculates the SU (Summer Days).
-    # 
-    # Parameters
-    # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.Series
-    #       Daily maximum temperature data of the corresponding season in units ºC.
-    # 
-    # tmax_threshold : float
-    #       Upper limit of the maximum temperature, preferably 25ºC.
-    # 
-    # Returns
-    # -------
-    # SU : int
-    #       Number of days in which the
-    #       maximum temperature has risen above the threshold.
-
+    """
+    Function that calculates the SU (Summer Days).
+    
+    Parameters
+    ----------
+    season_daily_tmax : numpy.ndarray or pandas.Series
+          Daily maximum temperature data of the corresponding season in units ºC.
+    
+    tmax_threshold : float
+          Upper limit of the maximum temperature, preferably 25ºC.
+    
+    Returns
+    -------
+    SU : int
+          Number of days in which the
+          maximum temperature has risen above the threshold.
+    """
+    
     SU = count_consecutive_days_maxdata(season_daily_tmax, tmax_threshold)
 
     return SU
@@ -282,21 +287,23 @@ def calculate_SU(season_daily_tmax, tmax_threshold):
 
 def calculate_CSU(season_daily_tmax, tmax_threshold):
     
-    # Function that calculates the CSU (Consecutive Summer Days).
-    # 
-    # Parameters
-    # ----------
-    # season_daily_tmax : numpy.ndarray or pandas.Series
-    #       Daily maximum temperature data of the season in units ºC.
-    # 
-    # tmax_threshold : float
-    #       Upper limit of the maximum temperature, preferably 25ºC.
-    # 
-    # Returns
-    # -------
-    # CSU : int
-    #       Number of maximum consecutive days in which
-    #       the temperature has risen above the threshold.
+    """
+    Function that calculates the CSU (Consecutive Summer Days).
+    
+    Parameters
+    ----------
+    season_daily_tmax : numpy.ndarray or pandas.Series
+          Daily maximum temperature data of the season in units ºC.
+    
+    tmax_threshold : float
+          Upper limit of the maximum temperature, preferably 25ºC.
+    
+    Returns
+    -------
+    CSU : int
+          Number of maximum consecutive days in which
+          the temperature has risen above the threshold.
+    """
     
     CSU = count_consecutive_days_maxdata(season_daily_tmax,
                                          tmax_threshold,
@@ -308,21 +315,23 @@ def calculate_CSU(season_daily_tmax, tmax_threshold):
 
 def calculate_FD(season_daily_tmin, tmin_threshold):
     
-    # Function that calculates the FD (Frost Days).
-    # 
-    # Parameters
-    # ----------
-    # season_daily_tmin : numpy.ndarray or pandas.Series
-    #       Daily minimum temperature data of the corresponding season in units ºC.
-    # 
-    # tmin_threshold : float
-    #       Upper limit of the minimum temperature, preferably 0ºC.
-    # 
-    # Returns
-    # -------
-    # FD : int
-    #       Number of days in which the
-    #       minimum temperature has fallen below the threshold.
+    """
+    Function that calculates the FD (Frost Days).
+    
+    Parameters
+    ----------
+    season_daily_tmin : numpy.ndarray or pandas.Series
+          Daily minimum temperature data of the corresponding season in units ºC.
+    
+    tmin_threshold : float
+          Upper limit of the minimum temperature, preferably 0ºC.
+    
+    Returns
+    -------
+    FD : int
+          Number of days in which the
+          minimum temperature has fallen below the threshold.
+    """
     
     FD = count_consecutive_days_mindata(season_daily_tmin, tmin_threshold)
 
@@ -331,21 +340,23 @@ def calculate_FD(season_daily_tmin, tmin_threshold):
 
 def calculate_TN(season_daily_tmin, tmin_threshold):
     
-    # Function that calculates the TN (Tropical Night Days).
-    # 
-    # Parameters
-    # ----------
-    # season_daily_tmin : numpy.ndarray or pandas.Series
-    #       Daily minimum temperature data of the corresponding season in units ºC.
-    # 
-    # tmin_threshold : float
-    #       Lower limit of the minimum temperature, preferably 20ºC.
-    # 
-    # Returns
-    # -------
-    # TN : int
-    #       Number of nights in which the
-    #       minimum temperature has risen above the threshold.
+    """
+    Function that calculates the TN (Tropical Night Days).
+    
+    Parameters
+    ----------
+    season_daily_tmin : numpy.ndarray or pandas.Series
+          Daily minimum temperature data of the corresponding season in units ºC.
+    
+    tmin_threshold : float
+          Lower limit of the minimum temperature, preferably 20ºC.
+    
+    Returns
+    -------
+    TN : int
+          Number of nights in which the
+          minimum temperature has risen above the threshold.
+    """
     
     TN = count_consecutive_days_mindata(season_daily_tmin,
                                         tmin_threshold,
@@ -355,24 +366,25 @@ def calculate_TN(season_daily_tmin, tmin_threshold):
 
 def calculate_RR(season_daily_precip, precip_threshold):
     
-    # Function that calculates the RR parameter (Wet Days).
-    # It is defined as the number of days in which the precipitation
-    # amount exceeds 1 mm.
-    # 
-    # Parameters
-    # ----------
-    # season_daily_precip : numpy.ndarray or pandas.Series
-    #       Daily precipitation data of the corresponding season in units mm.
-    # 
-    # precip_threshold : float
-    #       Upper limit of the daily precipitation, 1 mm in this case.
-    # 
-    # Returns
-    # -------
-    # RR : int
-    #       Number of days in which the
-    #       precipitation has risen above the threshold.   
+    """
+    Function that calculates the RR parameter (Wet Days).
+    It is defined as the number of days in which the precipitation
+    amount exceeds 1 mm.
     
+    Parameters
+    ----------
+    season_daily_precip : numpy.ndarray or pandas.Series
+          Daily precipitation data of the corresponding season in units mm.
+    
+    precip_threshold : float
+          Upper limit of the daily precipitation, 1 mm in this case.
+    
+    Returns
+    -------
+    RR : int
+          Number of days in which the
+          precipitation has risen above the threshold.   
+    """
     
     RR = count_consecutive_days_maxdata(season_daily_precip, precip_threshold)
     return RR
@@ -380,23 +392,25 @@ def calculate_RR(season_daily_precip, precip_threshold):
 
 def calculate_CWD(season_daily_precip, precip_threshold):
     
-    # Function that calculates the CWD (Consecutive Wet Days),
-    # i.e. the number of maximum consecutive days in which
-    # the precipitation amount exceeds 1 mm.
-    # 
-    # Parameters
-    # ----------
-    # season_daily_precip : numpy.ndarray or pandas.Series
-    #       Daily precipitation data of the season in units mm.
-    # 
-    # precip_threshold : float
-    #       Upper limit of the daily precipitation, 1 mm in this case.
-    # 
-    # Returns
-    # -------
-    # CWD : int
-    #       Number of maximum consecutive days in which
-    #       the precipitation has risen above the threshold.
+    """
+    Function that calculates the CWD (Consecutive Wet Days),
+    i.e. the number of maximum consecutive days in which
+    the precipitation amount exceeds 1 mm.
+    
+    Parameters
+    ----------
+    season_daily_precip : numpy.ndarray or pandas.Series
+          Daily precipitation data of the season in units mm.
+    
+    precip_threshold : float
+          Upper limit of the daily precipitation, 1 mm in this case.
+    
+    Returns
+    -------
+    CWD : int
+          Number of maximum consecutive days in which
+          the precipitation has risen above the threshold.
+    """
     
     CWD = count_consecutive_days_maxdata(season_daily_precip,
                                          precip_threshold,
@@ -410,44 +424,44 @@ def calculate_HWD(tmax_array, tmin_array,
                   max_threshold, min_threshold,
                   date_array, min_consec_days):
     
-        
-    # Function that returns the total number of heat waves, based on daily data.
-    # A heat wave is defined such that at least in N consecutive days
-    # the maximum temperature exceeds its 95th percentile
-    # and the minimum temperature exceeds it 90th percentile.
-    # 
-    # Each heat wave is assocciated with the following:
-    # 
-    # -Heat wave intensity : maximum temperature registered during the heat wave,
-    #                        i.e. that event satisfying the conditions aforementioned.
-    # -Heat wave duration : number of consecutive days of the heat wave.
-    # -Heat wave global intensity : sum of the maximum temperatures registered
-    #                               during the heat wave,
-    #                               divided by its duration.
-    # 
-    # Parameters
-    # ----------
-    # tmax_array : numpy.ndarray or pandas.Series
-    #       An array which contains the daily maximum temperature data.
-    # tmin_array : numpy.ndarray or pandas.Series
-    #       An array which contains the daily minimum temperature data.
-    # max_threshold : float
-    #       Upper limit.
-    # min_threshold : float
-    #       Lower limit.
-    # date_array : pandas.DatetimeIndex
-    #       Array containing dates, in this case of the corresponding season.
-    # min_consec_days : int
-    #       Minimum consecutive days number.
-    # 
-    # Returns
-    # -------
-    # HWD_characteristics : numpy.ndarray composed of tuples
-    #       All heat wave events,
-    #       each with its characteristics englobed in a tuple.
-    # HWD : int 
-    #       Total number of heat wave events.
+    """
+    Function that returns the total number of heat waves, based on daily data.
+    A heat wave is defined such that at least in N consecutive days
+    the maximum temperature exceeds its 95th percentile
+    and the minimum temperature exceeds it 90th percentile.
     
+    Each heat wave is assocciated with the following:
+    
+    -Heat wave intensity : maximum temperature registered during the heat wave,
+                            i.e. that event satisfying the conditions aforementioned.
+    -Heat wave duration : number of consecutive days of the heat wave.
+    -Heat wave global intensity : sum of the maximum temperatures registered
+                                  during the heat wave,
+                                  divided by its duration.
+    
+    Parameters
+    ----------
+    tmax_array : numpy.ndarray or pandas.Series
+          An array which contains the daily maximum temperature data.
+    tmin_array : numpy.ndarray or pandas.Series
+          An array which contains the daily minimum temperature data.
+    max_threshold : float
+          Upper limit.
+    min_threshold : float
+          Lower limit.
+    date_array : pandas.DatetimeIndex
+          Array containing dates, in this case of the corresponding season.
+    min_consec_days : int
+          Minimum consecutive days number.
+    
+    Returns
+    -------
+    HWD_characteristics : numpy.ndarray composed of tuples
+          All heat wave events,
+          each with its characteristics englobed in a tuple.
+    HWD : int 
+          Total number of heat wave events.
+    """
 
     N = min_consec_days
     satisfied_thres_bool_arr = (tmax_array > max_threshold) * (tmin_array > min_threshold)
@@ -505,10 +519,11 @@ def calculate_HDY(hourly_df,
                   varlist_primary,
                   drop_date_idx_col=False,
                   drop_new_idx_col=True):
-    
-    # Function to calculate the ´Hourly Design Year´,
-    # based on the ISO 15927-4 2005 (E) standard,
-    # version of January 2021.
+    """
+    Function to calculate the ´Hourly Design Year´,
+    based on the ISO 15927-4 2005 (E) standard,
+    version of January 2021.
+    """
     
     #--------------------------#
     # Define the HDY dataframe #
@@ -763,53 +778,55 @@ def HDY_interpolation(HDY_df,
                       polynomial_order,
                       drop_date_idx_col=False):
     
-    # Interpolates along a selected time array between two months
-    # of and HDY constructed following the standard ISO 15927-4 2005 (E).
-    # 
-    # Since the HDY is composed of 'fragments' of completely different months
-    # there are unavoidable vertical jumps on the tendencies for every variable.         
-    # Interpolation will help to smoothen those jumps.
-    # 
-    # The problem is that the slice to be interpolated
-    # in most of the cases presents vertical jumps,
-    # so when interpolating that slice those jumps won't be completely removed.
-    # 
-    # In this case, the polynomial fitting technique will be applied.
-    # This function performs a determined order polynomial interpolation,
-    # passed as an argument.
-    # 
-    # Do not consider the whole previous and next month
-    # of the slice to be interpolated, but only some days more earlier and later.
-    # The reason for that is because data is hourly so there are
-    # obviously a lot of oscillations.
-    # 
-    # Also do not consider all month indexes,
-    # because the last interpolation involving pairs of months
-    # is that of October and November.
-    # 
-    # For practicity and uniqueness purposes, it is strongly reccommended,
-    # to the extent of present elements in the variable list
-    # to interpolate against, to follow these standard short names.
-    # The order of the variables is not strict:
-    # 
-    # 2 metre temperature : t2m
-    # 2 metre dew point temperature : d2m
-    # Relative humidity : rh
-    # 10 metre U wind component : u10
-    # 10 metre V wind component : v10
-    # 10 metre wind speed modulus : ws10
-    # Surface solar radiation downwards : ssrd
-    # Surface thermal radiation downwards : strd
-    # Surface solar radiation downwards : ssrd
-    # Direct solar radiation at the surface : fdir
-    # Diffuse solar radiation at the surface : fdif
-    # Surface pressure : sp
-    # 
-    # 
-    # Notes
-    # -----
-    # Both wind direction and speed modulus will be calculated
-    # after the interpolation of u10 and v10 arrays.
+    """
+    Interpolates along a selected time array between two months
+    of and HDY constructed following the standard ISO 15927-4 2005 (E).
+    
+    Since the HDY is composed of 'fragments' of completely different months
+    there are unavoidable vertical jumps on the tendencies for every variable.         
+    Interpolation will help to smoothen those jumps.
+    
+    The problem is that the slice to be interpolated
+    in most of the cases presents vertical jumps,
+    so when interpolating that slice those jumps won't be completely removed.
+    
+    In this case, the polynomial fitting technique will be applied.
+    This function performs a determined order polynomial interpolation,
+    passed as an argument.
+    
+    Do not consider the whole previous and next month
+    of the slice to be interpolated, but only some days more earlier and later.
+    The reason for that is because data is hourly so there are
+    obviously a lot of oscillations.
+    
+    Also do not consider all month indexes,
+    because the last interpolation involving pairs of months
+    is that of October and November.
+    
+    For practicity and uniqueness purposes, it is strongly reccommended,
+    to the extent of present elements in the variable list
+    to interpolate against, to follow these standard short names.
+    The order of the variables is not strict:
+    
+    2 metre temperature : t2m
+    2 metre dew point temperature : d2m
+    Relative humidity : rh
+    10 metre U wind component : u10
+    10 metre V wind component : v10
+    10 metre wind speed modulus : ws10
+    Surface solar radiation downwards : ssrd
+    Surface thermal radiation downwards : strd
+    Surface solar radiation downwards : ssrd
+    Direct solar radiation at the surface : fdir
+    Diffuse solar radiation at the surface : fdif
+    Surface pressure : sp
+    
+    
+    Notes
+    -----
+    Both wind direction and speed modulus will be calculated
+    after the interpolation of u10 and v10 arrays.
+    """
     
     HDY_interp = HDY_df.copy()
     

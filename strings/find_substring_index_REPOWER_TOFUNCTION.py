@@ -25,11 +25,13 @@ def find_substring_index(string,
                          case_sensitive=False,
                          all_cases=False):
     
-    # substring: str or list of str
-    #       If 'str' then it can either be as is or a regex.
-    #       In the latter case, there is no need to explicitly define as so,
-    #       because it connects with Python's built-in 're' module.
-
+    """
+    substring: str or list of str
+          If 'str' then it can either be as is or a regex.
+          In the latter case, there is no need to explicitly define as so,
+          because it connects with Python's built-in 're' module.
+    """
+    
     if isinstance(string, str):
         substrLowestIdx = string_VS_string_search(string, substring, 
                                                   case_sensitive, all_cases, 

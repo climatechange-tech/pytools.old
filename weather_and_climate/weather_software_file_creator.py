@@ -54,11 +54,13 @@ week_range = calendar_operators.week_range
 
 def temperature_typical_extreme_period(hdy_df_t2m):
     
-    # Function that calculates the typical and extreme periods
-    # concerning the 2 metre temperature, required for E+ software
-    # as the third part of the header.
-    # Only temperature is needed to work with, 
-    # together with a date and time column.    
+    """
+    Function that calculates the typical and extreme periods
+    concerning the 2 metre temperature, required for E+ software
+    as the third part of the header.
+    Only temperature is needed to work with, 
+    together with a date and time column.    
+    """
     
     # HDY winter #
     #------------#

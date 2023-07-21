@@ -39,27 +39,29 @@ def angle_converter(angle, method):
 
 def meteorological_wind_direction(u, v):
     
-    # Calculates the wind direction, as the opposite to
-    # where the wind is blowing to. The 0 angle is located
-    # at the middle top of the goniometric cyrcle.
-    # This means that if the direction is, for example, 225º,
-    # then that is where wind is blowing, thus coming from
-    # an angle of 45º, so the wind is blowing from the north-east.
-    # 
-    # Parameters
-    # ----------
-    # u : numpy.ndarray
-    #       Array containing the modulus and sense of the
-    #       zonal component of the wind.
-    # v : numpy.ndarray
-    #       Array containing the modulus and sense of the
-    #       meridional component of the wind.
-    # 
-    # Returns
-    # -------
-    # wind_dir_meteo_array : numpy.ndarray
-    #       Array containing the directions of the wind, 
-    #       described as in the first paragraph.
+    """
+    Calculates the wind direction, as the opposite to
+    where the wind is blowing to. The 0 angle is located
+    at the middle top of the goniometric cyrcle.
+    This means that if the direction is, for example, 225º,
+    then that is where wind is blowing, thus coming from
+    an angle of 45º, so the wind is blowing from the north-east.
+    
+    Parameters
+    ----------
+    u : numpy.ndarray
+          Array containing the modulus and sense of the
+          zonal component of the wind.
+    v : numpy.ndarray
+          Array containing the modulus and sense of the
+          meridional component of the wind.
+    
+    Returns
+    -------
+    wind_dir_meteo_array : numpy.ndarray
+          Array containing the directions of the wind, 
+          described as in the first paragraph.
+    """
     
     if isinstance(u, int) or isinstance(v, int)\
         or isinstance(u, float) or isinstance(v, float):

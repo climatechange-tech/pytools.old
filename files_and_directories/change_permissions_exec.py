@@ -1,4 +1,6 @@
-"""**Note**
+"""
+**Note**
+
 This program is an application of the main module 'change_permissions_main.py',
 and it uses the 'modify_obj_permissions' and 'modify_obj_owner' 
 attributes or functions.

@@ -521,14 +521,16 @@ def create_grid_header_file(output_file, **kwargs):
         
 def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_str=None):
     
-    # Function to calculate basic statistics (included climatologies)
-    # with netCDF files, without the need of opening them.
-    # 
-    # Notes
-    # -----
-    # It is not recommended to use output file names within
-    # those functions that calculate deltas,
-    # since doing so lowers disk I/O performance.
+    """
+    Function to calculate basic statistics (included climatologies)
+    with netCDF files, without the need of opening them.
+    
+    Notes
+    -----
+    It is not recommended to use output file names within
+    those functions that calculate deltas,
+    since doing so lowers disk I/O performance.
+    """
     
     statistics = ["max", "min", "sum", 
                   "mean", "avg", 

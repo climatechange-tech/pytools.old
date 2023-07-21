@@ -191,7 +191,10 @@ def reorder_objs(path,
     
     if index_range == "all":
         
-        """1st step:
+        """
+        1st step
+        --------
+        
         Rename objects (files or directories) starting from the highest number,
         to prevent overwriting and object deletion because of
         unevenly spaced numbering.

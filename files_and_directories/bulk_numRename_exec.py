@@ -1,4 +1,6 @@
-"""**Note**
+"""
+**Note**
+
 This program is an application of the main module 'bulk_numRename_main.py',
 and it uses the 'reorder_objs' attribute or function.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,

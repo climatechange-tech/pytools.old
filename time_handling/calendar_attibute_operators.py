@@ -82,72 +82,75 @@ def standardize_calendar(obj,
                          separator=",",
                          save_index=False,
                          save_header=False):
-        
-    # **Function global note** 
-    # ------------------------
-    # This functions imports 'netcdf_handler' which at the same imports xarray.
-    # But not always will the conda environment have installed xarray
-    # or the user will not fot_resee any need of installing it,
-    # mainly because the basic libraries are already installed.
-    #
-    # To this day, taking account the structure of the modules
-    # and practicity and cleanliness of this function,
-    # the 'netcdf_handler' module will only be imported here
-    # together with xarray.
+    
+    """
+    **Function global note** 
+    ------------------------
+    
+    This functions imports 'netcdf_handler' which at the same imports xarray.
+    But not always will the conda environment have installed xarray
+    or the user will not fot_resee any need of installing it,
+    mainly because the basic libraries are already installed.
+    
+    To this day, taking account the structure of the modules
+    and practicity and cleanliness of this function,
+    the 'netcdf_handler' module will only be imported here
+    together with xarray.
     
     
-    # This function standardizes the given calendar of an object to gregorian
-    # and makes an interpolation ALONG ROWS (axis=0) to find the missing data.
-    # It usually happens when modelled atmospheric or land data is considered,
-    # when each model has its own calendar.
-    # This funcion is useful when several model data is handled at once.
-    # 
-    # It only sticks to the limits of the time array pt_resent at the object;
-    # further reconstructions is a task left for the user.
-    # 
-    # Parameters
-    # ----------
-    # obj : pd.DataFrame or xarray.Dataset
-    #       or list of pd.DataFrame or xarray.Dataset.
-    #       Object containing data. For each pd.DataFrame, if pt_resent,
-    #       the first column must be of type datetime64.
-    # file_path : str or list of str
-    #       String referring to the file name from which data object 
-    #       has been extracted.
-    # save_as_new_obj : bool
-    #       If True and object is pd.DataFrame, it is saved either
-    #       as CSV or Excel containing one or more frames, the latter being
-    #       desired by the user.
-    # extension : {"csv", "xlsx", "nc"}
-    #       The first two only work if object is pd.DataFrame,
-    #       while the third works if object is xarray.Dataset.
-    #       If "csv" chosen, the whole data frame will be stored in a single
-    #       document.
-    #       On the other hand, if "xlsx" is selected, then all columns other
-    #       than the time array will be introduced in separate tabs,
-    #       together with the time array itself.
-    # separator : str
-    #       String used to separate data columns.
-    #       Default value is a comma (',').
-    # save_index : bool
-    #       Boolean to choose whether to include a column into the excel document
-    #       that identifies row numbers. Default value is False.
-    # save_header : bool
-    #       Boolean to choose whether to include a row into the excel document
-    #       that identifies column numbers. Default value is False.
-    # 
-    # 
-    # Returns
-    # -------
-    # obj : pd.DataFrame, xarray.Dataset 
-    #       or xarray.DataArray.
-    #       Object containing the standardized calendar to gregorian.
-    # 
-    # Note
-    # ----
-    # There is no programatic way to store multiple sheets on a CSV file,
-    # as can be donde with Excel files, because CSV is rough, old format
-    # but mainly for data transport used.
+    This function standardizes the given calendar of an object to gregorian
+    and makes an interpolation ALONG ROWS (axis=0) to find the missing data.
+    It usually happens when modelled atmospheric or land data is considered,
+    when each model has its own calendar.
+    This funcion is useful when several model data is handled at once.
+    
+    It only sticks to the limits of the time array pt_resent at the object;
+    further reconstructions is a task left for the user.
+    
+    Parameters
+    ----------
+    obj : pd.DataFrame or xarray.Dataset
+          or list of pd.DataFrame or xarray.Dataset.
+          Object containing data. For each pd.DataFrame, if pt_resent,
+          the first column must be of type datetime64.
+    file_path : str or list of str
+          String referring to the file name from which data object 
+          has been extracted.
+    save_as_new_obj : bool
+          If True and object is pd.DataFrame, it is saved either
+          as CSV or Excel containing one or more frames, the latter being
+          desired by the user.
+    extension : {"csv", "xlsx", "nc"}
+          The first two only work if object is pd.DataFrame,
+          while the third works if object is xarray.Dataset.
+          If "csv" chosen, the whole data frame will be stored in a single
+          document.
+          On the other hand, if "xlsx" is selected, then all columns other
+          than the time array will be introduced in separate tabs,
+          together with the time array itself.
+    separator : str
+          String used to separate data columns.
+          Default value is a comma (',').
+    save_index : bool
+          Boolean to choose whether to include a column into the excel document
+          that identifies row numbers. Default value is False.
+    save_header : bool
+          Boolean to choose whether to include a row into the excel document
+          that identifies column numbers. Default value is False.
+    
+    
+    Returns
+    -------
+    obj : pd.DataFrame, xarray.Dataset 
+          or xarray.DataArray.
+          Object containing the standardized calendar to gregorian.
+    
+    Note
+    ----
+    There is no programatic way to store multiple sheets on a CSV file,
+    as can be donde with Excel files, because CSV is rough, old format
+    but mainly for data transport used.
+    """
     
     obj_types = ["pandas", "xarray"]
 
@@ -319,24 +322,26 @@ def standardize_calendar(obj,
 
 def week_range(date):
     
-    # Finds the week day-range, i.e, the first and last day of the week
-    # where a given calendar day lies on.
-    # In Europe weeks start on Monday and end on Sunday.
-    # 
-    # Parameters
-    # ----------
-    # date : pandas._libs.tslibs.timestamps.Timestamp
-    #       Timestamp format string that contains a particular date time.
-    # start_date, end_date: str
-    #       Pair of strings that refer, respectively, to the first and
-    #       last days of the week that lies the given date within.
+    """
+    Finds the week day-range, i.e, the first and last day of the week
+    where a given calendar day lies on.
+    In Europe weeks start on Monday and end on Sunday.
+    
+    Parameters
+    ----------
+    date : pandas._libs.tslibs.timestamps.Timestamp
+          Timestamp format string that contains a particular date time.
+    start_date, end_date: str
+          Pair of strings that refer, respectively, to the first and
+          last days of the week that lies the given date within.
     
     
-    # Isocalendar function #
-    #----------------------#
+    Isocalendar function #
+    ----------------------#
     
-    # isocalendar calculates the year, week of the year, and day of the week (dow).
-    # dow is Mon = 1, Sat = 6, Sun = 7
+    isocalendar calculates the year, week of the year, and day of the week (dow).
+    dow is Mon = 1, Sat = 6, Sun = 7
+    """
     
     if isinstance(date, pd._libs.tslibs.timestamps.Timestamp):
         

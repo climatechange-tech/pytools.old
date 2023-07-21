@@ -13,28 +13,30 @@ import numpy as np
 
 def count_consecutive(array, calculate_max_consec=False):
     
-    # Function that counts:
-    #   1 : consecutive numbers in an array or pandas series,
-    #       also distinguishing them by blocks.
-    #   2 : maximum consecutive number subset length
-    #       starting from an array that already satisfies certain condition,
-    #       i.e. boolean array.
+    """
+    Function that counts:
+      1 : consecutive numbers in an array or pandas series,
+          also distinguishing them by blocks.
+      2 : maximum consecutive number subset length
+          starting from an array that already satisfies certain condition,
+          i.e. boolean array.
     
-    # Example 1
-    # ---------
-    # random_list = [45, 46, 47, 48, 80, 81, 83, 87]
-    # 
-    # As can be seen, the first four numbers are consecutive,
-    # it stops there and another two consecutive number sequence begins.
-    # 
-    # The result is then the following array:
-    # consec_array = [4, 2]
-    # 
-    # Example 2
-    # ---------
-    # bool_array = [False, False, True, True, True, True, True, False, True, True]
-    # consec_array = [5, 2]
-    # max_consec_num = 5
+    Example 1
+    ---------
+    random_list = [45, 46, 47, 48, 80, 81, 83, 87]
+    
+    As can be seen, the first four numbers are consecutive,
+    it stops there and another two consecutive number sequence begins.
+    
+    The result is then the following array:
+    consec_array = [4, 2]
+    
+    Example 2
+    ---------
+    bool_array = [False, False, True, True, True, True, True, False, True, True]
+    consec_array = [5, 2]
+    max_consec_num = 5
+    """
     
     if not calculate_max_consec:
         
@@ -67,27 +69,29 @@ def count_consecutive(array, calculate_max_consec=False):
         
 def insert_values(x, index, values, axis=None):
     
-    # Inserts values at the specified index either on a list or numpy array.
-    # 
-    # Parameters
-    # ----------
-    # x : list or numpy.ndarray
-    #       Object containing whatever type of data
-    # index : int
-    #       Position where to introduce new data.
-    #       Same behaviour as introducing a blank space at the left
-    #       and then filling it with new data.
-    # values : list, numpy.array or pandas.Series
-    #       If values are part of a data frame, they equally can be introduced
-    #       into a list, to then call its data in the appropriate manner.
-    # axis : int or NoneType
-    #       Axis along which to insert 'values'.  If 'axis' is None then 'x'
-    #       is flattened first.
-    # 
-    # Returns
-    # -------
-    # appended_array : numpy.ndarray
-    #       Only ix 'x' is a numpy.ndarray. Array with new data appended.
+    """
+    Inserts values at the specified index either on a list or numpy array.
+    
+    Parameters
+    ----------
+    x : list or numpy.ndarray
+          Object containing whatever type of data
+    index : int
+          Position where to introduce new data.
+          Same behaviour as introducing a blank space at the left
+          and then filling it with new data.
+    values : list, numpy.array or pandas.Series
+          If values are part of a data frame, they equally can be introduced
+          into a list, to then call its data in the appropriate manner.
+    axis : int or NoneType
+          Axis along which to insert 'values'.  If 'axis' is None then 'x'
+          is flattened first.
+    
+    Returns
+    -------
+    appended_array : numpy.ndarray
+          Only if 'x' is a numpy.ndarray. Array with new data appended.
+    """
     
     lx = len(x)
     
@@ -109,31 +113,33 @@ def insert_values(x, index, values, axis=None):
         
 def decompose_24h_cumulative_data(array, zeros_dtype='d'):
     
-    # Function that obtains the 1-hour time step cumulative data,
-    # subtracting to the next cumulative data, the previous cumulative value.
-    # It is only intended for 24-hour time step hourly data.
-    # 
-    # The methodology, by its nature, gives negative values every 24 hours.
-    # Assuming that data follow a cumulative distribution
-    # and is definite positive, then those negative values
-    # are considered as spurious and they are substituted by
-    # arrays of zeroes.
-    # It suffices to encounter a single negative value
-    # along the n-1 dimensional array (for a time index) to set it to zero.
-    # 
-    # Parameters
-    # ----------
-    # array : numpy.ndarray
-    #       Multi-dimensional array which contains data,
-    #       being the first index corresponding to ´time´ dimension.
-    # zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)
-    #       Sets the precision of the array composed of zeroes.
-    # 
-    # Returns
-    # -------
-    # hour_TS_array : numpy.ndarray
-    #       Multi dimensional array containing
-    #       1-hour time step cumulative data.
+    """
+    Function that obtains the 1-hour time step cumulative data,
+    subtracting to the next cumulative data, the previous cumulative value.
+    It is only intended for 24-hour time step hourly data.
+    
+    The methodology, by its nature, gives negative values every 24 hours.
+    Assuming that data follow a cumulative distribution
+    and is definite positive, then those negative values
+    are considered as spurious and they are substituted by
+    arrays of zeroes.
+    It suffices to encounter a single negative value
+    along the n-1 dimensional array (for a time index) to set it to zero.
+    
+    Parameters
+    ----------
+    array : numpy.ndarray
+          Multi-dimensional array which contains data,
+          being the first index corresponding to ´time´ dimension.
+    zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)
+          Sets the precision of the array composed of zeroes.
+    
+    Returns
+    -------
+    hour_TS_array : numpy.ndarray
+          Multi dimensional array containing
+          1-hour time step cumulative data.
+    """
     
     records = len(array)
     array_shape = array.shape

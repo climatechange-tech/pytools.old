@@ -59,48 +59,49 @@ def time_format_tweaker(t,
                         method="datetime",
                         infer_dt_format=False, # Only if method=="pandas"
                         standardizeHourRange=False):
+    """
     
-    # 
-    # 
-    # 
-    # 
-    # 
-    # Parameters
-    # ----------
-    # t: int, float, str or tuple, 
-    #    time.struct_time or datetime.[datetime, date, time],
-    #    array-like, pandas.Series or xarray.DataArray 
-    # In either case, the object containg the dates and times.
-    # 
-    # TODO: ondoko guztiak hobeto azaldu
-    # method : {"numpy_generic", "numpy_dt64",
-    #           "pandas", 
-    #           "datetime", "model_datetime"}
-    # 
-    #         Method to use in order to give to the time (t) object.
-    # 
-    #         If "pandas" is selected, then the dates are treated as strings,
-    #         so the function gives the date time format using 
-    #         pd.to_datetime formatter.
-    # 
-    #         If "datetime", then the format is given using
-    #         the built-in "datetime" module's datetime.strptime attribute.
-    # 
-    #         Lastly, the option "model_datetime" is designed in order
-    #         to use again "datetime" module, 
-    #         but creating a model (or generic) date and time where the year
-    #         is 1, for example in model or calendar year calculations
-    #         in climate change; that is to say the year is unimportant.         
-    # 
-    # Returns
-    # -------
-    # t_res : str, tuple, datetime.datetime,
-    #         array-like or pandas.[DatetimeIndex, DataFrame, Series]
-    # 
-    # Array containg the reformatted date times.
-    # If the type of calendar used in the original time array
-    # is different of Gregorian, it converts to that one.
-    # Otherwise the calendar type remains as Gregorian, unchanged.
+    
+    
+    
+    
+    Parameters
+    ----------
+    t: int, float, str or tuple, 
+        time.struct_time or datetime.[datetime, date, time],
+        array-like, pandas.Series or xarray.DataArray 
+    In either case, the object containg the dates and times.
+    
+    TODO: ondoko guztiak hobeto azaldu
+    method : {"numpy_generic", "numpy_dt64",
+              "pandas", 
+              "datetime", "model_datetime"}
+    
+            Method to use in order to give to the time (t) object.
+    
+            If "pandas" is selected, then the dates are treated as strings,
+            so the function gives the date time format using 
+            pd.to_datetime formatter.
+    
+            If "datetime", then the format is given using
+            the built-in "datetime" module's datetime.strptime attribute.
+    
+            Lastly, the option "model_datetime" is designed in order
+            to use again "datetime" module, 
+            but creating a model (or generic) date and time where the year
+            is 1, for example in model or calendar year calculations
+            in climate change; that is to say the year is unimportant.         
+    
+    Returns
+    -------
+    t_res : str, tuple, datetime.datetime,
+            array-like or pandas.[DatetimeIndex, DataFrame, Series]
+    
+    Array containg the reformatted date times.
+    If the type of calendar used in the original time array
+    is different of Gregorian, it converts to that one.
+    Otherwise the calendar type remains as Gregorian, unchanged.
+    """
     
     method_name = inspect.currentframe().f_code.co_name
     arg_names = time_format_tweaker.__code__.co_varnames
@@ -454,27 +455,29 @@ def frequentTimeFormatConverter(t,
     
 def over24HourFixer(time_obj):
 
-    # Function that checks whether the range of hours
-    # contained in an object (numpy's or pandas's) is the 24-hour standard 0-23.
-    # 
-    # For the task, the date and times in the input object 
-    # must only be of type string, otherwise it is not possible
-    # to define non standard hour ranges like 1-24
-    # with Timestamp-like attributes.
-    # 
-    # Time 24:00 is assumed to mean the next day,
-    # so it is converted to string 23:00 and then 
-    # an hour time delta is added to it.
-    #
-    # Parameters
-    # ----------
-    # time_obj : array-like of strings, pandas.DataFrame or pandas.Series
-    #       Object containing the date and times to be checked.
-    #
-    # Returns
-    # -------
-    # time_obj_fixed : array-like, pandas.DataFrame or pandas.Series
-    #       Object containing fixed dates and times.
+    """
+    Function that checks whether the range of hours
+    contained in an object (numpy's or pandas's) is the 24-hour standard 0-23.
+    
+    For the task, the date and times in the input object 
+    must only be of type string, otherwise it is not possible
+    to define non standard hour ranges like 1-24
+    with Timestamp-like attributes.
+    
+    Time 24:00 is assumed to mean the next day,
+    so it is converted to string 23:00 and then 
+    an hour time delta is added to it.
+    
+    Parameters
+    ----------
+    time_obj : array-like of strings, pandas.DataFrame or pandas.Series
+          Object containing the date and times to be checked.
+    
+    Returns
+    -------
+    time_obj_fixed : array-like, pandas.DataFrame or pandas.Series
+          Object containing fixed dates and times.
+    """
    
     if isinstance(time_obj, np.ndarray):
         twentyFourHourIdx = find_substring_index(time_obj, "24:0")

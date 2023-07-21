@@ -105,110 +105,112 @@ def tweak_pages(file, cat_str, output_path="default"):
 
 def pdf_file_tweaker(path, cat_out_obj):
     
-    # Function that allows to select a single page, or range(s) of pages
-    # to conserve in a PDF file, the same way as it is done
-    # when printing a document.
-    # 
-    # For that it uses pdftk tool, together with 'cat' and the
-    # os.system shell emulator attribute.
-    # 
-    # For the sake of gathering simplicity and practicity,
-    # the structure of the default output file name will be the following:
-    # '{path_without_the_extension}_{page_configuration}.{extension}'
-    # 
-    # Although in many cases an only interval page is selected from a file,
-    # and the output file name is renamed to the original,
-    # it has been considered, due to the range of varieties that
-    # this function offers, the best option to be the previously described one.
-    # 
-    # Parameters
-    # ----------
-    # path : str or PosixPath or list of str or PosixPath
-    #       String or list of strings that identify the file(s) to work with,
-    #       included pathlib.Path module's PosixPaths.
-    # cat_out_obj : str, dict or list of dict
-    #       Object that provides the output file name(s)
-    #       together with the strings that assemble or catenate pages.
-    #   
-    # 
-    # This function distinguishes among these three cases:
-    # 
-    #   1. Both the path and cat string are single strings
-    #   --------------------------------------------------
-    # 
-    #   In this case, from a single input file is created
-    #   a sole output page.
-    #   Then in order to distinguish
-    #   between the path (WITH or WITHOUT THE EXTENSION) and 
-    #   the string to assemble or catenate pages,
-    #   the following structure is used:
-    #   f"{cat_string}; {output_path}"
-    #   
-    #   The semicolon is absolutely necessary, because the function
-    #   is designed to split the string is splitted
-    #   according to that character. 
-    #   The space around the semicolon is not necessary and
-    #   serves only as a description.
-    # 
-    #   2. The path is a string, and the catenation object is a dictionary
-    #   ------------------------------------------------------------------
-    # 
-    #   Then it is understood that several files are going to be created
-    #   from a single input file.
-    # 
-    #   The dictionary has to be structured like the following:
-    # 
-    #   input_path --> type string --> it corresponds this object:
-    #   {output_path_1 : cat_str_1,
-    #    output_path_2 : cat_str_2,
-    #                (...)        ,
-    #    output_path_n : cat_str_n}
-    # 
-    #   3. Both the path and catenation object are lists
-    #   ------------------------------------------------
-    # 
-    #   This is the most complete case, in which each file
-    #   is splitted into several files.
-    #   There must be a catenation object per input path,
-    #   so the structure of the case is as follows:
-    # 
-    #   input_path_1 --> type string --> it corresponds this object:
-    #   {output_path_1 : cat_str_1,
-    #    output_path_2 : cat_str_2,
-    #                (...)        ,
-    #    output_path_n : cat_str_n}
-    # 
-    #   [...]
-    # 
-    #   input_path_n --> type string --> it corresponds this object:
-    #   {output_path_n+1 : cat_str_n+1,
-    #    output_path_n+2 : cat_str_n+2,
-    #                  (...)          ,
-    #    output_path_n+m : cat_str_n+m}
-    # 
-    # Note
-    # ----
-    # In any case, this function includes an option to
-    # mark the output path as 'default', that it to say,
-    # output_path == "default".
-    # 
-    # In such case, the catenation string will be ussed
-    # as an appendix to the original path, 
-    # i.e. f"{original_path}_{catenation_string}.{extension}"
-    # 
-    # However, there might be occasions in which that string is too long
-    # (more than 60 characters), so when this happens the string to add
-    # will be simply 'lotsOfPagesTweaked' and the output path will be
-    # f"{original_path_name_noext}_lotsOfPagesTweaked.{extension}"
-    # 
-    # If any other than the default is given -as said, with or without
-    # the extension, irrespective of the case- , to the output path 
-    # the 'pdf' extension will be added if necessary. 
-    # Recall that the latter refers to the output path(s).
-    # 
-    # Also for the sake of gathering simplicity and practicity,
-    # this function is designed to work with absolute paths,
-    # in order to have a unique function placed in a module with a fixed path.
+    """
+    Function that allows to select a single page, or range(s) of pages
+    to conserve in a PDF file, the same way as it is done
+    when printing a document.
+    
+    For that it uses pdftk tool, together with 'cat' and the
+    os.system shell emulator attribute.
+    
+    For the sake of gathering simplicity and practicity,
+    the structure of the default output file name will be the following:
+    '{path_without_the_extension}_{page_configuration}.{extension}'
+    
+    Although in many cases an only interval page is selected from a file,
+    and the output file name is renamed to the original,
+    it has been considered, due to the range of varieties that
+    this function offers, the best option to be the previously described one.
+    
+    Parameters
+    ----------
+    path : str or PosixPath or list of str or PosixPath
+          String or list of strings that identify the file(s) to work with,
+          included pathlib.Path module's PosixPaths.
+    cat_out_obj : str, dict or list of dict
+          Object that provides the output file name(s)
+          together with the strings that assemble or catenate pages.
+      
+    
+    This function distinguishes among these three cases:
+    
+      1. Both the path and cat string are single strings
+      --------------------------------------------------
+    
+      In this case, from a single input file is created
+      a sole output page.
+      Then in order to distinguish
+      between the path (WITH or WITHOUT THE EXTENSION) and 
+      the string to assemble or catenate pages,
+      the following structure is used:
+      f"{cat_string}; {output_path}"
+      
+      The semicolon is absolutely necessary, because the function
+      is designed to split the string is splitted
+      according to that character. 
+      The space around the semicolon is not necessary and
+      serves only as a description.
+    
+      2. The path is a string, and the catenation object is a dictionary
+      ------------------------------------------------------------------
+    
+      Then it is understood that several files are going to be created
+      from a single input file.
+    
+      The dictionary has to be structured like the following:
+    
+      input_path --> type string --> it corresponds this object:
+      {output_path_1 : cat_str_1,
+        output_path_2 : cat_str_2,
+                    (...)        ,
+        output_path_n : cat_str_n}
+    
+      3. Both the path and catenation object are lists
+      ------------------------------------------------
+    
+      This is the most complete case, in which each file
+      is splitted into several files.
+      There must be a catenation object per input path,
+      so the structure of the case is as follows:
+    
+      input_path_1 --> type string --> it corresponds this object:
+      {output_path_1 : cat_str_1,
+        output_path_2 : cat_str_2,
+                    (...)        ,
+        output_path_n : cat_str_n}
+    
+      [...]
+    
+      input_path_n --> type string --> it corresponds this object:
+      {output_path_n+1 : cat_str_n+1,
+        output_path_n+2 : cat_str_n+2,
+                      (...)          ,
+        output_path_n+m : cat_str_n+m}
+    
+    Note
+    ----
+    In any case, this function includes an option to
+    mark the output path as 'default', that it to say,
+    output_path == "default".
+    
+    In such case, the catenation string will be ussed
+    as an appendix to the original path, 
+    i.e. f"{original_path}_{catenation_string}.{extension}"
+    
+    However, there might be occasions in which that string is too long
+    (more than 60 characters), so when this happens the string to add
+    will be simply 'lotsOfPagesTweaked' and the output path will be
+    f"{original_path_name_noext}_lotsOfPagesTweaked.{extension}"
+    
+    If any other than the default is given -as said, with or without
+    the extension, irrespective of the case- , to the output path 
+    the 'pdf' extension will be added if necessary. 
+    Recall that the latter refers to the output path(s).
+    
+    Also for the sake of gathering simplicity and practicity,
+    this function is designed to work with absolute paths,
+    in order to have a unique function placed in a module with a fixed path.
+    """
     
     arg_names = pdf_file_tweaker.__code__.co_varnames
     
@@ -249,46 +251,48 @@ def pdf_file_tweaker(path, cat_out_obj):
         
 def pdf_file_compressor(in_path, out_path=None):
     
-    # Function that compresses pdf files with an imperceptible loss of quality.
-    # For that it uses the 'ps2pdf' tool, 
-    # together with os.system shell emulator attribute.
-    # 
-    # Parameters
-    # ----------
-    # in_path : str or PosixPath or list of str or PosixPath.
-    #       String or list of strings that identify the file(s) to work with,
-    #       included pathlib.Path module's PosixPaths.
-    # out_path : str or PosixPath or list of str or PosixPath.
-    #       Object that provides the output file name(s).
-    # 
-    # This function distinguishes between these two cases:
-    # 
-    #   1. Both the input and output paths are single strings
-    #       In this case, a single file is compressed and then 
-    #       renamed to the custom name.
-    # 
-    #   2. Both the input and output paths are lists
-    #       It is understood that, for each index, the corresponding input file 
-    #       has to be renamed to the corresponding output file,
-    #       after the compression.
-    # 
-    # Note
-    # ----
-    # This function incorportates a default behaviour
-    # in which adds the string '_compressed' 
-    # to the extensionless part of the name.
-    # 
-    # For the sake of simplicity, unlike in 'pdf_file_tweaker' because
-    # it is more complex, the function is designed to invoke such funcionality
-    # by setting the output path to None.
-    # 
-    # If any other than the default is given to the output path,
-    # the 'pdf' extension will be added if necessary. 
-    # Recall that the latter refers to the output path(s).
-    # 
-    # Also for the sake thereof, this function is designed to work
-    # with absolute paths in order to have a unique function 
-    # placed in a module with a fixed path.
+    """
+    Function that compresses pdf files with an imperceptible loss of quality.
+    For that it uses the 'ps2pdf' tool, 
+    together with os.system shell emulator attribute.
+    
+    Parameters
+    ----------
+    in_path : str or PosixPath or list of str or PosixPath.
+          String or list of strings that identify the file(s) to work with,
+          included pathlib.Path module's PosixPaths.
+    out_path : str or PosixPath or list of str or PosixPath.
+          Object that provides the output file name(s).
+    
+    This function distinguishes between these two cases:
+    
+      1. Both the input and output paths are single strings
+          In this case, a single file is compressed and then 
+          renamed to the custom name.
+    
+      2. Both the input and output paths are lists
+          It is understood that, for each index, the corresponding input file 
+          has to be renamed to the corresponding output file,
+          after the compression.
+    
+    Note
+    ----
+    This function incorportates a default behaviour
+    in which adds the string '_compressed' 
+    to the extensionless part of the name.
+    
+    For the sake of simplicity, unlike in 'pdf_file_tweaker' because
+    it is more complex, the function is designed to invoke such funcionality
+    by setting the output path to None.
+    
+    If any other than the default is given to the output path,
+    the 'pdf' extension will be added if necessary. 
+    Recall that the latter refers to the output path(s).
+    
+    Also for the sake thereof, this function is designed to work
+    with absolute paths in order to have a unique function 
+    placed in a module with a fixed path.
+    """
     
     arg_names = pdf_file_compressor.__code__.co_varnames
           
@@ -343,23 +347,25 @@ def checkEssentialProgInstallStatus():
 
 def eml2pdf(path_to_walk_in, delete_eml_files=False):
     
-    # Tool to convert email messages (.msg extension) to PDF files.
-    # 
-    # The main conversion is done by parsing (and cleaning)
-    # the mime/structure, converting it to html and then using
-    # wkhtmltopdf to convert the generated html to a pdf file.
-    # In linux, 'wkhtmltopdf' program is needed
-    # in order to perform the latter task.
-    # 
-    # Parameters
-    # ----------
-    # path_to_walk_in : str or PosixPath
-    #       Input path to search for 'eml' files.
-    # delete_eml_files : bool
-    #       Option to control whether to delete eml extension files.
-    #       It has been incorporated to prevent file deletion if
-    #       the conversion fails, or because the user wants to keep those files.
-    #       Defaults to False to prevent accidental loss.
+    """
+    Tool to convert email messages (.msg extension) to PDF files.
+    
+    The main conversion is done by parsing (and cleaning)
+    the mime/structure, converting it to html and then using
+    wkhtmltopdf to convert the generated html to a pdf file.
+    In linux, 'wkhtmltopdf' program is needed
+    in order to perform the latter task.
+    
+    Parameters
+    ----------
+    path_to_walk_in : str or PosixPath
+          Input path to search for 'eml' files.
+    delete_eml_files : bool
+          Option to control whether to delete eml extension files.
+          It has been incorporated to prevent file deletion if
+          the conversion fails, or because the user wants to keep those files.
+          Defaults to False to prevent accidental loss.
+    """
     
     extension = extensions[1]
     eml_files = find_ext_file_paths(extension,
@@ -383,33 +389,35 @@ def msg2pdf(path_to_walk_in,
             delete_msg_files=False,
             delete_eml_files=False):
     
-    # Tool to convert Microsoft Outlook messages (.msg extension)
-    # to PDF files or email messages (.eml extension) to PDF.
-    # 
-    # It firstly it uses the 'msgconvert' tool to convert
-    # msg files into email files.
-    # Then the main conversion is done by parsing (and cleaning)
-    # the mime/structure, converting it to html and then using
-    # wkhtmltopdf to convert the generated html to a pdf file.
-    # This is performed by calling the already defined 'eml2pdf' function.
-    # 
-    # In linux, 'wkhtmltopdf' program is needed
-    # in order to perform the latter task.
-    # 
-    # Parameters
-    # ----------
-    # path_to_walk_in : str or PosixPath
-    #       Input path to search for 'msg' files.
-    # delete_msg_files : bool
-    #       Option to control whether to delete msg extension files.
-    #       It has been incorporated to prevent file deletion if
-    #       the conversion fails, or because the user wants to keep those files.
-    #       Defaults to False to prevent accidental loss.
-    # 
-    # delete_eml_files : bool
-    #       Same task as the previous parameter
-    #       but affecting only to eml files.
-    #       Defaults to False to prevent accidental loss.
+    """
+    Tool to convert Microsoft Outlook messages (.msg extension)
+    to PDF files or email messages (.eml extension) to PDF.
+    
+    It firstly it uses the 'msgconvert' tool to convert
+    msg files into email files.
+    Then the main conversion is done by parsing (and cleaning)
+    the mime/structure, converting it to html and then using
+    wkhtmltopdf to convert the generated html to a pdf file.
+    This is performed by calling the already defined 'eml2pdf' function.
+    
+    In linux, 'wkhtmltopdf' program is needed
+    in order to perform the latter task.
+    
+    Parameters
+    ----------
+    path_to_walk_in : str or PosixPath
+          Input path to search for 'msg' files.
+    delete_msg_files : bool
+          Option to control whether to delete msg extension files.
+          It has been incorporated to prevent file deletion if
+          the conversion fails, or because the user wants to keep those files.
+          Defaults to False to prevent accidental loss.
+    
+    delete_eml_files : bool
+          Same task as the previous parameter
+          but affecting only to eml files.
+          Defaults to False to prevent accidental loss.
+    """
     
     extension = extensions[2]
     msg_files = find_ext_file_paths(extension,

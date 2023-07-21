@@ -4,27 +4,29 @@
 
 def dict_value_basic_operator(dict1, dict2, basic_math_operator):
 
-    # Performs the basic mathematical operations between two dictionaries.
-    # 
-    # Parameters
-    # ----------
-    # dict1 : dict
-    #       First dictionary containing some values.
-    # dict2 : dict
-    #       Second dictionary containing some values.
-    # basic_math_operator : {'+', '-', '*', '/'}
-    # 
-    # Returns
-    # -------
-    # Depending on the operation chosen:
-    # sum_dict : dict:
-    #       Dictionary with summed values.
-    # subtr_dict : dict:
-    #       Dictionary with subtracted values.
-    # mult_dict : dict:
-    #       Dictionary with multiplied values.
-    # div_dict : dict:
-    #       Dictionary with divided values.
+    """
+    Performs the basic mathematical operations between two dictionaries.
+    
+    Parameters
+    ----------
+    dict1 : dict
+          First dictionary containing some values.
+    dict2 : dict
+          Second dictionary containing some values.
+    basic_math_operator : {'+', '-', '*', '/'}
+    
+    Returns
+    -------
+    Depending on the operation chosen:
+    sum_dict : dict:
+          Dictionary with summed values.
+    subtr_dict : dict:
+          Dictionary with subtracted values.
+    mult_dict : dict:
+          Dictionary with multiplied values.
+    div_dict : dict:
+          Dictionary with divided values.
+    """
 
     if basic_math_operator == '+':
         sum_dict = {key:

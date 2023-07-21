@@ -48,37 +48,39 @@ posixpath_converter = file_and_directory_paths.posixpath_converter
 
 def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
     
-    # Function that moves files selected by extensions,
-    # from the directory that this code is called
-    # to the desired directory or directories.
-    # 
-    # Parameters
-    # ----------
-    # extensions : str or list
-    #       A string of the file extension or a list of extensions,
-    #       WITHOUT THE POINT MARKER in any case.
-    # destination_directories : str or list
-    #       A string of the directory name or a list
-    #       containing several directories where to move the matching files.
-    # 
-    # This function distinguishes four cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #           Then it is understood that each extensioned file
-    #           corresponds to a single directory (it is physically impossible to
-    #           move files to multiple directories other than copying them),
-    #           and it is moved to the aforementioned directory.
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The extensions are contained in a list but there is
-    #      a single directory.
-    #           Then the matching files will be moved to that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the single-extension matching files will be
-    #           moved to each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be moved to that directory.
-
+    """
+    Function that moves files selected by extensions,
+    from the directory that this code is called
+    to the desired directory or directories.
+    
+    Parameters
+    ----------
+    extensions : str or list
+          A string of the file extension or a list of extensions,
+          WITHOUT THE POINT MARKER in any case.
+    destination_directories : str or list
+          A string of the directory name or a list
+          containing several directories where to move the matching files.
+    
+    This function distinguishes four cases:
+    
+      1. Both file names and directories are lists.
+              Then it is understood that each extensioned file
+              corresponds to a single directory (it is physically impossible to
+              move files to multiple directories other than copying them),
+              and it is moved to the aforementioned directory.
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The extensions are contained in a list but there is
+          a single directory.
+              Then the matching files will be moved to that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the single-extension matching files will be
+              moved to each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be moved to that directory.
+    """
+    
     if isinstance(extensions, list)\
     and isinstance(destination_directories, list):
         
@@ -127,53 +129,55 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
 
 def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
 
-    # Function that moves files selected by part of the file name,
-    # from the directory that this code is called
-    # to the desired directory or directories.
-    # It uses name globbing (or main globbing, Path(path).glob attribute).
-    #
-    # There are four cases of string globbing inside the main globbing:
-    #   1. The string is fixed.
-    #       Then on the main globbing no asterisk is needed.
-    #   2. The string has a particular beggining.
-    #       Then on the main globbing the asterisk goes at the end.
-    #   3. The string has a particular ending.
-    #       Then on the main globbing the asterisk goes at the beggining.
-    #   4. The string is composed by several particular substrings.
-    #       Several asterisks are placed along the string.
-    # 
-    # Because these reasons and for practical purposes and simplicity,
-    # the main globbing does not include any asterisk placement case,
-    # so the strings are required already to have asterisks.
-    # This functionality is applied to similar functions in this module.
-    # 
-    # Parameters
-    # ----------
-    # file_strings : str or list
-    #       String or list of strings that identify the desired files.
-    #       Accepts file name extension globbing.
-    # destination_directories : str or list
-    #       A string of the directory name or a list
-    #       containing several directories where to move the matching files.
-    # 
-    # This function distinguishes four cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #           Then it is understood that each extensioned file
-    #           corresponds to a single directory (it is physically impossible to
-    #           move files to multiple directories other than copying them),
-    #           and it is moved to the aforementioned directory.
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The extensions are contained in a list but there is
-    #      a single directory.
-    #           Then the matching files will be moved to that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the single-extension matching files will be
-    #           moved to each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be moved to that directory.
-
+    """
+    Function that moves files selected by part of the file name,
+    from the directory that this code is called
+    to the desired directory or directories.
+    It uses name globbing (or main globbing, Path(path).glob attribute).
+    
+    There are four cases of string globbing inside the main globbing:
+      1. The string is fixed.
+          Then on the main globbing no asterisk is needed.
+      2. The string has a particular beggining.
+          Then on the main globbing the asterisk goes at the end.
+      3. The string has a particular ending.
+          Then on the main globbing the asterisk goes at the beggining.
+      4. The string is composed by several particular substrings.
+          Several asterisks are placed along the string.
+    
+    Because these reasons and for practical purposes and simplicity,
+    the main globbing does not include any asterisk placement case,
+    so the strings are required already to have asterisks.
+    This functionality is applied to similar functions in this module.
+    
+    Parameters
+    ----------
+    file_strings : str or list
+          String or list of strings that identify the desired files.
+          Accepts file name extension globbing.
+    destination_directories : str or list
+          A string of the directory name or a list
+          containing several directories where to move the matching files.
+    
+    This function distinguishes four cases:
+    
+      1. Both file names and directories are lists.
+              Then it is understood that each extensioned file
+              corresponds to a single directory (it is physically impossible to
+              move files to multiple directories other than copying them),
+              and it is moved to the aforementioned directory.
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The extensions are contained in a list but there is
+          a single directory.
+              Then the matching files will be moved to that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the single-extension matching files will be
+              moved to each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be moved to that directory.
+    """
+    
     if isinstance(file_strings, list)\
     and isinstance(destination_directories, list):
         
@@ -297,45 +301,47 @@ def copy_files_byExts_fromCodeCallDir(extensions,
                                       destination_directories,
                                       recursive_in_depth=True):
     
-    # Function that moves files selected by extensions,
-    # from the directory that this code is called
-    # to the desired directory or directories.
-    #  
-    # Parameters
-    # ----------
-    # extensions : str or list
-    #       A string of the file extension or a list of extensions,
-    #       WITHOUT THE POINT MARKER in any case.
-    # destination_directories : str or list
-    #       A string of the directory name or a list
-    #       containing several directories where to move the matching files.
-    # recursive_in_depth : bool
-    #       Applies only to the case in which both of the first parameters are lists.
-    #       Default value is True.
-    #       Behavior explanation is shown below.
-    # 
-    # This function distinguishes four cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #       1.1 recursive_in_depth=True
-    #           Then it is understood that each extensioned file
-    #           corresponds to multiple directories and it is
-    #           recursively copied to all of them.
-    #       1.2 recursive_in_depth=False
-    #           Then it is understood that each extensioned file
-    #           corresponds to a single directory, and it is copied
-    #           to the aforementioned directory.
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The file names are contained in a list but there is
-    #      a single directory.
-    #           Then each file will be copied to that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the matching files will be recursively copied
-    #           to each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be copied to that directory.
-               
+    """
+    Function that moves files selected by extensions,
+    from the directory that this code is called
+    to the desired directory or directories.
+      
+    Parameters
+    ----------
+    extensions : str or list
+          A string of the file extension or a list of extensions,
+          WITHOUT THE POINT MARKER in any case.
+    destination_directories : str or list
+          A string of the directory name or a list
+          containing several directories where to move the matching files.
+    recursive_in_depth : bool
+          Applies only to the case in which both of the first parameters are lists.
+          Default value is True.
+          Behavior explanation is shown below.
+    
+    This function distinguishes four cases:
+    
+      1. Both file names and directories are lists.
+          1.1 recursive_in_depth=True
+              Then it is understood that each extensioned file
+              corresponds to multiple directories and it is
+              recursively copied to all of them.
+          1.2 recursive_in_depth=False
+              Then it is understood that each extensioned file
+              corresponds to a single directory, and it is copied
+              to the aforementioned directory.
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The file names are contained in a list but there is
+          a single directory.
+              Then each file will be copied to that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the matching files will be recursively copied
+              to each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be copied to that directory.
+    """          
+    
     if isinstance(extensions, list)\
     and isinstance(destination_directories, list)\
     and recursive_in_depth:
@@ -399,44 +405,46 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
                                     destination_directories,
                                     recursive_in_depth=True):
 
-    # Function that copies files selected by part of the file name,
-    # from the directory that this code is called
-    # to the desired directory or directories.
-    # 
-    # Parameters
-    # ----------
-    # file_strings : str or list
-    #       String or list of strings that identify the desired files.
-    #       Accepts file name extension globbing.
-    # destination_directories : str or list
-    #       A string of the directory name or a list
-    #       containing several directories where to move the matching files.
-    # recursive_in_depth : bool
-    #       Applies only to the case in which both of the first parameters are lists.
-    #       Default value is True.
-    #       Behavior explanation is shown below.
-    # 
-    # This function distinguishes five cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #       1.1 recursive_in_depth=True
-    #           Then it is understood that each string file
-    #           corresponds to multiple directories and it is
-    #           recursively copied to all of them.
-    #       1.2 recursive_in_depth=False
-    #           Then it is understood that each string file
-    #           corresponds to a single directory, and it is
-    #           copied to the aforementioned directory. 
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The file names are contained in a list but there is
-    #      a single directory.
-    #           Then each file will be copied to that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the matching files will be recursively copied
-    #           to each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be moved to that directory.
+    """
+    Function that copies files selected by part of the file name,
+    from the directory that this code is called
+    to the desired directory or directories.
+    
+    Parameters
+    ----------
+    file_strings : str or list
+          String or list of strings that identify the desired files.
+          Accepts file name extension globbing.
+    destination_directories : str or list
+          A string of the directory name or a list
+          containing several directories where to move the matching files.
+    recursive_in_depth : bool
+          Applies only to the case in which both of the first parameters are lists.
+          Default value is True.
+          Behavior explanation is shown below.
+    
+    This function distinguishes five cases:
+    
+      1. Both file names and directories are lists.
+          1.1 recursive_in_depth=True
+              Then it is understood that each string file
+              corresponds to multiple directories and it is
+              recursively copied to all of them.
+          1.2 recursive_in_depth=False
+              Then it is understood that each string file
+              corresponds to a single directory, and it is
+              copied to the aforementioned directory. 
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The file names are contained in a list but there is
+          a single directory.
+              Then each file will be copied to that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the matching files will be recursively copied
+              to each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be moved to that directory.
+    """
 
     if isinstance(file_strings, list)\
     and isinstance(destination_directories, list)\
@@ -512,52 +520,54 @@ def remove_files_byExts(extensions,
                         find_hidden_files=False,
                         recursive_in_depth=True):
     
-    # Function that removes files selected by extensions 
-    # from the specified directory or directories.
-    # 
-    # It also incorporates a function to remove hidden files,
-    # if the path is already known; it is similar to the UNIX command.
-    # Since it is not an ordinary task to work with hidden files,
-    # the only task to accomplish for is to delete them.
-    # 
-    # Parameters
-    # ----------
-    # extensions : str or list
-    #       A string of the file extension or a list of extensions,
-    #       WITHOUT THE POINT MARKER in any case.
-    # destination_directories : str or list
-    #       A string of the directory name or a list
-    #       containing several directories where to move the matching files.
-    # find_hidden_files : bool
-    #       Controls whether to seek for hidden files in the given directory
-    #       by ´destination_directories´ parameter. Defaults False.
-    # recursive_in_depth : bool
-    #       Applies only to the case in which both of the first parameters are lists.
-    #       Default value is True.
-    #       Behavior explanation is shown below.
-    # 
-    # This function distinguishes four cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #       1.1 recursive_in_depth=True
-    #           Then it is understood that each file
-    #           corresponds to multiple directories and they have to be
-    #           recursively removed from all of them.
-    #       1.2 recursive_in_depth=False
-    #           Then it is understood that each file
-    #           corresponds to a single directory, and they are removed from
-    #           the given directories.
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The file names are contained in a list but there is
-    #      a single directory.
-    #           Then each file will be removed from that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the matching files will be recursively removed
-    #           from each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be removed from that directory.
-               
+    """
+    Function that removes files selected by extensions 
+    from the specified directory or directories.
+    
+    It also incorporates a function to remove hidden files,
+    if the path is already known; it is similar to the UNIX command.
+    Since it is not an ordinary task to work with hidden files,
+    the only task to accomplish for is to delete them.
+    
+    Parameters
+    ----------
+    extensions : str or list
+          A string of the file extension or a list of extensions,
+          WITHOUT THE POINT MARKER in any case.
+    destination_directories : str or list
+          A string of the directory name or a list
+          containing several directories where to move the matching files.
+    find_hidden_files : bool
+          Controls whether to seek for hidden files in the given directory
+          by ´destination_directories´ parameter. Defaults False.
+    recursive_in_depth : bool
+          Applies only to the case in which both of the first parameters are lists.
+          Default value is True.
+          Behavior explanation is shown below.
+    
+    This function distinguishes four cases:
+    
+      1. Both file names and directories are lists.
+          1.1 recursive_in_depth=True
+              Then it is understood that each file
+              corresponds to multiple directories and they have to be
+              recursively removed from all of them.
+          1.2 recursive_in_depth=False
+              Then it is understood that each file
+              corresponds to a single directory, and they are removed from
+              the given directories.
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The file names are contained in a list but there is
+          a single directory.
+              Then each file will be removed from that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the matching files will be recursively removed
+              from each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be removed from that directory.
+    """ 
+          
     if isinstance(destination_directories, list):
         destination_directories = [posixpath_converter(dirc, False)
                                    for dirc in str(destination_directories)]
@@ -653,52 +663,54 @@ def remove_files_byFS(file_strings,
                       find_hidden_files=False,
                       recursive_in_depth=True):
     
-    # Function that removes files selected by part of the file name
-    # from the specified directory or directories.
-    # 
-    # It also incorporates a function to remove hidden files,
-    # if the path is already known; it is similar to the UNIX command.
-    # Since it is not an ordinary task to work with hidden files,
-    # the only task to accomplish for is to delete them.
-    # 
-    # Parameters
-    # ----------
-    # file_strings : str or list
-    #       String or list of strings that identify the desired files.
-    #       Accepts file name extension globbing.
-    # destination_directories : str or list
-    #       A string of the directory name or a list containing
-    #       several directories.
-    # find_hidden_files : bool
-    #       Controls whether to seek for hidden files in the given directory
-    #       by ´destination_directories´ parameter. Defaults False.
-    # recursive_in_depth : bool
-    #       Applies only to the case in which both of the first parameters are lists.
-    #       Default value is True.
-    #       Behavior explanation is shown below.
-    # 
-    # This function distinguishes four cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #       1.1 recursive_in_depth=True
-    #           Then it is understood that each string file
-    #           corresponds to multiple directories and it is
-    #           recursively removed from all of them.
-    #       1.2 recursive_in_depth=False
-    #           Then it is understood that each string file
-    #           corresponds to a single directory, and it is
-    #           removed from the aforementioned directory. 
-    #           File and directory lists have to be of the same length;
-    #           throws and error otherwise.
-    #   2. The file names are contained in a list but there is
-    #      a single directory.
-    #           Then each file will be removed from that directory.
-    #   3. The extension is a string and directories are contained in a list.
-    #           Then the matching files will be recursively removed
-    #           from each of the directories.
-    #   4. None of them are lists.
-    #           Then the matching files will simply be removed from that directory.
-        
+    """
+    Function that removes files selected by part of the file name
+    from the specified directory or directories.
+    
+    It also incorporates a function to remove hidden files,
+    if the path is already known; it is similar to the UNIX command.
+    Since it is not an ordinary task to work with hidden files,
+    the only task to accomplish for is to delete them.
+    
+    Parameters
+    ----------
+    file_strings : str or list
+          String or list of strings that identify the desired files.
+          Accepts file name extension globbing.
+    destination_directories : str or list
+          A string of the directory name or a list containing
+          several directories.
+    find_hidden_files : bool
+          Controls whether to seek for hidden files in the given directory
+          by ´destination_directories´ parameter. Defaults False.
+    recursive_in_depth : bool
+          Applies only to the case in which both of the first parameters are lists.
+          Default value is True.
+          Behavior explanation is shown below.
+    
+    This function distinguishes four cases:
+    
+      1. Both file names and directories are lists.
+          1.1 recursive_in_depth=True
+              Then it is understood that each string file
+              corresponds to multiple directories and it is
+              recursively removed from all of them.
+          1.2 recursive_in_depth=False
+              Then it is understood that each string file
+              corresponds to a single directory, and it is
+              removed from the aforementioned directory. 
+              File and directory lists have to be of the same length;
+              throws and error otherwise.
+      2. The file names are contained in a list but there is
+          a single directory.
+              Then each file will be removed from that directory.
+      3. The extension is a string and directories are contained in a list.
+              Then the matching files will be recursively removed
+              from each of the directories.
+      4. None of them are lists.
+              Then the matching files will simply be removed from that directory.
+    """ 
+    
     if isinstance(destination_directories, list):
         destination_directories = [posixpath_converter(dirc, False)
                                    for dirc in str(destination_directories)]
@@ -991,39 +1003,41 @@ def copy_entire_directories(directories,
 def rename_objects(relative_paths,
                    renaming_relative_paths):
 
-    # Function that renames files specified by their absolute paths.
-    # 
-    # In fact, os.rename can also perform the same tasks as shutil.move does,
-    # therefore functions 'move_files_byExts_fromCodeCallDir' and
-    # 'move_files_byFS_fromCodeCallDir', including the fact that,
-    # besides moving a directory or file, it includes the option to
-    # rename thereof at the destination directory, i.e. altering the
-    # ultimate part of the absolute path.
-    # 
-    # However, as a matter of distinguishing among the main usages of the modules,
-    # and to invoke simple operations, this function will be used
-    # such that each file or directory will be given another name,
-    # without altering the absolute path.
-    # 
-    # Parameters
-    # ----------
-    # relative_paths: str or list
-    #       String or list of strings that identify the desired files/directories,
-    #       i.e. the absolute path.
-    # renaming_relative_paths : str or list
-    #       A string of the file/directory name or a list containing
-    #       several files/directories, i.e the renamed BUT UNALTERED absolute path.
-    # 
-    # This function distinguishes two cases:
-    # 
-    #   1. Both file names and directories are lists.
-    #       Then it is understood that each string file or directory
-    #       corresponds to another single file or directory and
-    #       it is renamed as commanded. 
-    #       File and directory lists have to be of the same length;
-    #       throws and error otherwise.
-    #   2. None of them are lists.
-    #       Then the matching files will simply be renamed.
+    """
+    Function that renames files specified by their absolute paths.
+    
+    In fact, os.rename can also perform the same tasks as shutil.move does,
+    therefore functions 'move_files_byExts_fromCodeCallDir' and
+    'move_files_byFS_fromCodeCallDir', including the fact that,
+    besides moving a directory or file, it includes the option to
+    rename thereof at the destination directory, i.e. altering the
+    ultimate part of the absolute path.
+    
+    However, as a matter of distinguishing among the main usages of the modules,
+    and to invoke simple operations, this function will be used
+    such that each file or directory will be given another name,
+    without altering the absolute path.
+    
+    Parameters
+    ----------
+    relative_paths: str or list
+          String or list of strings that identify the desired files/directories,
+          i.e. the absolute path.
+    renaming_relative_paths : str or list
+          A string of the file/directory name or a list containing
+          several files/directories, i.e the renamed BUT UNALTERED absolute path.
+    
+    This function distinguishes two cases:
+    
+      1. Both file names and directories are lists.
+          Then it is understood that each string file or directory
+          corresponds to another single file or directory and
+          it is renamed as commanded. 
+          File and directory lists have to be of the same length;
+          throws and error otherwise.
+      2. None of them are lists.
+          Then the matching files will simply be renamed.
+    """
     
     if isinstance(relative_paths, list)\
     and isinstance(renaming_relative_paths, list):

@@ -22,6 +22,7 @@ c = cdsapi.Client()
 #-------------------------#
 
 def download_data(product, output_file, **kwargs):
+    
     """ Download data from the climate data store
 
     Parameters
@@ -37,7 +38,6 @@ def download_data(product, output_file, **kwargs):
     Returns
     -------
     None
-
     """
 
     c.retrieve(

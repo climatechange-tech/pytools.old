@@ -84,57 +84,59 @@ def periodic_statistics(obj, statistic, freq,
                         drop_date_idx_col=False,
                         season_months=None):
     
-    # Calculates the basic statistics (NOT CLIMATOLOGIES)
-    # of the data for a certain time-frequency.
-    # 
-    # Parameters
-    # ----------
-    # obj : pandas.DataFrame or xarray.Dataset
-    #       or xarray.DataArray
-    #       Object containing data.
-    # statistic : {"max", "min", "mean", "std", "sum"}
-    #       String that defines which statistic to compute.
-    # freq : str
-    #       String that identifies the frequency to which data is filtered.
-    #       For example, "D" stands for daily data, "M" for monthly and so on.
-    #       See https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-offset-aliases
-    #       for more details.
-    # groupby_dates : bool
-    #       Available only if obj is xarray.Dataset 
-    #       or xarray.DataArray.
-    #       -----
-    #       The standard procedure to calculate time-statistics
-    #       is to group the dates according to a time-frequency 
-    #       (which technically would be to make an 'upsampling').
-    #       For example, if a data set which contains 30 years expressed
-    #       in an hourly basis and daily mean is required to compute,
-    #       then the result would be another data set with the equal 30 years
-    #       but on a daily basis.
-    #       -----
-    #       However, xarray.Dataset or xarray.DataArray includes
-    #       a resampling method that groups every time-frequency of all years.
-    #       Taking the previous example, the result would be a data set with
-    #       31 time steps, because it takes every day 1, day 2, etc. of all years.
-    #       These are not climatological values but 'groupby' values, which
-    #       is not that common to compute.
-    #       This functions incorporates this option.
-    # drop_date_idx_col : bool
-    #       Boolean used to whether drop the date columns in the new data frame.
-    #       If it is False, then the columns of the dates will be kept.
-    #       Otherwise, the dates themselves will be kept, but they will be
-    #       treated as indexers, and not as a column.
-    #       Defaults to False.
-    # season_months : list of integers
-    #       List containing the month numbers to later refer to the time array,
-    #       whatever the object is among the mentioned three types.
-    #       Defaults to None.
-    # 
-    # Returns
-    # -------
-    # obj : pd.DataFrame, xarray.Dataset 
-    #       or xarray.DataArray.
-    #       Object containing the frecuency-statistic data.
-
+    """
+    Calculates the basic statistics (NOT CLIMATOLOGIES)
+    of the data for a certain time-frequency.
+    
+    Parameters
+    ----------
+    obj : pandas.DataFrame or xarray.Dataset
+          or xarray.DataArray
+          Object containing data.
+    statistic : {"max", "min", "mean", "std", "sum"}
+          String that defines which statistic to compute.
+    freq : str
+          String that identifies the frequency to which data is filtered.
+          For example, "D" stands for daily data, "M" for monthly and so on.
+          See https://pandas.pydata.org/docs/user_guide/timeseries.html#timeseries-offset-aliases
+          for more details.
+    groupby_dates : bool
+          Available only if obj is xarray.Dataset 
+          or xarray.DataArray.
+          -----
+          The standard procedure to calculate time-statistics
+          is to group the dates according to a time-frequency 
+          (which technically would be to make an 'upsampling').
+          For example, if a data set which contains 30 years expressed
+          in an hourly basis and daily mean is required to compute,
+          then the result would be another data set with the equal 30 years
+          but on a daily basis.
+          -----
+          However, xarray.Dataset or xarray.DataArray includes
+          a resampling method that groups every time-frequency of all years.
+          Taking the previous example, the result would be a data set with
+          31 time steps, because it takes every day 1, day 2, etc. of all years.
+          These are not climatological values but 'groupby' values, which
+          is not that common to compute.
+          This functions incorporates this option.
+    drop_date_idx_col : bool
+          Boolean used to whether drop the date columns in the new data frame.
+          If it is False, then the columns of the dates will be kept.
+          Otherwise, the dates themselves will be kept, but they will be
+          treated as indexers, and not as a column.
+          Defaults to False.
+    season_months : list of integers
+          List containing the month numbers to later refer to the time array,
+          whatever the object is among the mentioned three types.
+          Defaults to None.
+    
+    Returns
+    -------
+    obj : pd.DataFrame, xarray.Dataset 
+          or xarray.DataArray.
+          Object containing the frecuency-statistic data.
+    """
+    
     # Quality control of input parameters # 
     statistics = ["max", "min", "sum", "mean", "std"]
     
@@ -228,44 +230,46 @@ def climat_periodic_statistics(obj,
                                drop_date_idx_col=False,
                                season_months=None):
 
-    # Function that calculates climatologic statistics for a time-frequency.
-    # 
-    # Parameters
-    # ----------
-    # obj : pandas.DataFrame, xarray.Dataset 
-    #       or xarray.DataArray.
-    # statistic : {"max", "min", "mean", "std", "sum"}
-    #       String that defines which statistic to compute.
-    # time_freq : str
-    #       String that identifies the frequency to which data is filtered.
-    # keep_std_dates : bool
-    #       If True, standard YMD (HMS) date format is kept for all climatologics
-    #       except for yearly climatologics.
-    #       Otherwise dates are shown as hour, day, or month indexes,
-    #       and season achronyms if "seasonal" is selected as the time frequency.
-    #       Default value is False.
-    # drop_date_idx_col : bool
-    #       Affects only if the passed object is a pandas data frame.
-    #       Boolean used to whether drop the date columns in the new data frame.
-    #       If it is False, then the columns of the dates will be kept.
-    #       Otherwise, the dates themselves will be kept, but they will be
-    #       treated as indexers, and not as a column.
-    #       Defaults to False.
-    # season_months : list of integers
-    #       List containing the month numbers to later refer to the time array,
-    #       whatever the object is among the mentioned three types.
-    #       Defaults to None.
-    # 
-    # Returns
-    # -------
-    # obj_climat : pandas.DataFrame, xarray.Dataset 
-    #              or xarray.DataArray.
-    #              Climatological average of the data.
-    # 
-    # Notes
-    # -----
-    # For pandas data frames, since it is an 2D object,
-    # it is interpreted that data holds for a specific geographical point.
+    """
+    Function that calculates climatologic statistics for a time-frequency.
+    
+    Parameters
+    ----------
+    obj : pandas.DataFrame, xarray.Dataset 
+          or xarray.DataArray.
+    statistic : {"max", "min", "mean", "std", "sum"}
+          String that defines which statistic to compute.
+    time_freq : str
+          String that identifies the frequency to which data is filtered.
+    keep_std_dates : bool
+          If True, standard YMD (HMS) date format is kept for all climatologics
+          except for yearly climatologics.
+          Otherwise dates are shown as hour, day, or month indexes,
+          and season achronyms if "seasonal" is selected as the time frequency.
+          Default value is False.
+    drop_date_idx_col : bool
+          Affects only if the passed object is a pandas data frame.
+          Boolean used to whether drop the date columns in the new data frame.
+          If it is False, then the columns of the dates will be kept.
+          Otherwise, the dates themselves will be kept, but they will be
+          treated as indexers, and not as a column.
+          Defaults to False.
+    season_months : list of integers
+          List containing the month numbers to later refer to the time array,
+          whatever the object is among the mentioned three types.
+          Defaults to None.
+    
+    Returns
+    -------
+    obj_climat : pandas.DataFrame, xarray.Dataset 
+                  or xarray.DataArray.
+                  Climatological average of the data.
+    
+    Notes
+    -----
+    For pandas data frames, since it is an 2D object,
+    it is interpreted that data holds for a specific geographical point.
+    """
     
     # Quality control of input parameters # 
     time_freqs = ["yearly", "seasonal", "monthly", "daily", "hourly"]
@@ -553,68 +557,70 @@ def calculate_and_apply_deltas(observed_series,
                                drop_date_idx_col=False,
                                season_months=None):
 
-    # Function that calculates simple deltas between two objects
-    # and then applies to any of them.
-    # 
-    # For that, it firstly calculates the given time-frequency climatologies
-    # for both objects using 'climat_periodic_statistics' function,
-    # and then performs the delta calculation, 
-    # depending on the math operator chosen:
-    #   1. Absolute delta: subtraction between both objects
-    #   2. Relative delta: division between both objects
-    # 
-    # Once calculated, delta values are climatologically applied to the chosen
-    # object, by addition if the deltas are absolute or multiplication if they
-    # are relative.
-    # 
-    # Parameters
-    # ----------
-    # observed_series : pandas.DataFrame, xarray.Dataset 
-    #                   or xarray.DataArray.
-    # reanalysis_series : pandas.DataFrame, xarray.Dataset 
-    #                     or xarray.DataArray.
-    #       This object can be that extracted from a reanalysis,
-    #       CORDEX projections or similar.
-    # time_freq : str
-    #       String that identifies the frequency to which data is filtered.
-    # delta_type : {"absolute", "relative"}
-    # statistic : {"max", "min", "mean", "std", "sum"}
-    #       String that defines which statistic to compute.
-    #       Default is "mean" so that climatologic means are calculated.
-    # preference_over : {"observed", "reanalysis"}
-    #       If "observed", then the observed series will be treated as the 'truth'
-    #       and the reanalysis will be delta-corrected.
-    #       Otherwise, though it is not common, the reanalysis will be treated
-    #       as the truth and observations will be delta-corrected.
-    #       Defaults to give preference to the observed series.
-    # keep_std_dates : bool
-    #       If True, standard YMD (HMS) date format is kept for all climatologics
-    #       except for yearly climatologics.
-    #       Otherwise dates are shown as hour, day, or month indexes,
-    #       and season achronyms if "seasonal" is selected as the time frequency.
-    #       Default value is False.
-    # drop_date_idx_col : bool
-    #       Affects only if the passed object is a pandas data frame.
-    #       Boolean used to whether drop the date columns in the new data frame.
-    #       If it is False, then the columns of the dates will be kept.
-    #       Otherwise, the dates themselves will be kept, but they will be
-    #       treated as indexers, and not as a column.
-    #       Defaults to True in order to return date-time incorporated series.
-    # season_months : list of integers
-    #       List containing the month numbers to later refer to the time array,
-    #       whatever the object is among the mentioned three types.
-    #       Defaults to None.
-    # 
-    # Returns
-    # -------
-    # obj_climat : pandas.DataFrame, xarray.Dataset 
-    #              or xarray.DataArray.
-    #              Climatological average of the data.
-    # 
-    # Notes
-    # -----
-    # For pandas data frames, since it is an 2D object,
-    # it is interpreted that data holds for a specific geographical point.
+    """
+    Function that calculates simple deltas between two objects
+    and then applies to any of them.
+    
+    For that, it firstly calculates the given time-frequency climatologies
+    for both objects using 'climat_periodic_statistics' function,
+    and then performs the delta calculation, 
+    depending on the math operator chosen:
+      1. Absolute delta: subtraction between both objects
+      2. Relative delta: division between both objects
+    
+    Once calculated, delta values are climatologically applied to the chosen
+    object, by addition if the deltas are absolute or multiplication if they
+    are relative.
+    
+    Parameters
+    ----------
+    observed_series : pandas.DataFrame, xarray.Dataset 
+                      or xarray.DataArray.
+    reanalysis_series : pandas.DataFrame, xarray.Dataset 
+                        or xarray.DataArray.
+          This object can be that extracted from a reanalysis,
+          CORDEX projections or similar.
+    time_freq : str
+          String that identifies the frequency to which data is filtered.
+    delta_type : {"absolute", "relative"}
+    statistic : {"max", "min", "mean", "std", "sum"}
+          String that defines which statistic to compute.
+          Default is "mean" so that climatologic means are calculated.
+    preference_over : {"observed", "reanalysis"}
+          If "observed", then the observed series will be treated as the 'truth'
+          and the reanalysis will be delta-corrected.
+          Otherwise, though it is not common, the reanalysis will be treated
+          as the truth and observations will be delta-corrected.
+          Defaults to give preference to the observed series.
+    keep_std_dates : bool
+          If True, standard YMD (HMS) date format is kept for all climatologics
+          except for yearly climatologics.
+          Otherwise dates are shown as hour, day, or month indexes,
+          and season achronyms if "seasonal" is selected as the time frequency.
+          Default value is False.
+    drop_date_idx_col : bool
+          Affects only if the passed object is a pandas data frame.
+          Boolean used to whether drop the date columns in the new data frame.
+          If it is False, then the columns of the dates will be kept.
+          Otherwise, the dates themselves will be kept, but they will be
+          treated as indexers, and not as a column.
+          Defaults to True in order to return date-time incorporated series.
+    season_months : list of integers
+          List containing the month numbers to later refer to the time array,
+          whatever the object is among the mentioned three types.
+          Defaults to None.
+    
+    Returns
+    -------
+    obj_climat : pandas.DataFrame, xarray.Dataset 
+                  or xarray.DataArray.
+                  Climatological average of the data.
+    
+    Notes
+    -----
+    For pandas data frames, since it is an 2D object,
+    it is interpreted that data holds for a specific geographical point.
+    """
     
     # Quality control of input parameters # 
     delta_types = ["absolute", "relative"]
@@ -942,25 +948,27 @@ def calculate_and_apply_deltas(observed_series,
 
 def windowSum(x, N):
 
-    # Function that computes the sum of the elements
-    # of a (time, lat, lon) array, in a sliding window, i.e. the moving sum.
-    # 
-    # Parameters
-    # ----------
-    # x : numpy.ndarray
-    #       Array containing data.
-    # N : int
-    #       Window size.
-    # 
-    # Returns
-    # -------
-    # sum_window : numpy.ndarray
-    #       The sum of the elements.
-    # 
-    # Notes
-    # -----
-    # Numpy's 'convolve' function does not work for n > 1 dimensional arrays.
-    # In such cases, scipy's 'convolve' function does the trick.
+    """
+    Function that computes the sum of the elements
+    of a (time, lat, lon) array, in a sliding window, i.e. the moving sum.
+    
+    Parameters
+    ----------
+    x : numpy.ndarray
+          Array containing data.
+    N : int
+          Window size.
+    
+    Returns
+    -------
+    sum_window : numpy.ndarray
+          The sum of the elements.
+    
+    Notes
+    -----
+    Numpy's 'convolve' function does not work for n > 1 dimensional arrays.
+    In such cases, scipy's 'convolve' function does the trick.
+    """
     
     shape = x.shape
     dims = len(shape)
@@ -999,21 +1007,23 @@ def windowSum(x, N):
 
 def moving_average(x, N):
     
-    # Returns the moving average of an array, independently of its dimension.
-    # For that, firstly uses the moving sum function and divides the result
-    # by the window size, N.
-    # 
-    # Parameters
-    # ----------
-    # x : numpy.ndarray
-    #       Array containing data.
-    # N : int
-    #       Window size.
-    # 
-    # Returns
-    # -------
-    # moving_average : numpy.ndarray
-    #       The moving average of the array.
+    """
+    Returns the moving average of an array, independently of its dimension.
+    For that, firstly uses the moving sum function and divides the result
+    by the window size, N.
+    
+    Parameters
+    ----------
+    x : numpy.ndarray
+          Array containing data.
+    N : int
+          Window size.
+    
+    Returns
+    -------
+    moving_average : numpy.ndarray
+          The moving average of the array.
+    """
     
     moving_average = windowSum(x, N) / N
     

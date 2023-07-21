@@ -45,36 +45,38 @@ decompose_24h_cumulative_data\
 
 def get_1hour_time_step_data(array, zero_threshold, zeros_dtype='d'):
     
-    # Function that obtains the 1-hour time step cumulative data,
-    # subtracting to the next cumulative, the previous cumulative value.
-    # 
-    # In many cases, data is expressed as 24-hour cumulative,
-    # where data is summed up for every 1 hour,
-    # but each value is added to that of the previous hour.
-    # This is usually the case of the radiation.
-    # 
-    # The methodology, by its nature, still computes
-    # negative or too small unrealistic values,
-    # only at the edges of the time array,
-    # so BELOW this threshold those edges are set to zero.
-    # E.g. radiation, where at midnight the sun does not radiate.
-    # 
-    # Parameters
-    # ----------
-    # array : numpy.ndarray
-    #       Multi-dimensional array which contains data,
-    #       being the first index corresponding to ´time´ dimension.
-    # zero_threshold: int or float:
-    #       Defines the value BELOW which data values are set to zero.
-    # zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)
-    #       Sets the precision of the array composed of zeroes.
-    # 
-    # Returns
-    # -------
-    # hour_TS_delEdges : numpy.ndarray
-    #       Multi dimensional array containing
-    #       1-hour time step cumulative data,
-    #       with the problem of the edges solved.
+    """
+    Function that obtains the 1-hour time step cumulative data,
+    subtracting to the next cumulative, the previous cumulative value.
+    
+    In many cases, data is expressed as 24-hour cumulative,
+    where data is summed up for every 1 hour,
+    but each value is added to that of the previous hour.
+    This is usually the case of the radiation.
+    
+    The methodology, by its nature, still computes
+    negative or too small unrealistic values,
+    only at the edges of the time array,
+    so BELOW this threshold those edges are set to zero.
+    E.g. radiation, where at midnight the sun does not radiate.
+    
+    Parameters
+    ----------
+    array : numpy.ndarray
+          Multi-dimensional array which contains data,
+          being the first index corresponding to ´time´ dimension.
+    zero_threshold: int or float:
+          Defines the value BELOW which data values are set to zero.
+    zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)
+          Sets the precision of the array composed of zeroes.
+    
+    Returns
+    -------
+    hour_TS_delEdges : numpy.ndarray
+          Multi dimensional array containing
+          1-hour time step cumulative data,
+          with the problem of the edges solved.
+    """
     
     records = len(array)
     array_shape = array.shape
@@ -96,29 +98,31 @@ def count_consecutive_days_maxdata(
         min_consec_days=None,
         calculate_max_consecutive_days=False):
     
-    # Function that counts the number of days in which the daily maximum
-    # value exceeds certain threshold.
-    # 
-    # Parameters
-    # ----------
-    # array : numpy.ndarray or pandas.Series
-    #       An array which contains the daily maximum value data.
-    # max_threshold : int
-    #       Upper limit.
-    # min_consec_days : int
-    #       Minimum consecutive days number. It is set to None by default.
-    #       If it is set to None, then no minimum consecutive days will
-    #       be considered, and the number of days above the threshold
-    #       will simply be summed.
-    # calculate_max_consecutive_days : bool
-    #       Returns the largest consecutive days subset
-    # 
-    # Returns
-    # -------
-    # consec_num_days : int
-    #       Total number of days in which the condition has been satisfied.
-    # max_consec_num_days : int
-    #       Maximum number of consecutive days in which the condition has been satisfied.
+    """
+    Function that counts the number of days in which the daily maximum
+    value exceeds certain threshold.
+    
+    Parameters
+    ----------
+    array : numpy.ndarray or pandas.Series
+          An array which contains the daily maximum value data.
+    max_threshold : int
+          Upper limit.
+    min_consec_days : int
+          Minimum consecutive days number. It is set to None by default.
+          If it is set to None, then no minimum consecutive days will
+          be considered, and the number of days above the threshold
+          will simply be summed.
+    calculate_max_consecutive_days : bool
+          Returns the largest consecutive days subset
+    
+    Returns
+    -------
+    consec_num_days : int
+          Total number of days in which the condition has been satisfied.
+    max_consec_num_days : int
+          Maximum number of consecutive days in which the condition has been satisfied.
+    """
     
     above_thres_idx = array > max_threshold
     
@@ -159,32 +163,34 @@ def count_consecutive_days_mindata(
         min_consec_days=None,
         calculate_min_consecutive_days=False):
     
-    # Function that counts the number of days in which the daily minimum
-    # value exceeds certain threshold.
-    # 
-    # Parameters
-    # ----------
-    # array : numpy.ndarray or pandas.Series
-    #       An array which contains the daily minimum value data.
-    # min_threshold : int
-    #       Integer that defines an upper or lower limit of the minimum value.
-    # threshold_mode : {"below","above"}, optional
-    #       Defines whether to select the data that lies
-    #       above or below the threshold. Default value is "below".
-    # min_consec_days : int
-    #       Minimum consecutive days number. It is set to None by default.
-    #       If it is set to None, then no minimum consecutive days will
-    #       be considered, and the number of days above the threshold
-    #       will simply be summed.
-    # calculate_min_consecutive_days : bool
-    #       Returns the largest consecutive days subset
+    """
+    Function that counts the number of days in which the daily minimum
+    value exceeds certain threshold.
+    
+    Parameters
+    ----------
+    array : numpy.ndarray or pandas.Series
+          An array which contains the daily minimum value data.
+    min_threshold : int
+          Integer that defines an upper or lower limit of the minimum value.
+    threshold_mode : {"below","above"}, optional
+          Defines whether to select the data that lies
+          above or below the threshold. Default value is "below".
+    min_consec_days : int
+          Minimum consecutive days number. It is set to None by default.
+          If it is set to None, then no minimum consecutive days will
+          be considered, and the number of days above the threshold
+          will simply be summed.
+    calculate_min_consecutive_days : bool
+          Returns the largest consecutive days subset
 
-    # Returns
-    # -------
-    # consec_num_days : int
-    #       Total number of days in which the condition has been satisfied.
-    # min_consec_num_days : int
-    #       minimum number of consecutive days in which the condition has been satisfied.
+    Returns
+    -------
+    consec_num_days : int
+          Total number of days in which the condition has been satisfied.
+    min_consec_num_days : int
+          minimum number of consecutive days in which the condition has been satisfied.
+    """
     
     if threshold_mode == "below":
         above_thres_idx = array < min_threshold
