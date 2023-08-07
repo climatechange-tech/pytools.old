@@ -915,10 +915,10 @@ def move_entire_directories(directories, destination_directories):
         
 def copy_entire_directories(directories,
                             destination_directories,
-                            copy_directories_themselves=True,
+                            files_only=False,
                             recursive_in_depth=True):
     
-    if copy_directories_themselves:
+    if not files_only:
         
         if isinstance(directories, list)\
         and isinstance(destination_directories, list)\

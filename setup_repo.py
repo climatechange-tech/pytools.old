@@ -22,7 +22,6 @@ home_path = Path.home()
 
 # Default path (same as the current one) 
 default_path = Path.cwd()
-default_path_str = str(default_path)
 
 # Ask the user if other than the default is preferred #
 custom_path\
@@ -66,7 +65,7 @@ else:
     """
     shutil.copytree(default_path, customPathWithDefaultDir, dirs_exist_ok=True)
     
-    print(f"Changed path from '{default_path}' to '{custom_path}'.")
+    print(f"Path changed from '{default_path}' to '{custom_path}'.")
     
     os.chdir(f"{default_path}/..")
     shutil.rmtree(default_path, ignore_errors=True)
