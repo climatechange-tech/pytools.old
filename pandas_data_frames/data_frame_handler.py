@@ -20,14 +20,14 @@ home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
 import get_pytools_path
-fixed_dirpath = get_pytools_path.return_custom_path()
+fixed_path = get_pytools_path.return_custom_path()
 
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_dirpath}/files_and_directories"
-custom_mod2_path = f"{fixed_dirpath}/parameters_and_constants"
-custom_mod3_path = f"{fixed_dirpath}/strings"
+custom_mod1_path = f"{fixed_path}/files_and_directories"
+custom_mod2_path = f"{fixed_path}/parameters_and_constants"
+custom_mod3_path = f"{fixed_path}/strings"
                                         
 # Add the module path to the path variable #
 #------------------------------------------#

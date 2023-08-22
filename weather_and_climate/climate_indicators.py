@@ -19,7 +19,7 @@ cwd = Path.cwd()
 main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 
 # All-code containing directory #
-fixed_dirpath = str([path
+fixed_path = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
 
@@ -28,7 +28,7 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "climate_statistics.py"
-custom_mod1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_path}/"\
                    f"weather_and_climate/{module_imp1}"
 
 spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
@@ -37,7 +37,7 @@ spec1.loader.exec_module(climate_statistics)
 
 
 module_imp2 = "array_numerical_operations.py"
-custom_mod2_path = f"{fixed_dirpath}/"\
+custom_mod2_path = f"{fixed_path}/"\
                    f"arrays_and_lists/{module_imp2}"
 
 spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
@@ -46,7 +46,7 @@ spec2.loader.exec_module(array_numerical_operations)
 
 
 module_imp3 = "array_handler.py"
-custom_mod3_path = f"{fixed_dirpath}/"\
+custom_mod3_path = f"{fixed_path}/"\
                    f"arrays_and_lists/{module_imp3}"
 
 spec3 = importlib.util.spec_from_file_location(module_imp3, custom_mod3_path)
@@ -55,7 +55,7 @@ spec3.loader.exec_module(array_handler)
 
 
 module_imp4 = "string_handler.py"
-custom_mod4_path = f"{fixed_dirpath}/"\
+custom_mod4_path = f"{fixed_path}/"\
                    f"strings/{module_imp4}"
 
 spec4 = importlib.util.spec_from_file_location(module_imp4, custom_mod4_path)
@@ -64,7 +64,7 @@ spec4.loader.exec_module(string_handler)
 
 
 module_imp5 = "consecutive_idx_statistics.py"
-custom_mod5_path = f"{fixed_dirpath}/"\
+custom_mod5_path = f"{fixed_path}/"\
                    f"weather_and_climate/{module_imp5}"
 
 spec5 = importlib.util.spec_from_file_location(module_imp5, custom_mod5_path)
@@ -73,7 +73,7 @@ spec5.loader.exec_module(consecutive_idx_statistics)
 
 
 module_imp6 = "climatic_signal_modulators.py"
-custom_mod6_path = f"{fixed_dirpath}/"\
+custom_mod6_path = f"{fixed_path}/"\
                    f"weather_and_climate/{module_imp6}"
 
 spec6 = importlib.util.spec_from_file_location(module_imp6, custom_mod6_path)
@@ -82,7 +82,7 @@ spec6.loader.exec_module(climatic_signal_modulators)
 
 
 module_imp7 = "meteorological_variables.py"
-custom_mod7_path = f"{fixed_dirpath}/"\
+custom_mod7_path = f"{fixed_path}/"\
                    f"weather_and_climate/{module_imp7}"
 
 spec7 = importlib.util.spec_from_file_location(module_imp7, custom_mod7_path)

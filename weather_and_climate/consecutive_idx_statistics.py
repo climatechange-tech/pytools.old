@@ -15,7 +15,7 @@ cwd = Path.cwd()
 main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 
 # All-code containing directory #
-fixed_dirpath = str([path
+fixed_path = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
 
@@ -24,7 +24,7 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "array_numerical_operations.py"
-custom_mod1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_path}/"\
                    f"arrays_and_lists/{module_imp1}"
 
 spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)

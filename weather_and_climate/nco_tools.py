@@ -14,7 +14,7 @@ cwd = Path.cwd()
 main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 
 # All-code containing directory #
-fixed_dirpath = str([path
+fixed_path = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
 
@@ -23,7 +23,7 @@ fixed_dirpath = str([path
 #-----------------------#
 
 module_imp1 = "string_handler.py"
-custom_mod1_path = f"{fixed_dirpath}/"\
+custom_mod1_path = f"{fixed_path}/"\
                    f"strings/{module_imp1}"
 
 spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
@@ -32,7 +32,7 @@ spec1.loader.exec_module(string_handler)
 
 
 module_imp2 = "file_and_directory_handler.py"
-custom_mod2_path = f"{fixed_dirpath}/"\
+custom_mod2_path = f"{fixed_path}/"\
                    f"files_and_directories/{module_imp2}"
 
 spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)

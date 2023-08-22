@@ -17,7 +17,7 @@ def find_substring_index(string,
                          advanced_search=False,
                          find_whole_words=False,
                          case_sensitive=False,
-                         all_cases=False):
+                         all_matches=False):
     
     # substring: str or list of str
     #       If 'str' then it can either be as is or a regex.
@@ -29,7 +29,7 @@ def find_substring_index(string,
             substrLowestIdx = string_VS_string_search(string, substring, 
                                                       find_whole_words,
                                                       case_sensitive,
-                                                      all_cases)
+                                                      all_matches)
         else:
             substrLowestIdx = np.char.find(string,
                                            substring,
@@ -72,7 +72,7 @@ def find_substring_index(string,
                 = np.array([string_VS_string_search(s_el, substring,
                                                     find_whole_words,
                                                     case_sensitive, 
-                                                    all_cases)
+                                                    all_matches)
                             for s_el in string])
                 
                 substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
@@ -95,7 +95,7 @@ def find_substring_index(string,
                 = np.array([[string_VS_string_search(s_el, sb_el,
                                                      find_whole_words,
                                                      case_sensitive,
-                                                     all_cases)
+                                                     all_matches)
                              for s_el in string]
                             for sb_el in substring])
                 
@@ -124,12 +124,12 @@ def string_VS_string_search(string,
                             substring,
                             find_whole_words,
                             case_sensitive,
-                            all_cases):
+                            all_matches):
     
     # No option selected #
     #--------------------#
     
-    if not case_sensitive and not all_cases and not find_whole_words:
+    if not case_sensitive and not all_matches and not find_whole_words:
         firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = firstOnlyMatch.start(0)
@@ -140,7 +140,7 @@ def string_VS_string_search(string,
     # One option selected #
     #---------------------#
         
-    elif case_sensitive and not all_cases and not find_whole_words:
+    elif case_sensitive and not all_matches and not find_whole_words:
         firstOnlyMatch = re.search(substring, string)
         try:
             substrLowestIdx = firstOnlyMatch.start(0)
@@ -148,7 +148,7 @@ def string_VS_string_search(string,
         except:
             return -1
         
-    elif not case_sensitive and all_cases and not find_whole_words:
+    elif not case_sensitive and all_matches and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = [m.start(0) for m in allMatchesIterator]
@@ -156,7 +156,7 @@ def string_VS_string_search(string,
         except:
             return -1
         
-    elif not case_sensitive and not all_cases and find_whole_words:
+    elif not case_sensitive and not all_matches and find_whole_words:
         exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = exactMatch.start(0)
@@ -167,7 +167,7 @@ def string_VS_string_search(string,
     # Two options selected #
     #----------------------# 
     
-    elif case_sensitive and all_cases and not find_whole_words:
+    elif case_sensitive and all_matches and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string)
         try:
             substrLowestIdx = [m.start(0) for m in allMatchesIterator]
@@ -175,7 +175,7 @@ def string_VS_string_search(string,
         except:
             return -1
         
-    elif case_sensitive and not all_cases and find_whole_words:
+    elif case_sensitive and not all_matches and find_whole_words:
         exactMatch = re.fullmatch(substring, string)
         try:
             substrLowestIdx = exactMatch.start(0)

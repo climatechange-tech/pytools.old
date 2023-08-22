@@ -16,7 +16,7 @@ cwd = Path.cwd()
 main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
 
 # All-code containing directory #
-fixed_dirpath = str([path
+fixed_path = str([path
                      for path in main_path
                      if "pytools" in str(path).lower()][0])
 

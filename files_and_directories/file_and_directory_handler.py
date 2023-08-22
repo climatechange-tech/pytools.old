@@ -16,12 +16,12 @@ home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
 import get_pytools_path
-fixed_dirpath = get_pytools_path.return_custom_path()
+fixed_path = get_pytools_path.return_custom_path()
 
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod_path = f"{fixed_dirpath}/files_and_directories"      
+custom_mod_path = f"{fixed_path}/files_and_directories"      
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -963,8 +963,7 @@ def copy_entire_directories(directories,
             
             for dirc in directories:
                 for dd in destination_directories:
-                    cp_command = f"cp -rv '{dirc}'/* '{dd}'"
-                    os.system(cp_command)
+                    os.system(cp_command.format(dirc, dd))
                         
         elif isinstance(directories, list)\
         and isinstance(destination_directories, list)\
@@ -978,24 +977,20 @@ def copy_entire_directories(directories,
                                  "are not of the same length.")
             else:
                 for dirc, dd in zip(directories, destination_directories):
-                    cp_command = f"cp -rv '{dirc}'/* '{dd}'"
-                    os.system(cp_command)
+                    os.system(cp_command.format(dirc, dd))
                     
         elif isinstance(directories, list)\
         and not isinstance(destination_directories, list):
             for dirc in directories:
-                cp_command = f"cp -rv '{dirc}'/* '{destination_directories}'"
-                os.system(cp_command)
+                os.system(cp_command.format(dirc, destination_directories))
                     
         elif not isinstance(directories, list)\
         and isinstance(destination_directories, list):        
             for dd in destination_directories:
-                cp_command = f"cp -rv '{directories}'/* '{dd}'"
-                os.system(cp_command)
+                os.system(cp_command.format(directories, dd))
                     
         else:
-            cp_command = f"cp -rv '{directories}'/* '{destination_directories}'"
-            os.system(cp_command)     
+            os.system(cp_command.format(directories, destination_directories))     
 
 # Operations involving both files and directories #
 #-------------------------------------------------#
@@ -1060,10 +1055,14 @@ def rename_objects(relative_paths,
     else:
         raise ValueError("Both input arguments must either be "
                          "strings or lists simultaneously.")
+                         
+#------------------#
+# Local parameters #
+#------------------#
 
-#--------------------------------------------------------#
 # Get the directory from where this code is being called #
-#--------------------------------------------------------#
-
 cwd = Path.cwd()
-alldoc_dirpath = Path(fixed_dirpath).parent
+alldoc_dirpath = Path(fixed_path).parent
+
+# Bash 'cp' command #
+cp_command = """cp -rv {}/* {}"""
