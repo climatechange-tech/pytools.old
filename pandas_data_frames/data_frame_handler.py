@@ -581,6 +581,7 @@ def save2csv(file_name,
                     remove_files_byFS(file_name, fn_parent)
                     data_frame.to_csv(file_name,
                                       sep=separator,
+                                      decimal=decimal,
                                       index=save_index,
                                       header=save_header)
                     
@@ -590,6 +591,7 @@ def save2csv(file_name,
             else:
                 data_frame.to_csv(file_name,
                                   sep=separator,
+                                  decimal=decimal,
                                   index=save_index,
                                   header=save_header)
                 
@@ -609,6 +611,7 @@ def save2csv(file_name,
                     remove_files_byFS(file_name, fn_parent)
                     data_frame.to_csv(file_name,
                                       sep=separator,
+                                      decimal=decimal,
                                       date_format=date_format,
                                       index=save_index,
                                       header=save_header)
@@ -619,6 +622,7 @@ def save2csv(file_name,
             else:
                 data_frame.to_csv(file_name,
                                   sep=separator,
+                                  decimal=decimal,
                                   date_format=date_format,
                                   index=save_index,
                                   header=save_header)
@@ -770,7 +774,8 @@ def merge_csv_files(input_file_list,
     if save_merged_file:
         save2csv(output_file_name, 
                  all_file_data_df, 
-                 separator=separator_out, 
+                 separator=separator_out,
+                 decimal=decimal,
                  save_index=save_index, 
                  save_header=save_header)
         
