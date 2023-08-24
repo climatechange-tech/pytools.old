@@ -148,7 +148,7 @@ def read_table_and_split_bywhitespaces(file_name,
                                        minimum_white_nspaces_column=1,
                                        engine=None,
                                        encoding=None,
-                                       row=None):
+                                       row='infer'):
     """
     Function that uses pandas module to read a text file
     and converts to a data frame.
@@ -184,11 +184,24 @@ def read_table_and_split_bywhitespaces(file_name,
           In such cases "latin1" is reccommended to use.
           Default value is ´None´ in which case
           ´errors="replace"´ is passed to ´open()´.
-    row : int or NoneType
-          Integer that is used to specify the first row
-          to read the text file from.
-          Default value is None, for the case in which
-          the text file has no header at all.
+    row : int, list of int, None, default ´infer´
+          Row number(s) to use as the column names, and the start of the data.
+          Default behaviour is to infer the column names: if no names are passed
+          the behaviour is identical to header=0 and column names are inferred
+          from the first line of the file.
+          
+          If column names are passed explicitly then the behaviour
+          is identical to header=None, where the text file's header
+          are only column names.
+          
+          Explicitly pass header=0 to be able to replace existing names.
+          The header can be a list of integers that specify row locations
+          for a multi-index on the columns e.g. [0,1,3].
+          
+          This parameter ignores commented lines and empty lines if
+          skip_blank_lines=True (not included in the arguments for simplicity),
+          so header=0 denotes the first line of data
+          rather than the first line of the file.
     
     Returns
     -------
@@ -261,11 +274,25 @@ def read_table_simple(file_name,
           In such cases "latin1" is reccommended to use.
     whitespace_char : str
           Delimiter to use as a separator of columns.
-    row : int or NoneType
-          Integer that is used to specify the first row
-          to read the text file from.
-          Default value is None, for the case in which
-          the text file has no header at all.
+    row : int, list of int, None, default ´infer´
+          Row number(s) to use as the column names, and the start of the data.
+          Default behaviour is to infer the column names: if no names are passed
+          the behaviour is identical to header=0 and column names are inferred
+          from the first line of the file.
+          
+          If column names are passed explicitly then the behaviour
+          is identical to header=None, where the text file's header
+          are only column names.
+          
+          Explicitly pass header=0 to be able to replace existing names.
+          The header can be a list of integers that specify row locations
+          for a multi-index on the columns e.g. [0,1,3].
+          
+          This parameter ignores commented lines and empty lines if
+          skip_blank_lines=True (not included in the arguments for simplicity),
+          so header=0 denotes the first line of data
+          rather than the first line of the file.
+          
     Returns
     -------
     new_df : pandas.Dataset
@@ -636,7 +663,6 @@ def csv2df(file_name,
            encoding=None,
            header='infer',
            parse_dates=False,
-           infer_dt_format_bool=False,
            index_col=None,
            decimal="."):
     
@@ -679,11 +705,6 @@ def csv2df(file_name,
         * dict, e.g. {'foo' : [1, 3]} -> parse columns 1, 3 as date and call
           result 'foo'
     
-    infer_dt_format_bool : bool
-          If True and ´parse_dates´ is enabled, pandas will attempt to infer the
-          format of the datetime strings in the columns, and if it can be inferred,
-          switch to a faster method of parsing them. In some cases this can increase
-          the parsing speed by 5-10x
     index_col : int, str, sequence of int / str, False or NoneType
           Column(s) to use as the row labels of the 'DataFrame', either given as
           string name or column index. If a sequence of int / str is given, a
@@ -692,29 +713,15 @@ def csv2df(file_name,
           Character to recognize as decimal point (e.g. use ',' 
           for European data). Default value is '.' (dot).
     """
-        
-    if not parse_dates:
-        df = pd.read_csv(file_name, 
-                         sep=separator,
-                         decimal=decimal,
-                         encoding=encoding,
-                         header=header,
-                         index_col=index_col,
-                         engine=engine)
-        
-    elif parse_dates and not infer_dt_format_bool:
-        raise ValueError("Please set ´infer_datetime_format´ argument to True")
-        
-    else:
-        df = pd.read_csv(file_name, 
-                         sep=separator,
-                         decimal=decimal,
-                         encoding=encoding,
-                         header=header,
-                         engine=engine,
-                         parse_dates=parse_dates,
-                         index_col=index_col,
-                         infer_datetime_format=infer_dt_format_bool)
+
+    df = pd.read_csv(file_name, 
+                     sep=separator,
+                     decimal=decimal,
+                     encoding=encoding,
+                     header=header,
+                     engine=engine,
+                     parse_dates=parse_dates,
+                     index_col=index_col)
     
     return df
 
@@ -727,7 +734,6 @@ def merge_csv_files(input_file_list,
                     encoding=None,
                     header='infer',
                     parse_dates=False,
-                    infer_dt_format_bool=False,
                     index_col=None,
                     decimal=".",                                 
                     save_index=False,
@@ -755,7 +761,6 @@ def merge_csv_files(input_file_list,
                          encoding=encoding,
                          header=header,
                          parse_dates=parse_dates,
-                         infer_dt_format_bool=infer_dt_format_bool,
                          index_col=index_col,
                          decimal=decimal)
         

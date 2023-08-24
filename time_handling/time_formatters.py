@@ -57,7 +57,6 @@ def time_format_tweaker(t,
                         return_str=False,
                         return_days=False,
                         method="datetime",
-                        infer_dt_format=False, # Only if method=="pandas"
                         standardizeHourRange=False):
     """
     
@@ -404,8 +403,7 @@ def time_format_tweaker(t,
                 
 def frequentTimeFormatConverter(t,
                                 method=None,
-                                time_fmt_str=None,
-                                infer_dt_format=False):
+                                time_fmt_str=None):
     
     arg_names = frequentTimeFormatConverter.__code__.co_varnames
     method_arg_pos = find_substring_index(arg_names, 
@@ -428,18 +426,14 @@ def frequentTimeFormatConverter(t,
         
     elif method == "pandas":
         try:
-            dtobj = pd.to_datetime(t,
-                                   format=time_fmt_str,
-                                   infer_datetime_format=infer_dt_format)
+            dtobj = pd.to_datetime(t, format=time_fmt_str)
             
         except:        
             import cftime as cft
             dtobj\
-            = pd.to_datetime([cft.datetime.strftime(time_el,
-                                                    format=time_fmt_str)
+            = pd.to_datetime([cft.datetime.strftime(time_el, format=time_fmt_str)
                               for time_el in t],
-                              format=time_fmt_str,
-                              infer_datetime_format=infer_dt_format)
+                             format=time_fmt_str)
             
     elif method == "numpy_dt64":
         dtobj = t.to_datetime64()
