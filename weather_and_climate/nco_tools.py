@@ -2,48 +2,42 @@
 # Import modules #
 #----------------#
 
-import importlib
 import os
 from pathlib import Path
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_path = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
+import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "string_handler.py"
-custom_mod1_path = f"{fixed_path}/"\
-                   f"strings/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
-string_handler = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(string_handler)
+import get_pytools_path
+fixed_path = get_pytools_path.return_custom_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "file_and_directory_handler.py"
-custom_mod2_path = f"{fixed_path}/"\
-                   f"files_and_directories/{module_imp2}"
+custom_mod1_path = f"{fixed_path}/files_and_directories"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
-file_and_directory_handler = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(file_and_directory_handler)
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import file_and_directory_handler
+import file_format_tweaker
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-addExtraName2File = string_handler.addExtraName2File
+aux_path_strAdd = file_format_tweaker.aux_path_strAdd 
 rename_objects = file_and_directory_handler.rename_objects
 
 #-------------------------#
@@ -65,7 +59,7 @@ def modify_variable_units_and_values(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
                 
-        temp_file = addExtraName2File(file_name)
+        temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         
@@ -179,7 +173,7 @@ def modify_coordinate_values_byThreshold(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = addExtraName2File(file_name)
+        temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 
@@ -344,7 +338,7 @@ def modify_coordinate_allValues(file_list,
         file_name = file[-1]
         file_num = file[0] + 1
 
-        temp_file = addExtraName2File(file_name)
+        temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
                                 

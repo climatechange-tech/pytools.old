@@ -2,8 +2,8 @@
 # Import modules #
 #----------------#
 
-import importlib
 from pathlib import Path
+import sys
 
 import calendar
 
@@ -11,83 +11,41 @@ import numpy as np
 import pandas as pd
 import scipy.stats as ss
 
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_path = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
-
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "climate_statistics.py"
-custom_mod1_path = f"{fixed_path}/"\
-                   f"weather_and_climate/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
-climate_statistics = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(climate_statistics)
+import get_pytools_path
+fixed_path = get_pytools_path.return_custom_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "array_numerical_operations.py"
-custom_mod2_path = f"{fixed_path}/"\
-                   f"arrays_and_lists/{module_imp2}"
+custom_mod1_path = f"{fixed_path}/arrays_and_lists"
+custom_mod2_path = f"{fixed_path}/strings"  
+custom_mod3_path = f"{fixed_path}/weather_and_climate"
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
-array_numerical_operations = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(array_numerical_operations)
+# Add the module paths to the path variable #
+#-------------------------------------------#
 
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
-module_imp3 = "array_handler.py"
-custom_mod3_path = f"{fixed_path}/"\
-                   f"arrays_and_lists/{module_imp3}"
+# Perform the module importations #
+#---------------------------------#
 
-spec3 = importlib.util.spec_from_file_location(module_imp3, custom_mod3_path)
-array_handler = importlib.util.module_from_spec(spec3)
-spec3.loader.exec_module(array_handler)
-
-
-module_imp4 = "string_handler.py"
-custom_mod4_path = f"{fixed_path}/"\
-                   f"strings/{module_imp4}"
-
-spec4 = importlib.util.spec_from_file_location(module_imp4, custom_mod4_path)
-string_handler = importlib.util.module_from_spec(spec4)
-spec4.loader.exec_module(string_handler)
-
-
-module_imp5 = "consecutive_idx_statistics.py"
-custom_mod5_path = f"{fixed_path}/"\
-                   f"weather_and_climate/{module_imp5}"
-
-spec5 = importlib.util.spec_from_file_location(module_imp5, custom_mod5_path)
-consecutive_idx_statistics = importlib.util.module_from_spec(spec5)
-spec5.loader.exec_module(consecutive_idx_statistics)
-
-
-module_imp6 = "climatic_signal_modulators.py"
-custom_mod6_path = f"{fixed_path}/"\
-                   f"weather_and_climate/{module_imp6}"
-
-spec6 = importlib.util.spec_from_file_location(module_imp6, custom_mod6_path)
-climatic_signal_modulators = importlib.util.module_from_spec(spec6)
-spec6.loader.exec_module(climatic_signal_modulators)
-
-
-module_imp7 = "meteorological_variables.py"
-custom_mod7_path = f"{fixed_path}/"\
-                   f"weather_and_climate/{module_imp7}"
-
-spec7 = importlib.util.spec_from_file_location(module_imp7, custom_mod7_path)
-meteorological_variables = importlib.util.module_from_spec(spec7)
-spec7.loader.exec_module(meteorological_variables)
+import array_handler
+import array_numerical_operations
+import climate_statistics
+import climatic_signal_modulators
+import consecutive_idx_statistics
+import meteorological_variables
+import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #

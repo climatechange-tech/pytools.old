@@ -2,23 +2,8 @@
 # Import modules #
 #----------------#
 
-# import importlib
-from pathlib import Path
-
 import numpy as np
 import scipy.signal as ssig
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_path = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
 
 #------------------#
 # Define functions #

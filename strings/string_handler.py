@@ -265,7 +265,7 @@ def get_obj_specs(obj_path,
     
     
 def modify_obj_specs(target_path_obj,
-                     obj2change,
+                     obj2modify,
                      new_obj=None,
                      str2add=None):
     
@@ -274,24 +274,24 @@ def modify_obj_specs(target_path_obj,
     arg_names = modify_obj_specs.__code__.co_varnames
     obj2ch_arg_pos = find_substring_index(arg_names, "obj2")
     
-    if obj2change not in objSpecsKeys_short:
+    if obj2modify not in objSpecsKeys_short:
         raise ValueError(f"Wrong {arg_names[obj2ch_arg_pos]} option. "
                          "Options are {objSpecsKeys_short}.")
     
     if not isinstance(target_path_obj, dict):
         obj_specs_dict = obj_path_specs(target_path_obj)
         
-    if obj2change == "name_noext_parts" and not isinstance(new_obj, tuple):
-        raise ValueError("bi gauzak bete behar dira: "
-                         "tupla(aldatzeko karaktere-katea, ordezkoa")
+    if obj2modify == "name_noext_parts" and not isinstance(new_obj, tuple):
+        raise TypeError("If the object to modify is '{objSpecsKeys_short[3]}', "
+                        "then the provided new object must also be of type 'tuple'")
             
-    if obj2change == "parent":
+    if obj2modify == "parent":
         osk = objSpecsKeys[0]
         
-    elif obj2change == "name":
+    elif obj2modify == "name":
         osk = objSpecsKeys[1]
             
-    elif obj2change == "name_noext":
+    elif obj2modify == "name_noext":
         osk = objSpecsKeys[2]
 
         if str2add is not None:
@@ -299,13 +299,13 @@ def modify_obj_specs(target_path_obj,
             lengthened_fileName = join_obj_path_specs(obj_specs_dict)
             new_obj = lengthened_fileName
         
-    elif obj2change == "name_noext_parts" and isinstance(new_obj, tuple):
+    elif obj2modify == "name_noext_parts" and isinstance(new_obj, tuple):
         osk = objSpecsKeys[2]
         name_noext = get_obj_specs(target_path_obj, osk)
         new_obj_aux = substring_replacer(name_noext, new_obj[0], new_obj[1])
         new_obj = new_obj_aux
             
-    elif obj2change == "ext":
+    elif obj2modify == "ext":
         osk = objSpecsKeys[4]
 
     item2updateDict = {osk : new_obj}

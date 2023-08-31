@@ -2,34 +2,36 @@
 # Import modules #
 #----------------#
 
-import importlib
 from pathlib import Path
+import sys
 
 import numpy as np
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_path = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "array_numerical_operations.py"
-custom_mod1_path = f"{fixed_path}/"\
-                   f"arrays_and_lists/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
-array_numerical_operations = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(array_numerical_operations)
+import get_pytools_path
+fixed_path = get_pytools_path.return_custom_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod1_path = f"{fixed_path}/arrays_and_lists"
+
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import array_numerical_operations
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #

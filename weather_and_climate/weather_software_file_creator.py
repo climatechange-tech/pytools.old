@@ -2,51 +2,47 @@
 # Import modules #
 #----------------#
 
-import importlib
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
-
-#---------------------------#
-# Get the fixed directories #
-#---------------------------#
-
-cwd = Path.cwd()
-main_path = Path("/".join(cwd.parts[:3])[1:]).glob("*/*")
-
-# All-code containing directory #
-fixed_path = str([path
-                     for path in main_path
-                     if "pytools" in str(path).lower()][0])
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-module_imp1 = "array_handler.py"
-custom_mod1_path = f"{fixed_path}/"\
-                   f"arrays_and_lists/{module_imp1}"
+# Import module that finds python tools' path #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
 
-spec1 = importlib.util.spec_from_file_location(module_imp1, custom_mod1_path)
-array_handler = importlib.util.module_from_spec(spec1)
-spec1.loader.exec_module(array_handler)
+import get_pytools_path
+fixed_path = get_pytools_path.return_custom_path()
 
+# Enumerate custom modules and their paths #
+#------------------------------------------#
 
-module_imp2 = "calendar_operators.py"
-custom_mod2_path = f"{fixed_path}/"\
-                    f"time_handling/{module_imp2}"
+custom_mod1_path = f"{fixed_path}/arrays_and_lists"
+custom_mod2_path = f"{fixed_path}/time_handling"  
 
-spec2 = importlib.util.spec_from_file_location(module_imp2, custom_mod2_path)
-calendar_operators = importlib.util.module_from_spec(spec2)
-spec2.loader.exec_module(calendar_operators)
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
+
+# Perform the module importations #
+#---------------------------------#
+
+import array_handler
+import calendar_attibute_operators
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
 approach_value_in_array = array_handler.approach_value_in_array
-week_range = calendar_operators.week_range
+week_range = calendar_attibute_operators.week_range
 
 #-------------------------#
 # Define custom functions #
