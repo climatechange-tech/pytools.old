@@ -312,7 +312,8 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         
     # Choose between returning the results as strings or datetime objects #     
     if print_str:
-        natural_year_range_table ="""
+        natural_year_range_table = \
+        """
         {} -- {}
         
         |
@@ -337,6 +338,7 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
 TypeErrorStr1 = """Argument '{}' at position {} must be of type {}."""
 TypeErrorStr2 = """Argument '{}' at position {} must be of type {} or {}."""
+
 AttributeErrorStr =\
 """Argument '{}' is of type '{}' but it is
 unnamed. Please set a name using {}.name attribute."""
