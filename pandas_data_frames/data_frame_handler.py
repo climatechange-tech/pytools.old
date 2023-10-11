@@ -148,7 +148,7 @@ def read_table_and_split_bywhitespaces(file_name,
                                        minimum_white_nspaces_column=1,
                                        engine=None,
                                        encoding=None,
-                                       row='infer'):
+                                       header='infer'):
     """
     Function that uses pandas module to read a text file
     and converts to a data frame.
@@ -184,10 +184,10 @@ def read_table_and_split_bywhitespaces(file_name,
           In such cases "latin1" is reccommended to use.
           Default value is ´None´ in which case
           ´errors="replace"´ is passed to ´open()´.
-    row : int, list of int, None, default ´infer´
-          Row number(s) to use as the column names, and the start of the data.
-          Default behaviour is to infer the column names: if no names are passed
-          the behaviour is identical to header=0 and column names are inferred
+    header : int, list of int, None, default ´infer´
+          Row number(s) to use as column names and start of data.
+          Default behaviour is to infer the column names: if no names are passed,
+          it is identical to header=0 and column names are inferred
           from the first line of the file.
           
           If column names are passed explicitly then the behaviour
@@ -210,7 +210,7 @@ def read_table_and_split_bywhitespaces(file_name,
     """
 
     df = pd.read_table(file_name, 
-                       header=row, 
+                       header=header, 
                        encoding=encoding,
                        engine=engine)
 
@@ -241,7 +241,7 @@ def read_table_simple(file_name,
                       engine=None,
                       whitespace_char=None,
                       encoding=None,
-                      row=None):
+                      header=None):
     
     """
     Function that uses pandas module to read a text file
@@ -274,7 +274,7 @@ def read_table_simple(file_name,
           In such cases "latin1" is reccommended to use.
     whitespace_char : str
           Delimiter to use as a separator of columns.
-    row : int, list of int, None, default ´infer´
+    header : int, list of int, None, default ´infer´
           Row number(s) to use as the column names, and the start of the data.
           Default behaviour is to infer the column names: if no names are passed
           the behaviour is identical to header=0 and column names are inferred
@@ -302,7 +302,7 @@ def read_table_simple(file_name,
     df = pd.read_table(file_name,
                        engine=engine,
                        encoding=encoding,
-                       header=row,
+                       header=header,
                        delim_whitespace=whitespace_char)
     
     return df
@@ -793,6 +793,7 @@ def insert_column_in_df(df, index_col, column_name, values):
     """
     Function that inserts a column on a simple, non multi-index
     pandas data frame, specified by an index column.
+    Note that this method is in-place.
     
     Parameters
     ----------
@@ -807,6 +808,11 @@ def insert_column_in_df(df, index_col, column_name, values):
           Name of the column to be inserted.
     values : list, numpy.array or pandas.Series
     """
+    
+    ncols = len(df.iloc[0])
+    
+    if index_col < 0:
+        index_col += ncols + 1
 
     df.insert(index_col, column_name, values)
     
