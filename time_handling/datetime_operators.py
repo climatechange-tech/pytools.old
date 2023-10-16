@@ -108,7 +108,7 @@ def count_time(mode, return_days=False):
         elapsed_time = abs(ti-tf)
         
         return time_format_tweaker(elapsed_time,
-                                   print_str="extended", 
+                                   return_str="extended", 
                                    return_days=return_days)
         
 
