@@ -144,105 +144,15 @@ def find_date_key(df):
     except:
         raise ValueError("Grouper name 'date' or similar not found")
 
-def read_table_and_split_bywhitespaces(file_name,
-                                       minimum_white_nspaces_column=1,
-                                       engine=None,
-                                       encoding=None,
-                                       header='infer'):
-    """
-    Function that uses pandas module to read a text file
-    and converts to a data frame.
-    
-    For that it uses the read_table function; if the result
-    is a data frame that has only one columns
-    (usually because each row is a long string)
-    then it tries to split according to whitespaces
-    in order to form columns.
-    
-    It is assumed that the whitespace is one character long
-    throughout the whole data frame.
-    
-    Parameters
-    ----------
-    
-    file_name : str
-          String that identifies the file to be examined.
-    minimum_white_nspaces_column : int
-          Defines the minimum number of spaces in order to consider
-          a column splitting. Defaults to a single white space.
-    engine : {'c', 'python', 'pyarrow'}, optional
-          Parser engine to use. The C and pyarrow engines are faster, 
-          while the python engine is currently more feature-complete. 
-          Multithreading is currently only supported by the pyarrow engine.
-          Defaults to None.
-    encoding : str
-          String that identifies the encoding to use for UTF
-          when reading/writing.
-          The widely value is 'utf-8' but it can happen that
-          the text file has internal strange characters that
-          UTF-8 encoding is not able to read.
-          In such cases "latin1" is reccommended to use.
-          Default value is ´None´ in which case
-          ´errors="replace"´ is passed to ´open()´.
-    header : int, list of int, None, default ´infer´
-          Row number(s) to use as column names and start of data.
-          Default behaviour is to infer the column names: if no names are passed,
-          it is identical to header=0 and column names are inferred
-          from the first line of the file.
-          
-          If column names are passed explicitly then the behaviour
-          is identical to header=None, where the text file's header
-          are only column names.
-          
-          Explicitly pass header=0 to be able to replace existing names.
-          The header can be a list of integers that specify row locations
-          for a multi-index on the columns e.g. [0,1,3].
-          
-          This parameter ignores commented lines and empty lines if
-          skip_blank_lines=True (not included in the arguments for simplicity),
-          so header=0 denotes the first line of data
-          rather than the first line of the file.
-    
-    Returns
-    -------
-    new_df : pandas.Dataset
-          Text file converted to a data frame.
-    """
 
-    df = pd.read_table(file_name, 
-                       header=header, 
-                       encoding=encoding,
-                       engine=engine)
-
-    # Find the number of columns #
-    ncols = len(df.iloc[:,0].str.split("\s{1,}")[0])
-    
-    # Define the minimum-number-of-white-space splitter format #
-    str_left = "\s{"
-    str_right = ",}"
-    column_splitting_formatter\
-    = f"{str_left}{minimum_white_nspaces_column}{str_right}"
-
-    # Define a new data frame and loop through each column,
-    # concatting thereof to the new data frame.
-    
-    new_df = pd.DataFrame()
-    
-    for icol in range(ncols):
-        df_col = df.iloc[:,0].str.split(column_splitting_formatter).str[icol]
-        df_col_vals = df_col.values
-        new_df = pd.concat([new_df,
-                            pd.DataFrame(df_col_vals)],
-                           axis=1,
-                           ignore_index=True)
-    return new_df
-
-def read_table_simple(file_name,
-                      engine=None,
-                      whitespace_char=None,
-                      encoding=None,
-                      header=None):
-    
+def read_table(file_name,
+               separator=None,
+               delim_whitespace=False,
+               dtype=None,
+               engine=None,
+               encoding=None,
+               header='infer'):
+ 
     """
     Function that uses pandas module to read a text file
     and converts to a data frame.
@@ -259,7 +169,27 @@ def read_table_simple(file_name,
     ----------
     
     file_name : str
-          String that identifies the file to be examined..
+          String that identifies the file to be examined.
+    separator : str, default '\\t' (tab-stop)
+          Delimiter to use. If sep is None, the C engine cannot automatically detect
+          the separator, but the Python parsing engine can, meaning the latter will
+          be used and automatically detect the separator by Python's builtin sniffer
+          tool, ``csv.Sniffer``. In addition, separators longer than 1 character and
+          different from ``'\s+'`` will be interpreted as regular expressions and
+          will also force the use of the Python parsing engine. Note that regex
+          delimiters are prone to ignoring quoted data. Regex example: ``'\r\t'``.
+    delim_whitespace : bool, default False
+          Specifies whether or not whitespace (e.g. ``' '`` or ``'    '``) will be
+          used as the sep. Equivalent to setting ``sep='\s+'``. If this option
+          is set to True, nothing should be passed in for the ``delimiter``
+          parameter.
+    dtype : Type name or dict of column -> type, optional
+          Data type for data or columns. E.g. {'a': np.float64, 'b': np.int32,
+          'c': 'Int64'}
+          Use `str` or `object` together with suitable `na_values` settings
+          to preserve and not interpret dtype.
+          If converters are specified, they will be applied INSTEAD
+          of dtype conversion.
     engine : {'c', 'python', 'pyarrow'}, optional
           Parser engine to use. The C and pyarrow engines are faster, 
           while the python engine is currently more feature-complete. 
@@ -272,8 +202,7 @@ def read_table_simple(file_name,
           the text file has internal strange characters that
           UTF-8 encoding is not able to read.
           In such cases "latin1" is reccommended to use.
-    whitespace_char : str
-          Delimiter to use as a separator of columns.
+   
     header : int, list of int, None, default ´infer´
           Row number(s) to use as the column names, and the start of the data.
           Default behaviour is to infer the column names: if no names are passed
@@ -299,11 +228,20 @@ def read_table_simple(file_name,
           Text file converted to a data frame.
     """
     
+    # if delim_whitespace:    
     df = pd.read_table(file_name,
                        engine=engine,
                        encoding=encoding,
                        header=header,
-                       delim_whitespace=whitespace_char)
+                       delim_whitespace=delim_whitespace,
+                       dtype=dtype)
+        
+    # else:
+    #     df = pd.read_table(file_name,
+    #                        sep=separator,
+    #                        engine=engine,
+    #                        encoding=encoding,
+    #                        header=header)
     
     return df
 
