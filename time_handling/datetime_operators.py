@@ -96,20 +96,20 @@ def get_current_time(Type="datetime", time_fmt_str=None):
         return current_datetime
     
 
-def count_time(mode, return_days=False):
+# def program_exec_timer(mode, return_days=False):
     
-    global ti
+#     global ti
     
-    if mode == "start":  
-        ti = time.time()
+#     if mode == "start":  
+#         ti = time.time()
         
-    elif mode == "stop":
-        tf = time.time()
-        elapsed_time = abs(ti-tf)
+#     elif mode == "stop":
+#         tf = time.time()
+#         elapsed_time = abs(ti-tf)
         
-        return time_format_tweaker(elapsed_time,
-                                   return_str="extended", 
-                                   return_days=return_days)
+#         return time_format_tweaker(elapsed_time,
+#                                    return_str="extended", 
+#                                    return_days=return_days)
         
 
 def get_obj_operation_datetime(objList,
@@ -248,7 +248,6 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
         
     return res_dts
 
-#%%
 
 def natural_year(dt_start, dt_end, time_fmt_str=None,
                  months_shift=0,

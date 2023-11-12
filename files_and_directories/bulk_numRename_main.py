@@ -69,6 +69,8 @@ get_obj_operation_datetime = time_formatters.get_obj_operation_datetime
 basic_time_format_strs = global_parameters.basic_time_format_strs
 basic_object_types = global_parameters.basic_object_types
 
+move_files_byExts_fromCodeCallDir = file_and_directory_handler.move_files_byExts_fromCodeCallDir
+
 #------------------#
 # Define functions #
 #------------------#

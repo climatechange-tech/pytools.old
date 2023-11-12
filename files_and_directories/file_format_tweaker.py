@@ -21,19 +21,22 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/files_and_directories" 
-custom_mod2_path = f"{fixed_path}/strings"
+custom_mod2_path = f"{fixed_path}/operative_systems" 
+custom_mod3_path = f"{fixed_path}/strings"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_handler
 import file_and_directory_paths
+import os_operations
 import string_handler
 
 #----------------------------------------------------#
@@ -42,13 +45,17 @@ import string_handler
 
 remove_files_byExts = file_and_directory_handler.remove_files_byExts
 
+find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
+find_fileString_paths = file_and_directory_paths.find_fileString_paths
+
+catch_shell_prompt_output = os_operations.catch_shell_prompt_output
+exec_shell_command = os_operations.exec_shell_command
+
 get_obj_specs = string_handler.get_obj_specs
 obj_path_specs = string_handler.obj_path_specs
 find_substring_index = string_handler.find_substring_index
 modify_obj_specs = string_handler.modify_obj_specs
 
-find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
-find_fileString_paths = file_and_directory_paths.find_fileString_paths
 
 #------------------#
 # Define functions #
@@ -100,7 +107,7 @@ def tweak_pages(file, cat_str, output_path="default"):
     zsh_pdftk_command = f"{essential_program_list[1]} '{file}' cat {cat_str} "\
                         f"output '{output_path}'"
                         
-    os.system(zsh_pdftk_command)
+    exec_shell_command(zsh_pdftk_command)    
 
 
 def pdf_file_tweaker(path, cat_out_obj):
@@ -320,19 +327,23 @@ def pdf_file_compressor(in_path, out_path=None):
         ps2pdf_command\
         = f"{essential_program_list[0]} -dPDFSETTINGS=/ebook {ip} {op}"
     
-        os.system(ps2pdf_command)
+        exec_shell_command(ps2pdf_command)
     
   
 def checkEssentialProgInstallStatus():
     
-    keyword_list = ["none", "ninguno"]
+    none_keyword_list = ["none", "ninguno"]
     
-    # This function checks whether at least one of the programs is installed,
-    # only to be used by functions 'eml2pdf' and 'msg2pdf'.
-    # If so, it returns True, otherwise returns False.
+    """
+    This function checks whether at least one of the programs is installed,
+    only to be used by functions 'eml2pdf' and 'msg2pdf'.
+    If so, it returns True, otherwise returns False.
+    """
     
-    for kw, ess_prog in zip(keyword_list, essential_program_list):
-        progInstalledStatusString = os.popen(f"apt-cache policy {ess_prog}").read()
+    for kw, ess_prog in zip(none_keyword_list, essential_program_list):
+        apt_cache_comm = f"apt-cache policy {ess_prog}"
+        
+        progInstalledStatusString = catch_shell_prompt_output(apt_cache_comm)
         kw_idx = find_substring_index(progInstalledStatusString, 
                                       kw, 
                                       advanced_search=True,
@@ -345,7 +356,7 @@ def checkEssentialProgInstallStatus():
         print(f"{ess_prog} program installed, continuing.")
 
 
-def eml2pdf(path_to_walk_in, delete_eml_files=False):
+def eml2pdf(path_to_walk_into, delete_eml_files=False):
     
     """
     Tool to convert email messages (.msg extension) to PDF files.
@@ -358,7 +369,7 @@ def eml2pdf(path_to_walk_in, delete_eml_files=False):
     
     Parameters
     ----------
-    path_to_walk_in : str or PosixPath
+    path_to_walk_into : str or PosixPath
           Input path to search for 'eml' files.
     delete_eml_files : bool
           Option to control whether to delete eml extension files.
@@ -369,7 +380,7 @@ def eml2pdf(path_to_walk_in, delete_eml_files=False):
     
     extension = extensions[1]
     eml_files = find_ext_file_paths(extension,
-                                    path_to_walk_in,
+                                    path_to_walk_into,
                                     top_path_only=True)
    
     str2find = f"*emailconverter*.{extensions[-1]}"    
@@ -378,14 +389,14 @@ def eml2pdf(path_to_walk_in, delete_eml_files=False):
     # Convert each email to PDF #        
     for emlf in eml_files:
         eml2pdf_command = f"java -jar {converter_tool_path} '{emlf}'"
-        os.system(eml2pdf_command)
+        exec_shell_command(eml2pdf_command)
         
     if delete_eml_files:
         # Delete every email file #
-        remove_files_byExts(extension, path_to_walk_in)
+        remove_files_byExts(extension, path_to_walk_into)
 
             
-def msg2pdf(path_to_walk_in,
+def msg2pdf(path_to_walk_into,
             delete_msg_files=False,
             delete_eml_files=False):
     
@@ -405,7 +416,7 @@ def msg2pdf(path_to_walk_in,
     
     Parameters
     ----------
-    path_to_walk_in : str or PosixPath
+    path_to_walk_into : str or PosixPath
           Input path to search for 'msg' files.
     delete_msg_files : bool
           Option to control whether to delete msg extension files.
@@ -421,20 +432,20 @@ def msg2pdf(path_to_walk_in,
     
     extension = extensions[2]
     msg_files = find_ext_file_paths(extension,
-                                    path_to_walk_in,
+                                    path_to_walk_into,
                                     top_path_only=True)
     
     # Convert microsoft outlook message (.msg) to email (.eml) #
     for msgf in msg_files:
         msg2eml_command = f"{essential_program_list[3]} '{msgf}'"
-        os.system(msg2eml_command)
+        exec_shell_command(msg2eml_command)
         
     # Convert email to PDF #
-    eml2pdf(path_to_walk_in, delete_eml_files=delete_eml_files)
+    eml2pdf(path_to_walk_into, delete_eml_files=delete_eml_files)
         
     if delete_msg_files:
         # Delete every email file #
-        remove_files_byExts(extension, path_to_walk_in)
+        remove_files_byExts(extension, path_to_walk_into)
         
 #------------------#
 # Local operations #

@@ -57,7 +57,7 @@ spec2.loader.exec_module(array_numerical_operations)
 # find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 # find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
 
-# binary_faulty_file_detector = faulty_ncfile_detector.binary_faulty_file_detector
+# ncfile_integrity_status = faulty_ncfile_detector.ncfile_integrity_status
 
 #------------------#
 # Define functions #

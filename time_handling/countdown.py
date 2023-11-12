@@ -53,7 +53,6 @@ time_format_tweaker = time_formatters.time_format_tweaker
 def countdown(t, string_arr1, string_arr2, 
               time_fmt_str=None, print_str=False):
     
-    # if isinstance(t, str) or isinstance(t, tuple):
     if isinstance(t, str):
         time_dt = time_format_tweaker(t, time_fmt_str=time_fmt_str)
       
@@ -80,13 +79,13 @@ def countdown(t, string_arr1, string_arr2,
                                                       s2find_2,
                                                       s2replace_2)
                 
-            while t:
+            while t:        
                 time_str = time_dt.strftime(time_fmt_str)
                 print(time_str, end="\r")
                 
                 time.sleep(1)
-                time_dt -= datetime.timedelta(seconds=1)
-           
+                time_dt -= datetime.timedelta(seconds=1)              
+                
         except OverflowError:
             print("Time up!")
             
@@ -133,12 +132,17 @@ try:
     
     while print_str != "y" and print_str != "n":
         print_str = input("Please write 'y' for 'yes' or 'n' for 'no' ")
-            
-    countdown(t, string_arr1, string_arr2, print_str=print_str)    
+        
+    try:            
+        countdown(t, string_arr1, string_arr2, print_str=print_str)    
+    except KeyboardInterrupt:
+        print("\nCountdown stopped.")
+        
     
 except:
     time_fmt_str = input("String format detected. "
                          "Introduce the formatting string without quotes: ")
-    countdown(t, string_arr1, string_arr2, time_fmt_str=time_fmt_str)
-    
-    
+    try:
+        countdown(t, string_arr1, string_arr2, time_fmt_str=time_fmt_str)
+    except KeyboardInterrupt:
+        print("\nCountdown stopped.")

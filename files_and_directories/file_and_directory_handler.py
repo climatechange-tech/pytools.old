@@ -21,23 +21,27 @@ fixed_path = get_pytools_path.return_custom_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod_path = f"{fixed_path}/files_and_directories"      
+custom_mod1_path = f"{fixed_path}/files_and_directories"
+custom_mod2_path = f"{fixed_path}/operative_systems"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
-sys.path.append(custom_mod_path)
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_paths
+import os_operations
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
 posixpath_converter = file_and_directory_paths.posixpath_converter
+exec_shell_command = os_operations.exec_shell_command
 
 #------------------#
 # Define functions #
@@ -852,19 +856,19 @@ def rsync(source_paths,
         if delete_at_destination and not source_allfiles_only:
             
             zsh_command = f"rsync -{mode} --delete '{sp}' '{dp}'"
-            os.system(zsh_command)
+            exec_shell_command(zsh_command)
             
         elif not delete_at_destination and not source_allfiles_only:
             zsh_command = f"rsync -{mode} '{sp}' '{dp}'"
-            os.system(zsh_command)
+            exec_shell_command(zsh_command)
             
         elif delete_at_destination and source_allfiles_only:
             zsh_command = f"rsync -{mode} --delete '{sp}'/* '{dp}'"
-            os.system(zsh_command)
+            exec_shell_command(zsh_command)
             
         elif not delete_at_destination and source_allfiles_only:
             zsh_command = f"rsync -{mode} '{sp}'/* '{dp}'"
-            os.system(zsh_command)
+            exec_shell_command(zsh_command)
     
 
 def move_entire_directories(directories, destination_directories):
@@ -963,7 +967,7 @@ def copy_entire_directories(directories,
             
             for dirc in directories:
                 for dd in destination_directories:
-                    os.system(cp_command.format(dirc, dd))
+                    exec_shell_command(cp_command.format(dirc, dd))
                         
         elif isinstance(directories, list)\
         and isinstance(destination_directories, list)\
@@ -977,20 +981,22 @@ def copy_entire_directories(directories,
                                  "are not of the same length.")
             else:
                 for dirc, dd in zip(directories, destination_directories):
-                    os.system(cp_command.format(dirc, dd))
+                    exec_shell_command(cp_command.format(dirc, dd))
                     
         elif isinstance(directories, list)\
         and not isinstance(destination_directories, list):
             for dirc in directories:
-                os.system(cp_command.format(dirc, destination_directories))
+                exec_shell_command(cp_command.format(dirc, 
+                                                     destination_directories))
                     
         elif not isinstance(directories, list)\
         and isinstance(destination_directories, list):        
             for dd in destination_directories:
-                os.system(cp_command.format(directories, dd))
+                exec_shell_command(cp_command.format(directories, dd))
                     
         else:
-            os.system(cp_command.format(directories, destination_directories))     
+            exec_shell_command(cp_command.format(directories,
+                                                 destination_directories))     
 
 # Operations involving both files and directories #
 #-------------------------------------------------#
@@ -1065,4 +1071,4 @@ cwd = Path.cwd()
 alldoc_dirpath = Path(fixed_path).parent
 
 # Bash 'cp' command #
-cp_command = """cp -rv {}/* {}"""
+cp_command = """cp -rv {}/* {}""" # TODO: 'bash' agindua saihes daiteke?

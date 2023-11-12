@@ -229,6 +229,7 @@ def get_obj_specs(obj_path,
                   obj_spec_key=None,
                   splitchar=None):
     
+    # Proper argument selection control #
     arg_names = get_obj_specs.__code__.co_varnames
     osk_arg_pos = find_substring_index(arg_names, 
                                        "obj_spec_key",

@@ -122,10 +122,10 @@ def find_fileString_paths(file_string, path_to_walk_into, top_path_only=False):
     for the case of files. Accepts string globbing.
     
     Parameters
-    ---------- 
+    ----------
     file_string : str or list
           A string of the string to be searched or a list of strings.
-          It also works for complete names in case it is known
+          It also works for complete names in case it is known.
           Because at the date it has not been implemented yet,
           for now non-relative paths (i.e. full paths) are not allowed,
           and only the ultimate file name(s) is (are) accepted.

@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import os
 from pathlib import Path
 import sys
 
@@ -20,9 +19,10 @@ fixed_path = get_pytools_path.return_custom_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_path}/files_and_directories"      
-custom_mod2_path = f"{fixed_path}/strings"
-custom_mod3_path = f"{fixed_path}/weather_and_climate"
+custom_mod1_path = f"{fixed_path}/files_and_directories" 
+custom_mod2_path = f"{fixed_path}/operative_systems"     
+custom_mod3_path = f"{fixed_path}/strings"
+custom_mod4_path = f"{fixed_path}/weather_and_climate"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -30,29 +30,33 @@ custom_mod3_path = f"{fixed_path}/weather_and_climate"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
+sys.path.append(custom_mod4_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_handler
 import netcdf_handler
+import os_operations
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-addExtraName2File = string_handler.addExtraName2File
-find_substring_index = string_handler.find_substring_index
-fileList2String = string_handler.fileList2String
-obj_path_specs = string_handler.get_file_spec
-modify_obj_specs = string_handler.modify_obj_specs
-
 rename_objects = file_and_directory_handler.rename_objects
 
 get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
 get_times = netcdf_handler.get_times
+
+exec_shell_command = os_operations.exec_shell_command
+
+addExtraName2File = string_handler.addExtraName2File
+find_substring_index = string_handler.find_substring_index
+fileList2String = string_handler.fileList2String
+obj_path_specs = string_handler.get_file_spec
+modify_obj_specs = string_handler.modify_obj_specs
 
 #-------------------------#
 # Define custom functions #
@@ -169,7 +173,7 @@ def cdo_sellonlatbox(file_list,
         
         sellonlatbox_command = f"cdo sellonlatbox,{coordinate_list} "\
                                f"'{file}' {standardized_output_file_name}"
-        os.system(sellonlatbox_command)
+        exec_shell_command(sellonlatbox_command)
 
 
 def cdo_mergetime(file_list,
@@ -209,7 +213,7 @@ def cdo_mergetime(file_list,
     allfiles_string = fileList2String(file_list_selyear)
     mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                         f"{standardized_output_file_name}"
-    os.system(mergetime_command)
+    exec_shell_command(mergetime_command)
     
     
 def custom_cdo_mergetime(file_list,
@@ -226,7 +230,7 @@ def custom_cdo_mergetime(file_list,
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{temp_file}"
                      
-    os.system(mergetime_command)
+    exec_shell_command(mergetime_command)
         
     
 def cdo_selyear(file_list,
@@ -264,7 +268,7 @@ def cdo_selyear(file_list,
      
         selyear_command = f"cdo selyear,{selyear_string_cdo} "\
                           f"'{file}' {standardized_output_file_name}"
-        os.system(selyear_command)
+        exec_shell_command(selyear_command)
         
     
 def cdo_anomalies(input_file_full_time,
@@ -289,7 +293,7 @@ def cdo_anomalies(input_file_full_time,
  
     anomaly_calc_command = f"cdo sub '{input_file_freq_avg}' '{input_file_full_time}' "\
                            f"{standardized_output_file_name}"
-    os.system(anomaly_calc_command)
+    exec_shell_command(anomaly_calc_command)
 
 
 def cdo_shifttime(file_list,
@@ -300,7 +304,7 @@ def cdo_shifttime(file_list,
         temp_file = addExtraName2File(file)
         
         shifttime_command = f"cdo shifttime,{shift_value} '{file}' '{temp_file}'"
-        os.system(shifttime_command)
+        exec_shell_command(shifttime_command)
         
         rename_objects(temp_file, file)
         
@@ -322,7 +326,7 @@ def cdo_inttime(file_list,
         
         inttime_command = f"cdo inttime,{star_date_format},{time_step} "\
                           f"'{file}' '{temp_file}'"
-        os.system(inttime_command)
+        exec_shell_command(inttime_command)
         
         rename_objects(temp_file, file)
   
@@ -354,7 +358,7 @@ def cdo_rename(file_list,
                                                      splitchar1)
         chname_command = f"cdo chname,{var_file},{var_std} "\
                          f"'{file_name}' '{file_name_chname}'"
-        os.system(chname_command)
+        exec_shell_command(chname_command)
     
         # Rename the cdo output file name to the original one #
         rename_objects(file_name_chname, file_name)
@@ -383,7 +387,7 @@ def cdo_time_mean(input_file,
  
     time_mean_command = f"cdo -{calculationMethod} '{input_file}' "\
                         f"{standardized_output_file_name}"
-    os.system(time_mean_command)
+    exec_shell_command(time_mean_command)
     
 
 def cdo_remap(file_list,
@@ -460,7 +464,7 @@ def cdo_remap(file_list,
     for file in file_list:            
         remap_command = f"cdo {remap_method_cdo},{remap_method_str} "\
                         f"'{file}' {standardized_output_file_name}" 
-        os.system(remap_command)
+        exec_shell_command(remap_command)
         
         
 def create_grid_header_file(output_file, **kwargs):
@@ -583,7 +587,7 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
         
     # Perform the computation #
     cdo_stat_command = f"cdo {statname} {nc_file_name} {output_file_name}"
-    os.system(cdo_stat_command)
+    exec_shell_command(cdo_stat_command)
 
     
 def calculate_periodic_deltas(projected_ncfile,
@@ -638,7 +642,7 @@ def calculate_periodic_deltas(projected_ncfile,
         raise ValueError("Wrong basic operator. Options are "
                          "{'+', '-', '*', '/'}.")
                     
-    os.system(deltaCalc_command)
+    exec_shell_command(deltaCalc_command)
         
 
 def apply_periodic_deltas(projected_ncfile,
@@ -696,7 +700,7 @@ def apply_periodic_deltas(projected_ncfile,
         raise ValueError("Wrong basic operator. Options are "
                          "{'+', '-', '*', '/'}.")
                       
-    os.system(deltaApply_command)
+    exec_shell_command(deltaApply_command)
     
 #------------------#
 # Local parameters #

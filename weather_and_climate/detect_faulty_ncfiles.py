@@ -21,7 +21,6 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/time_handling"
 custom_mod2_path = f"{fixed_path}/weather_and_climate"
-
                                         
 # Add the module path to the path variable #
 #------------------------------------------#
@@ -32,28 +31,25 @@ sys.path.append(custom_mod2_path)
 # Perform the module importations #
 #---------------------------------#
 
-import time_formatters
-import faulty_ncfile_detector_main
+import program_snippet_exec_timers
+import netcdf_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-count_time = time_formatters.count_time
-netcdf_file_scanner = faulty_ncfile_detector_main.netcdf_file_scanner
+program_exec_timer = program_snippet_exec_timers.program_exec_timer
+netcdf_file_scanner = netcdf_handler.netcdf_file_scanner
 
 #-------------------------#
 # Define input parameters #
 #-------------------------#
 
 # Path containing string or list of strings #
-# path_obj = "/media/jonander/My_Basic/Dokumentuak"
-
-path_obj = "/media/jonander/My_Basic/Dokumentuak/03-Ikasketak/"\
-           "02-UCM_meteorologiako_masterra/TFM/input_data"
+path_obj = "/media/jonander/My_Basic/Dokumentuak"
 
 # path_obj = ["/media/jonander/My_Basic/Dokumentuak"
-#             "/home/jonander/Documents/03-Ikasketak/"]
+#             "/home/jonander/Documents/03-Ikasketak]
 
 # Switch for scanning files only at the top level of the given path(s) #
 top_path_only = True
@@ -65,7 +61,7 @@ extra_verbose = True
 # Initialise the program #
 #------------------------#
 
-count_time('start')
+program_exec_timer('start')
 netcdf_file_scanner(path_obj, 
                     top_path_only=top_path_only,
                     extra_verbose=extra_verbose)
@@ -74,4 +70,4 @@ netcdf_file_scanner(path_obj,
 # Calculate full program execution time #
 #---------------------------------------#
 
-count_time('stop')
+program_exec_timer('stop')

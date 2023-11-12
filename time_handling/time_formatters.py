@@ -549,7 +549,7 @@ def time2seconds(t, time_fmt_str=None):
 #------------------#
 
 # Global method options #
-method_options = ["datetime", "datetime_list", "datetime_pydt",
+method_options = ["datetime", "datetime_list", "datetime_pydt", "model_datetime",
                   "pandas", "numpy_dt64", "numpy_dt64_array", "numpy_generic"]
 
 # Extension list #

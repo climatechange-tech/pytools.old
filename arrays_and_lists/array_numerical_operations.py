@@ -66,50 +66,7 @@ def count_consecutive(array, calculate_max_consec=False):
             return max_consec_num
         else:
             return None
-        
-def insert_values(x, index, values, axis=None):
-    
-    """
-    Inserts values at the specified index either on a list or numpy array.
-    
-    Parameters
-    ----------
-    x : list or numpy.ndarray
-          Object containing whatever type of data
-    index : int
-          Position where to introduce new data.
-          Same behaviour as introducing a blank space at the left
-          and then filling it with new data.
-    values : list, numpy.array or pandas.Series
-          If values are part of a data frame, they equally can be introduced
-          into a list, to then call its data in the appropriate manner.
-    axis : int or NoneType
-          Axis along which to insert 'values'.  If 'axis' is None then 'x'
-          is flattened first.
-    
-    Returns
-    -------
-    appended_array : numpy.ndarray
-          Only if 'x' is a numpy.ndarray. Array with new data appended.
-    """
-    
-    lx = len(x)
-    
-    if isinstance(x, list):        
-        if index >= lx:
-            print(f"Index {index} beyond list length, "
-                  "will be appended at the end of it.")
-            
-        x.insert(index, values)
-        return x
-        
-    elif isinstance(x, np.ndarray):
-        x_appended = np.insert(x, index, values, axis=axis)
-        return x_appended
-        
-    else:
-        raise TypeError("Wrong type of data. "
-                        "Data must either be a list or numpy array.")
+
         
 def decompose_24h_cumulative_data(array, zeros_dtype='d'):
     

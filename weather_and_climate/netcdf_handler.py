@@ -2,6 +2,7 @@
 # Import modules #
 #----------------#
 
+import os
 from pathlib import Path
 import sys
 
@@ -24,8 +25,9 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/files_and_directories"      
 custom_mod2_path = f"{fixed_path}/pandas_data_frames"
-custom_mod3_path = f"{fixed_path}/strings"
-custom_mod4_path = f"{fixed_path}/weather_and_climate"
+custom_mod3_path = f"{fixed_path}/operative_systems"
+custom_mod4_path = f"{fixed_path}/strings"
+custom_mod5_path = f"{fixed_path}/weather_and_climate"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -34,34 +36,137 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
+sys.path.append(custom_mod5_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import data_frame_handler
-import faulty_ncfile_detector
 import file_and_directory_paths
 import file_and_directory_handler
+import os_operations
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
+save2csv = data_frame_handler.save2csv
+
 move_files_byFS_fromCodeCallDir = file_and_directory_handler.move_files_byFS_fromCodeCallDir
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
 
-binary_faulty_file_detector = faulty_ncfile_detector.binary_faulty_file_detector
+exec_shell_command = os_operations.exec_shell_command
 
-save2csv = data_frame_handler.save2csv
-
+fileList2String = string_handler.fileList2String
+find_substring_index = string_handler.find_substring_index
+get_obj_specs = string_handler.get_obj_specs
 modify_obj_specs = string_handler.modify_obj_specs
 
 #-------------------------#
 # Define custom functions #
 #-------------------------#
+
+# Faulty netCDF file detecting #
+#------------------------------#
+
+def ncfile_integrity_status(ncfile_name):
+    
+    try:
+        ds=xr.open_dataset(ncfile_name)
+        ds.close()
+        return 0
+    
+    except:
+        return -1
+        
+def netcdf_file_scanner(path_to_walk_into, 
+                        top_path_only=False,
+                        verbose=False,
+                        extra_verbose=False,
+                        create_report=False):
+
+    # Proper argument selection control #
+    arg_names = netcdf_file_scanner.__code__.co_varnames
+    verb_arg_pos = find_substring_index(arg_names, 
+                                        "verbose",
+                                        find_whole_words=True)
+    
+    xverb_arg_pos = find_substring_index(arg_names, 
+                                         "extra_verbose",
+                                         find_whole_words=True)
+    
+    # Define the input data directories and files #
+    #---------------------------------------------#
+    
+    if not isinstance(path_to_walk_into, list):        
+        path_to_walk_into = [path_to_walk_into]
+        
+    for ptwi in path_to_walk_into:
+        ncgrib_file_list = find_ext_file_paths(extensions[0],
+                                          ptwi,
+                                          top_path_only=top_path_only)
+        lncfl = len(ncgrib_file_list)
+    
+        # Initialise faulty file counter #
+        #--------------------------------#
+        
+        faulty_ncf_counter = [lncfl, 0]
+        faulty_ncf_list = []
+        
+        # Loop through all path list #
+        #----------------------------#
+        
+        for ncf in enumerate(ncgrib_file_list, start=1):
+            
+            file_num = ncf[0]
+            file_name = ncf[-1]
+            
+            if verbose and extra_verbose:
+                raise ValueError(f"Arguments {arg_names[verb_arg_pos]} "
+                                 f"and {arg_names[xverb_arg_pos]} "
+                                 "cannot be ´True´ at the same time.")
+                
+            else:
+                    
+                if verbose:
+                    print(scan_progress_table.format(file_num, lncfl,
+                                                     ptwi),
+                          end="\r")
+                elif extra_verbose:
+                    print(scan_progress_table_evb.format(file_name,
+                                                         file_num, lncfl,
+                                                         ptwi),
+                          end="\r")
+        
+            integrity_status = ncfile_integrity_status(file_name)
+            
+            if integrity_status == -1:
+                faulty_ncf_counter[-1] += 1
+                faulty_ncf_list.append(file_name)
+                
+        if create_report:
+        
+            # Create faulty netCDF file report #
+            #----------------------------------#
+            
+            ofile_name = f"{codeCallDir}/{report_fn_noext}.txt"
+            ofile = open(ofile_name, "w")
+            
+            ofile.write(report_table.format(ptwi,
+                                            faulty_ncf_counter[0], 
+                                            faulty_ncf_counter[-1]))
+            
+            for faulty_ncf in faulty_ncf_list:
+                ofile.write(f" {faulty_ncf}\n")
+            
+            print("Faulty netCDF file report created at the current directory.")
+            ofile.close()
+            
+        else:
+            return faulty_ncf_counter[-1]
 
 # netCDF data creating and manipulating #
 #---------------------------------------#
@@ -150,6 +255,7 @@ def saveXarrayDSAsNetCDF(xarray_ds,
     
     
 def netCDF_regridder(ds_in, ds_image, method="bilinear"):
+    
     
     import xesmf as xe
     
@@ -358,7 +464,7 @@ def saveNCdataAsCSV(nc_file,
     if isinstance(nc_file, str) and csv_file_name == "default":
             
         obj2change = "ext"
-        csv_file_name = modify_obj_specs(nc_file, obj2change, extensions[1])
+        csv_file_name = get_obj_specs(nc_file, obj2change, extensions[1])
     
     elif not isinstance(nc_file, str) and csv_file_name == "default":
         raise ValueError("You must provide a CSV file name.")
@@ -474,18 +580,18 @@ def infer_full_period_of_time(nc_file):
     return full_period
 
 
-def get_netcdf_fileList(path_to_walk_in):
+def get_netcdf_fileList(path_to_walk_into):
     
     netcdf_files = find_ext_file_paths(extensions[0], 
-                                       path_to_walk_in, 
+                                       path_to_walk_into, 
                                        top_path_only=True)
     
     return netcdf_files
 
 
-def get_netcdf_file_dirList(path_to_walk_in):
+def get_netcdf_file_dirList(path_to_walk_into):
     
-    netcdf_files_dirs = find_ext_file_directories(extensions[0], path_to_walk_in)
+    netcdf_files_dirs = find_ext_file_directories(extensions[0], path_to_walk_into)
     
     return netcdf_files_dirs
 
@@ -498,7 +604,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
     
     ofile_name = "latlon_bounds.txt"
     
-    netcdf_files_dirs = get_netcdf_file_dirList(cwd)
+    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir in enumerate(netcdf_files_dirs):
@@ -519,7 +625,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
                 
-                faulty_file_trial = binary_faulty_file_detector(ncf_name)
+                faulty_file_trial = ncfile_integrity_status(ncf_name)
                 
                 if faulty_file_trial == 0:
                     
@@ -589,7 +695,7 @@ def extract_and_store_period_bounds():
 
     ofile_name = "period_bounds.txt"
  
-    netcdf_files_dirs = get_netcdf_file_dirList(cwd)
+    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir in enumerate(netcdf_files_dirs):
@@ -610,7 +716,7 @@ def extract_and_store_period_bounds():
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
                                 
-                faulty_file_trial = binary_faulty_file_detector(ncf_name)
+                faulty_file_trial = ncfile_integrity_status(ncf_name)
                 
                 if faulty_file_trial == 0:
                 
@@ -648,7 +754,7 @@ def extract_and_store_time_formats():
     
     ofile_name = "time_formats.txt"
 
-    netcdf_files_dirs = get_netcdf_file_dirList(cwd)
+    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir in enumerate(netcdf_files_dirs):
@@ -669,7 +775,7 @@ def extract_and_store_time_formats():
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
                 
-                faulty_file_trial = binary_faulty_file_detector(ncf_name)
+                faulty_file_trial = ncfile_integrity_status(ncf_name)
                 
                 if faulty_file_trial == 0:
 
@@ -994,15 +1100,15 @@ def get_model_list(path_list, split_pos):
                                   for path in path_list
                                   if "/" in path]
     
-    file_list = [path.name
+    grib_file_list = [path.name
                  if len(fwd_slash_containing_files) > 0
                  and file_path_splitchar in path
                  else path
                  for path in path_list]
     
     unique_model_list = np.unique([f.split(file_path_splitchar)[split_pos]
-                                   for f in file_list
-                                   if len(file_list) > 0])
+                                   for f in grib_file_list
+                                   if len(grib_file_list) > 0])
     
     return unique_model_list
 
@@ -1190,18 +1296,60 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
     nearest_lons = np.round(nearest_lons, 3)
         
     return nearest_lats, nearest_lons
-        
 
-# TODO: grib formatotik netCDFra pasatzeko funtzioa garatu
-#def grib2netcdf(file_list):
-    # import eccodes as ecs
-    
+        
+def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
+        
+    if on_shell:
+        
+        if isinstance(grib_file_list, str):
+            nc_file_new = modify_obj_specs(grib_file_list, "ext", extensions[0])
+            
+        else:
+            grib_allfile_str = fileList2String(grib_file_list)
+            nc_file_new_noext = input("Please introduce a name "
+                                      "for the netCDF file, "
+                                      "WITHOUT THE EXTENSION: ")
+            
+            allowed_minimum_char_idx = find_substring_index(nc_file_new_noext,
+                                                            regex_grib2nc,
+                                                            advanced_search=True)
+            
+            while allowed_minimum_char_idx == -1:
+                print("Invalid file name.\nIt can contain alphanumeric characters, "
+                      "as well as the following non-word characters: {. _ -}")
+                
+                nc_file_new_noext = input("Please introduce a valid name: ")
+                allowed_minimum_char_idx = find_substring_index(nc_file_new_noext,
+                                                                regex_grib2nc,
+                                                                advanced_search=True)
+                
+            nc_file_new_noext = modify_obj_specs(nc_file_new_noext,
+                                                 obj2modify="ext",
+                                                 new_obj=extensions[0])
+            
+        if option_str is None:
+            grib2netcdf_comm = f"grib_to_netcdf -o {nc_file_new} {grib_allfile_str}"                
+        else:
+            grib2netcdf_comm = f"grib_to_netcdf {option_str} -o {nc_file_new} {grib_allfile_str}"
+            
+        exec_shell_command(grib2netcdf_comm)
+        
+    else:   
+        if isinstance(grib_file_list, str):
+            grib_file_list = [grib_file_list]
+
+        for grib_file in grib_file_list:
+            grib_file_noext = get_obj_specs(grib_file, "name_noext", extensions[0])
+            ds = xr.open_dataset(grib_file, engine="cfgrib")
+            saveXarrayDSAsNetCDF(ds, grib_file_noext)
+                
 #------------------#
 # Local parameters #
 #------------------#
 
 # Directory from where this code is being called #
-cwd = Path.cwd()
+codeCallDir = Path.cwd()
 
 # File extensions #
 extensions = ["nc", "csv"]
@@ -1209,8 +1357,10 @@ extensions = ["nc", "csv"]
 # File name separator character #
 file_path_splitchar = "_"
 
-# Information output tables #
+# RegEx control for GRIB-to-netCDF single file name #
+regex_grib2nc = "^[a-zA-Z0-9\._-]$"
 
+# Main parameter scanning output tables #
 latlon_table = \
 '''=========================================================
 ·File: {}
@@ -1245,3 +1395,28 @@ time_format_table = \
 
 '''
     
+# File scanning progress output tables #
+report_fn_noext = "faulty_netcdf_file_report"
+
+scan_progress_table =\
+"""File number: {} out of {}
+Directory: {}
+"""
+
+scan_progress_table_evb =\
+"""
+File: {}
+File number: {} out of {}
+Directory: {}
+"""
+
+report_table =\
+"""Faulty NETCDF format file report
+--------------------------------
+
+·Directory: {}
+·Total scanned files scanned: {}
+·Faulty file number: {}
+
+·Faulty files:
+"""

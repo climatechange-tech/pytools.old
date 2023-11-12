@@ -15,11 +15,68 @@ def df_to_structured_array(df):
     return data
 
 
+def insert_values(x, index, values, axis=None):
+    
+    """
+    Inserts values at the specified index either on a list or numpy array.
+    
+    Parameters
+    ----------
+    x : list or numpy.ndarray
+          Object containing whatever type of data
+    index : int
+          Position where to introduce new data.
+          Same behaviour as introducing a blank space at the left
+          and then filling it with new data.
+    values : list, numpy.array or pandas.Series
+          If values are part of a data frame, they equally can be introduced
+          into a list, to then call its data in the appropriate manner.
+    axis : int or NoneType
+          Axis along which to insert 'values'.  If 'axis' is None then 'x'
+          is flattened first.
+    
+    Returns
+    -------
+    appended_array : numpy.ndarray
+          Only if 'x' is a numpy.ndarray. Array with new data appended.
+    """
+    
+    lx = len(x)
+    
+    if isinstance(x, list):        
+        if index >= lx:
+            print(f"Index {index} beyond list length, "
+                  "will be appended at the end of it.")
+            
+        x.insert(index, values)
+        return x
+        
+    elif isinstance(x, np.ndarray):
+        x_appended = np.insert(x, index, values, axis=axis)
+        return x_appended
+        
+    else:
+        raise TypeError("Wrong type of data. "
+                        "Data must either be a list or numpy array.")
+        
+        
+def extend_array(obj, obj2extend, np_axis=None):
+    if isinstance(obj, list):
+        obj_extended = obj.extend(obj2extend)
+    elif isinstance(obj, np.ndarray):
+        obj_extended = np.concatenate((obj, obj2extend), axis=np_axis)
+    else:
+        raise TypeError("Input argument to be extended must either be of type "
+                        "´list´ or ´np.ndarray´.")
+    return obj_extended
+
+
 def arrayOfList_to_array(arrayList):
     
     dimList = np.unique([len(arr.shape) for arr in arrayList])
     ld = len(dimList)
     
+    # If all lists in the object are of the same dimension #
     if ld == 1:
         dims = dimList[0]
         
@@ -30,8 +87,10 @@ def arrayOfList_to_array(arrayList):
         else:
             raise Exception("Cannot handle lists containing D > 3 arrays.")
             
+    # If the lists are multi-dimensional #
     else:
-        array = np.concatenate(arrayList, axis=None)
+        array = extend_array(array, arrayList)
+        # array = np.hstack(arrayList) (EQUIVALENT for 'np.concatenate')
         
     return array
 

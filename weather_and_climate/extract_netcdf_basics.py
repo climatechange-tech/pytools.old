@@ -44,7 +44,7 @@ import netcdf_handler
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-count_time = time_formatters.count_time
+program_exec_timer = program_snippet_exec_timers.program_exec_timer
 
 extract_and_store_latlon_bounds = netcdf_handler.extract_and_store_latlon_bounds 
 extract_and_store_period_bounds = netcdf_handler.extract_and_store_period_bounds
@@ -54,7 +54,7 @@ extract_and_store_time_formats = netcdf_handler.extract_and_store_time_formats
 # Start the program #
 #-------------------#
 
-count_time("start")
+program_exec_timer("start")
 
 #-----------------------------------------------------------------------#
 # Extract every netCDF file´s basic information present in this project #
@@ -72,4 +72,4 @@ extract_and_store_time_formats()
 # Calculate the elapsed time for full execution #
 #-----------------------------------------------#
 
-count_time("stop")
+program_exec_timer("stop")

@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import os
 from pathlib import Path
 import sys
 
@@ -20,21 +19,26 @@ fixed_path = get_pytools_path.return_custom_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod_path = f"{fixed_path}/strings"
+custom_mod1_path = f"{fixed_path}/strings"
+custom_mod2_path = f"{fixed_path}/operative_systems"     
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
-sys.path.append(custom_mod_path)
+sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
 
 # Perform the module importations #
 #---------------------------------#
 
+import os_operations
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
+
+exec_shell_command = os_operations.exec_shell_command
 
 obj_path_specs = string_handler.obj_path_specs
 fileList2String = string_handler.fileList2String
@@ -84,7 +88,7 @@ def netCDF2raster(nc_file_list,
               f"{ncf_name} {raster_file_name} "\
               f"--config GDAL_PDF_DPI {raster_resolution}"
                             
-        os.system(zsh_rasterization)
+        exec_shell_command(zsh_rasterization)
 
 
 def merge_independent_rasters(raster_files_dict,
@@ -143,7 +147,7 @@ def merge_independent_rasters(raster_files_dict,
                                    f"-of {output_file_format} "\
                                    f"{zsh_allfile_string}"  
                                    
-            os.system(zsh_raster_merge)
+            exec_shell_command(zsh_raster_merge)
 
 
 #-------------------------#

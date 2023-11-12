@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import os
 from pathlib import Path
 import sys
 
@@ -21,24 +20,28 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/files_and_directories"
+custom_mod2_path = f"{fixed_path}/operative_systems"     
 
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
 sys.path.append(custom_mod1_path)
+sys.path.append(custom_mod2_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_handler
 import file_format_tweaker
+import os_operations
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-aux_path_strAdd = file_format_tweaker.aux_path_strAdd 
 rename_objects = file_and_directory_handler.rename_objects
+aux_path_strAdd = file_format_tweaker.aux_path_strAdd 
+exec_shell_command = os_operations.exec_shell_command
 
 #-------------------------#
 # Define custom functions #
@@ -65,7 +68,7 @@ def modify_variable_units_and_values(file_list,
         
         var_chunit_command\
         = f"ncatted -a units,{variable_name},o,c,'{new_unit}' '{file_name}'"
-        os.system(var_chunit_command)
+        exec_shell_command(var_chunit_command)
         
         if operator == "+":
             
@@ -85,7 +88,7 @@ def modify_variable_units_and_values(file_list,
                 f"'{variable_name}={variable_name}+{value}' "\
                 f"'{file_name}' '{temp_file}'"
                                      
-            os.system(varval_mod_command)            
+            exec_shell_command(varval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
                                      
@@ -107,7 +110,7 @@ def modify_variable_units_and_values(file_list,
                 f"'{variable_name}={variable_name}-{value}' "\
                 f"'{file_name}' '{temp_file}'"
                                      
-            os.system(varval_mod_command)            
+            exec_shell_command(varval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "*":
@@ -128,7 +131,7 @@ def modify_variable_units_and_values(file_list,
                 f"'{variable_name}={variable_name}*{value}' "\
                 f"'{file_name}' '{temp_file}'"
                                      
-            os.system(varval_mod_command)            
+            exec_shell_command(varval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "/":
@@ -149,7 +152,7 @@ def modify_variable_units_and_values(file_list,
                 f"'{variable_name}={variable_name}/{value}' "\
                 f"'{file_name}' '{temp_file}'"
             
-            os.system(varval_mod_command)            
+            exec_shell_command(varval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         else:
@@ -209,7 +212,7 @@ def modify_coordinate_values_byThreshold(file_list,
                     f"{dimension_name}={dimension_name}+{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "-":
@@ -244,7 +247,7 @@ def modify_coordinate_values_byThreshold(file_list,
                     f"{dimension_name}={dimension_name}-{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                                  
         elif operator == "*":
@@ -279,7 +282,7 @@ def modify_coordinate_values_byThreshold(file_list,
                     f"{dimension_name}={dimension_name}*{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "/":
@@ -314,7 +317,7 @@ def modify_coordinate_values_byThreshold(file_list,
                     f"{dimension_name}={dimension_name}/{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                          
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                                   
         else:
@@ -374,7 +377,7 @@ def modify_coordinate_allValues(file_list,
                     f"{dimension_name}={dimension_name}+{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "-":
@@ -409,7 +412,7 @@ def modify_coordinate_allValues(file_list,
                     f"{dimension_name}={dimension_name}-{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                                  
         elif operator == "*":
@@ -444,7 +447,7 @@ def modify_coordinate_allValues(file_list,
                     f"{dimension_name}={dimension_name}*{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                      
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                      
         elif operator == "/":
@@ -479,7 +482,7 @@ def modify_coordinate_allValues(file_list,
                     f"{dimension_name}={dimension_name}/{value}.0f' "\
                     f"'{file_name}' '{temp_file}'"
                                          
-            os.system(dimval_mod_command)            
+            exec_shell_command(dimval_mod_command)            
             rename_objects(temp_file, file_name)
                                                   
         else:

@@ -40,7 +40,7 @@ def download_data(product, output_file, **kwargs):
     None
     """
 
-    c.retrieve(
+    return c.retrieve(
         product,
         kwargs,
         output_file
