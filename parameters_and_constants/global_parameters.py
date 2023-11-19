@@ -24,13 +24,13 @@ basic_time_format_strs = dict(
     D_noDateSep = "%Y%m%d",
     M           = "%Y-%m",
     Y           = "%Y"
-    )
+)
 
 non_std_time_format_strs = dict(
     CFT_H = "%a %b %d %H:%M:%S %Y",
     CFT_D = "%a %b %d %Y",
     CFT_M = "%b %Y"
-    )
+)
 
 # TODO: gehitu beste batzuk
 
@@ -39,7 +39,7 @@ custom_time_format_strs = dict(
     CT_Excel_Spanish_noBar_H = "%d%m%y %H:%M:%S",
     CT_Excel_Spanish_D       = "%d/%m/%y",
     CT_Excel_Spanish_noBar_D = "%d%m%y"
-    )
+)
 
 month_number_dict = {
     1  : "J",
@@ -54,7 +54,7 @@ month_number_dict = {
     10 : "O",
     11 : "N",
     12 : "D"
-    }
+}
 
 season_timeFreq_dict = {
     1  : "Q-JAN",
@@ -69,9 +69,9 @@ season_timeFreq_dict = {
     10 : "Q-OCT",
     11 : "Q-NOV",
     12 : "Q-DEC"
-    }
+}
 
-mathematical_year_days = 365
+MATHEMATICAL_YEAR_DAYS = 360
 
 #----------------# 
 # Climate change #

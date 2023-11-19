@@ -53,7 +53,7 @@ import time_formatters
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-mathematical_year_days = global_parameters.mathematical_year_days
+MATHEMATICAL_YEAR_DAYS = global_parameters.MATHEMATICAL_YEAR_DAYS
 find_date_key = data_frame_handler.find_date_key
 find_substring_index = string_handler.find_substring_index
 time_format_tweaker = time_formatters.time_format_tweaker
