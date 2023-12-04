@@ -19,10 +19,12 @@ def find_substring_index(string,
                          case_sensitive=False,
                          all_matches=False):
     
-    # substring: str or list of str
-    #       If 'str' then it can either be as is or a regex.
-    #       In the latter case, there is no need to explicitly define as so,
-    #       because it connects with Python's built-in 're' module.
+    """
+    substring: str or list of str
+          If 'str' then it can either be as is or a regex.
+          In the latter case, there is no need to explicitly define as so,
+          because it connects with Python's built-in 're' module.
+    """
 
     if isinstance(string, str):        
         if advanced_search:
@@ -119,7 +121,7 @@ def find_substring_index(string,
     else:
         return substrLowestIdx
             
-
+    
 def string_VS_string_search(string,
                             substring,
                             find_whole_words,
@@ -186,20 +188,44 @@ def string_VS_string_search(string,
 
 def stringList_VS_stringList_search_wholeWords(strList, 
                                                substrList, 
+                                               method="default",
                                                start=0, 
                                                end=None):
     
-    substrLowestIdxNoFilt\
-    = np.array([np.char.find(strList, substr_el, start=0, end=None)
-                for substr_el in substrList])
+    # Proper argument selection control #
+    #-----------------------------------#
     
-    substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
+    arg_names = stringList_VS_stringList_search_wholeWords.__code__.co_varnames
+    method_arg_pos = find_substring_index(arg_names, 
+                                          "method",
+                                          find_whole_words=True)
     
-    if len(substrLowestIdx) == 0:
-        return -1
-    else:
-        return substrLowestIdx
+    if method not in list_wholewords_methods:
+        raise ValueError(f"Wrong '{arg_names[method_arg_pos]}' option. "
+                         f"Options are {list_wholewords_methods}.")
+    
+    # Operation part #
+    #----------------#
+    
+    if method == "default":
+        try:
+            substrLowestIdx = strList.index(substrList)
+        except:
+            return -1    
 
+    
+    elif method == "numpy":
+        substrLowestIdxNoFilt\
+        = np.array([np.char.find(strList, substr_el, start=0, end=None)
+                    for substr_el in substrList])
+        
+        substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
+        if len(substrLowestIdx) == 0:
+            return -1
+        else:
+            return substrLowestIdx
+        
+   
     
 def obj_path_specs(obj_path, splitchar=None):
     
@@ -374,3 +400,5 @@ objSpecsKeys = ["obj_path_parent",
 
 objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
                       for s in objSpecsKeys]
+
+list_wholewords_methods = ['default', 'numpy']

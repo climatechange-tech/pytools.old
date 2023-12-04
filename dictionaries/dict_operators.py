@@ -53,7 +53,8 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
         return div_dict
 
     else:
-        raise ValueError("Wrong operator sign.")
+        raise ValueError("Wrong basic operator sign. Accepted operators are: "\
+                         "{'+','-','*','/'}")
 
 def merge_dictionaries(dict_list):
     

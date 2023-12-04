@@ -608,6 +608,7 @@ def remove_elements_from_array(array, idx2access, axis=None):
     idx2access : list or numpy.array of integers or booleans
           Object containing indexes used to select elements
           from the previous list or array.
+          If ´array´ is of type list, then only a number is accepted.
     
     Returns
     -------
@@ -615,6 +616,20 @@ def remove_elements_from_array(array, idx2access, axis=None):
           NumPy's array with the selected elements removed.
     """
     
-    array_filtered = np.delete(array, idx2access, axis=axis)
+    if isinstance(array, list):
+        array_filtered = array.copy()
+        
+        if not isinstance(idx2access, int):
+            raise TypeError("For a list-type input argument, "\
+                            "only an integer is accepted to index it.")
+        else:
+            array_filtered.pop(idx2access)
+    
+    elif isinstance(array, np.ndarray):
+        array_filtered = np.delete(array, idx2access, axis=axis)
+        
+    else:
+        raise TypeError("Input argument must either be of type ´list´ or numpy array.")
+    
     
     return array_filtered
