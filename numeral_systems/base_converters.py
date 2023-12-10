@@ -20,30 +20,30 @@ def method_checker(method_list, arg):
 #---------------------------------------#
 
 # Bases: 2, 8, 10, 16
-def base2bin(n, method="fstring", zero_pad=4):
+def base2bin(n, method="format_string", zero_pad=4):
     method_checker(method_opts, method)
 
     if method == "default":
         n_bin = bin(n)
-    elif method == "fstring":
+    elif method == "format_string":
         n_bin = f"{n:0{zero_pad}b}"
     return n_bin
 
-def base2oct(n, method="fstring", zero_pad=4):
+def base2oct(n, method="format_string", zero_pad=4):
     method_checker(method_opts, method)
 
     if method == "default":
         n_oct = oct(n)
-    elif method == "fstring":
+    elif method == "format_string":
         n_oct = f"{n:0{zero_pad}o}"
     return n_oct
 
-def base2hex(n, method="fstring", zero_pad=4):
+def base2hex(n, method="format_string", zero_pad=4):
     method_checker(method_opts, method)
 
     if method == "default":
         n_hex = hex(n)
-    elif method == "fstring":
+    elif method == "format_string":
         n_hex = f"{n:0{zero_pad}h}"
     return n_hex
     
@@ -90,4 +90,4 @@ def conv_arbBases(x, base):
 # Local parameters #
 #------------------#
 
-method_opts = ['default', 'fstring']
+method_opts = ['default', 'format_string']

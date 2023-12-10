@@ -361,7 +361,7 @@ def approach_value_in_array(array, given_value):
     
     Parameters
     ----------
-    array : numpy.ndarray or pandas.DataFrame
+    array : list, numpy.ndarray or pandas.DataFrame
             or pandas.Series
             Array or pandas data frame or series containing the values.
     
@@ -380,26 +380,39 @@ def approach_value_in_array(array, given_value):
           containing the rows and columns where the closest value is located.
     """
     
-    shape = array.shape
+    if isinstance(array, list):
+        shape = len(array)
+    else:    
+        shape = array.shape
+        
+    array_vs_given_value_diff_function = lambda array: abs(array-given_value)
     
-    if len(shape) > 1:
-        
-        if not isinstance(array, np.ndarray):
-            array = array.values
+    if not isinstance(array, list):
+        if len(shape) > 1:
             
-        array_vs_given_value_diff_function = lambda array: abs(array-given_value)
-        approached_val = min(array.flatten(), key=array_vs_given_value_diff_function)
-        approached_val_idx = np.where(array==approached_val)
-                        
-    else: 
-        
-        if not isinstance(array, np.ndarray):  
-            array = array.values
+            if isinstance(array, pd.DataFrame):
+                array = array.values
+                
+            approached_val = min(array.flatten(), key=array_vs_given_value_diff_function)
+            approached_val_idx = np.where(array==approached_val)
+                            
+        else: 
             
-        array_vs_given_value_diff_function = lambda array: abs(array-given_value)        
+            if isinstance(array, pd.DataFrame):
+                array = array.values
+    
+            approached_val = min(array, key=array_vs_given_value_diff_function)
+            approached_val_idx = np.where(array==approached_val)[0][0]
+            
+    else:
         approached_val = min(array, key=array_vs_given_value_diff_function)
-        approached_val_idx = np.where(array==approached_val)[0][0]
-
+        approached_val_idx = [i for i in range(shape)
+                              if array[i] == approached_val]
+        
+    lavi = len(approached_val_idx)
+    if lavi == 1:
+        approached_val_idx = approached_val_idx[0]
+    
     return approached_val, approached_val_idx
 
 

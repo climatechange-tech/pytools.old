@@ -2,19 +2,33 @@
 # Define custom functions #
 #-------------------------#
 
-def print_fstring(format_string, arg_obj):
-    if isinstance(arg_obj, str):
-        print(format_string.format(arg_obj))
-    elif isinstance(arg_obj, tuple):
-        print(format_string.format(*arg_obj))
-    elif isinstance(arg_obj, dict):
-        print(format_string.format(**arg_obj))
-    else:
-        raise TypeError("Argument must either be of type ´str´, ´tuple´ or ´dict´.")
+def format_string(format_string, arg_obj):
+    if isinstance(arg_obj, tuple):
+        formatted_string = format_string.format(*arg_obj)
+        return formatted_string
     
-def print_percent_string(format_string, arg_obj):
+    elif isinstance(arg_obj, dict):
+        formatted_string = format_string.format(**arg_obj)
+        return formatted_string
+    
+    elif not isinstance(arg_obj, tuple) and not isinstance(arg_obj, dict):
+        formatted_string = format_string.format(arg_obj)
+        return formatted_string
+    
+    else:
+        raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
+
+
+def print_format_string(string2format, arg_obj):
+    try:
+        formatted_string = format_string(string2format, arg_obj)
+        print(formatted_string)
+    except:
+        raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
+
+    
+def print_percent_string(string2format, arg_obj):
     if isinstance(arg_obj, str):
-        print(format_string %(arg_obj))
+        print(string2format %(arg_obj))
     else:
         raise TypeError("Argument must be of type ´str´ only.")
-    

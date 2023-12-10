@@ -2,6 +2,12 @@
 # Define functions #
 #------------------#
 
+def sort_dictionary_byKeys(dic):
+    keys_sorted_list = sorted(dic.keys())
+    dic_sorted_byKeys = {key : dic[key] for key in keys_sorted_list}
+    return dic_sorted_byKeys
+
+
 def dict_value_basic_operator(dict1, dict2, basic_math_operator):
 
     """
@@ -32,25 +38,33 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
         sum_dict = {key:
                     dict1[key] + dict2[key]
                     for key in dict1.keys() & dict2}
-        return sum_dict
+            
+        sum_dict_sorted = sort_dictionary_byKeys(sum_dict)
+        return sum_dict_sorted
 
     elif basic_math_operator == '-':
         subtr_dict = {key:
                       dict1[key] - dict2[key]
                       for key in dict1.keys() & dict2}
-        return subtr_dict
+            
+        subtr_dict_sorted = sort_dictionary_byKeys(subtr_dict)
+        return subtr_dict_sorted
 
     elif basic_math_operator == '*':
         mult_dict = {key:
                      dict1[key] * dict2[key]
                      for key in dict1.keys() & dict2}
-        return mult_dict
+        
+        mult_dict_sorted = sort_dictionary_byKeys(mult_dict)
+        return mult_dict_sorted
 
     elif basic_math_operator == '/':
         div_dict = {key:
                     dict1[key] / dict2[key]
                     for key in dict1.keys() & dict2}
-        return div_dict
+            
+        div_dict_sorted = sort_dictionary_byKeys(div_dict)
+        return div_dict_sorted
 
     else:
         raise ValueError("Wrong basic operator sign. Accepted operators are: "\
