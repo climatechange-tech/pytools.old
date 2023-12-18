@@ -327,6 +327,9 @@ def week_range(date):
     where a given calendar day lies on.
     In Europe weeks start on Monday and end on Sunday.
     
+    Isocalendar calculates the year, week of the year, and day of the week (´dow´).
+    ´dow´ is Mon = 1, ... , Sat = 6, Sun = 7
+    
     Parameters
     ----------
     date : pandas._libs.tslibs.timestamps.Timestamp
@@ -334,21 +337,14 @@ def week_range(date):
     start_date, end_date: str
           Pair of strings that refer, respectively, to the first and
           last days of the week that lies the given date within.
-    
-    
-    Isocalendar function #
-    ----------------------#
-    
-    isocalendar calculates the year, week of the year, and day of the week (dow).
-    dow is Mon = 1, Sat = 6, Sun = 7
     """
     
     if isinstance(date, pd._libs.tslibs.timestamps.Timestamp):
         
-        year, week, dow = date.isocalendar()
+        dow = date.isocalendar()[-1]
 
-        # Find the first day of the week
-        #-------------------------------
+        # Find the first day of the week #
+        #--------------------------------#
         
         if dow == 1:
             # Since we want to start with Monday, let's test for that condition.
@@ -403,16 +399,15 @@ def nearest_leap_year(year):
 def leapYearDetector(start_year, end_year, return_days=False):
     
     if isinstance(start_year, str):
-        start_year = eval(start_year)
+        start_year = int(start_year)
     if isinstance(end_year, str):
-        end_year = eval(end_year)
+        end_year = int(end_year)
     
-    if return_days:
-        
+    if return_days:        
         if start_year == end_year:
             days_year = len(pd.date_range(str(start_year),
                                           str(start_year+1),
-                                          inclusive="left"))
+                                          inclusive="left"))       
             return days_year
             
         else:
