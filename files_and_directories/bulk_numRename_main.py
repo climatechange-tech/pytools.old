@@ -330,7 +330,7 @@ def reorder_objs(path,
             ansPerformChanges\
             = input("Would you like to perform the changes? [y/n] ")
  
-            while ansPerformChanges != "y" and ansPerformChanges != "n":   
+            while (ansPerformChanges != "y" and ansPerformChanges != "n"):   
                 ansPerformChanges\
                 = input("Please write 'y' for 'yes' or 'n' for 'no' ")
                 
@@ -430,7 +430,7 @@ def reorder_objs(path,
             ansPerformChanges\
             = input("Would you like to perform the changes? [y/n] ")
  
-            while ansPerformChanges != "y" and ansPerformChanges != "n":
+            while (ansPerformChanges != "y" and ansPerformChanges != "n"):
                 ansPerformChanges\
                 = input("Please write 'y' for 'yes' or 'n' for 'no' ")
                 

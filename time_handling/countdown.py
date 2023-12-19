@@ -68,7 +68,7 @@ def countdown(t, string_arr1, string_arr2,
         try:
             
             zero_pad_ans = input("Would you like to include zero padding? [y/n] ")
-            while zero_pad_ans != "y" and zero_pad_ans != "n":
+            while (zero_pad_ans != "y" and zero_pad_ans != "n"):
                 zero_pad_ans = input("Please write 'y' for 'yes' or 'n' for 'no' ")
                 
             if zero_pad_ans == "n":
@@ -79,7 +79,7 @@ def countdown(t, string_arr1, string_arr2,
                                                       s2find_2,
                                                       s2replace_2)
                 
-            while t:        
+            while (t):        
                 time_str = time_dt.strftime(time_fmt_str)
                 print(time_str, end="\r")
                 
@@ -93,7 +93,7 @@ def countdown(t, string_arr1, string_arr2,
     elif isinstance(t, int):
         t_secs = time_format_tweaker(t)
         
-        while t_secs:
+        while (t_secs):
             time_str = time_format_tweaker(t_secs, print_str=True)
             print(time_str, end="\r")
             
@@ -130,7 +130,7 @@ try:
     print_str = input("Convertible time format detected. "
                       "Would you like to print the time in string format? [y/n] ")
     
-    while print_str != "y" and print_str != "n":
+    while (print_str != "y" and print_str != "n"):
         print_str = input("Please write 'y' for 'yes' or 'n' for 'no' ")
         
     try:            

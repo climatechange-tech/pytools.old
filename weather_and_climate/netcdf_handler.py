@@ -1315,7 +1315,7 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
                                                             regex_grib2nc,
                                                             advanced_search=True)
             
-            while allowed_minimum_char_idx == -1:
+            while (allowed_minimum_char_idx == -1):
                 print("Invalid file name.\nIt can contain alphanumeric characters, "
                       "as well as the following non-word characters: {. _ -}")
                 

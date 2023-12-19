@@ -356,7 +356,7 @@ def save2excel(file_name,
                     f"at directory '{fn_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
-            while overWriteStdIn != "y" and overWriteStdIn != "n":
+            while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
                 
@@ -377,7 +377,7 @@ def save2excel(file_name,
                     f"at directory '{fn_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
-            while overWriteStdIn != "y" and overWriteStdIn != "n":
+            while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
                 
@@ -538,7 +538,7 @@ def save2csv(file_name,
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
-                while overWriteStdIn != "y" and overWriteStdIn != "n":
+                while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
                     
@@ -568,7 +568,7 @@ def save2csv(file_name,
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
-                while overWriteStdIn != "y" and overWriteStdIn != "n":
+                while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
                     

@@ -178,7 +178,7 @@ def completeDataReachThreshold(WS_arr,
                 # Initiate the number of cycles #
                 M = 0
                 
-                while N < valid_data_threshold:
+                while (N < valid_data_threshold):
                
                     M += 1
                     MF = i + M
