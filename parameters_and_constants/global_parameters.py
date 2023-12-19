@@ -84,3 +84,9 @@ emission_rcp_scenarios = ["historical", "rcp26", "rcp45", "rcp85"]
 #----# 
 
 basic_object_types = ["file", "directory"]
+
+#---------------------# 
+# Regular expressions #
+#---------------------# 
+
+regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'

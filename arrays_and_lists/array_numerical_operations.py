@@ -29,27 +29,27 @@ def count_consecutive(array, calculate_max_consec=False):
     it stops there and another two consecutive number sequence begins.
     
     The result is then the following array:
-    consec_array = [4, 2]
+    consec_times_array = [4, 2]
     
     Example 2
     ---------
     bool_array = [False, False, True, True, True, True, True, False, True, True]
-    consec_array = [5, 2]
+    consec_times_array = [5, 2]
     max_consec_num = 5
     """
     
     if not calculate_max_consec:
         
-        consec_array_byGroups_lengths\
+        consec_times_array_byGroups_lengths\
         = [len(list(group)) for group in mit.consecutive_groups(array)]
         
-        if len(consec_array_byGroups_lengths) > 1:
-            consec_array_byGroups_lengths_gt1\
-            = [lng for lng in consec_array_byGroups_lengths if lng >1]
-            return consec_array_byGroups_lengths_gt1
+        if len(consec_times_array_byGroups_lengths) > 1:
+            consec_times_array_byGroups_lengths_gt1\
+            = [lng for lng in consec_times_array_byGroups_lengths if lng >1]
+            return consec_times_array_byGroups_lengths_gt1
             
-        elif len(consec_array_byGroups_lengths) == 1:
-            return consec_array_byGroups_lengths
+        elif len(consec_times_array_byGroups_lengths) == 1:
+            return consec_times_array_byGroups_lengths
         
         else:
             return None
@@ -58,11 +58,11 @@ def count_consecutive(array, calculate_max_consec=False):
     
         bool_groups = [list(group) for _, group in it.groupby(array)]
         
-        consec_array_byGroups_lengths_gt1\
+        consec_times_array_byGroups_lengths_gt1\
         = [len(group) for group in bool_groups if group[0] and len(group)>1]
         
-        if len(consec_array_byGroups_lengths_gt1) > 0:
-            max_consec_num = np.max(consec_array_byGroups_lengths_gt1)
+        if len(consec_times_array_byGroups_lengths_gt1) > 0:
+            max_consec_num = np.max(consec_times_array_byGroups_lengths_gt1)
             return max_consec_num
         else:
             return None

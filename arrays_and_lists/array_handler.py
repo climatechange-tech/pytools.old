@@ -370,9 +370,9 @@ def approach_value_in_array(array, given_value):
     
     Returns
     -------
-    approached_val : float
+    value_approach : int or float
           Closest value in array to the given value.
-    approached_val_idx : tuple or float
+    value_approach_idx : int or float or tuple
           Index of the closest value.
           If the array or pandas series is of 1D, it returns a float
           number where the closest value is located.
@@ -380,40 +380,35 @@ def approach_value_in_array(array, given_value):
           containing the rows and columns where the closest value is located.
     """
     
-    if isinstance(array, list):
-        shape = len(array)
-    else:    
-        shape = array.shape
-        
-    array_vs_given_value_diff_function = lambda array: abs(array-given_value)
-    
     if not isinstance(array, list):
-        if len(shape) > 1:
+        shape = array.shape
+        lsh = len(shape)
+        
+        if isinstance(array, pd.DataFrame):
+            array = array.values
+        
+        diff_array = abs(array - given_value)
+        
+        value_approach_idx = np.where(array==np.min(diff_array))     
+        if lsh == 1:        
+            value_approach_idx = value_approach_idx[0][0]
             
-            if isinstance(array, pd.DataFrame):
-                array = array.values
-                
-            approached_val = min(array.flatten(), key=array_vs_given_value_diff_function)
-            approached_val_idx = np.where(array==approached_val)
-                            
-        else: 
-            
-            if isinstance(array, pd.DataFrame):
-                array = array.values
-    
-            approached_val = min(array, key=array_vs_given_value_diff_function)
-            approached_val_idx = np.where(array==approached_val)[0][0]
+        value_approach = array[value_approach_idx]
             
     else:
-        approached_val = min(array, key=array_vs_given_value_diff_function)
-        approached_val_idx = [i for i in range(shape)
-                              if array[i] == approached_val]
+        shape = len(array)        
+        diff_array = [abs(array[i] - given_value)
+                      for i in range(shape)]
+        value_approach_idx = [j
+                              for j in range(shape) 
+                              if diff_array[j]==min(diff_array)]
         
-    lavi = len(approached_val_idx)
-    if lavi == 1:
-        approached_val_idx = approached_val_idx[0]
-    
-    return approached_val, approached_val_idx
+        if isinstance(value_approach_idx, list):
+            value_approach_idx = value_approach_idx[0]
+            
+        value_approach = select_array_elements(array, value_approach_idx)
+            
+    return value_approach, value_approach_idx
 
 
 def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
@@ -601,10 +596,18 @@ def select_array_elements(array, idx2access):
     if isinstance(array, list):
         accessed_mapping = map(array.__getitem__, idx2access)
         accessed_list = list(accessed_mapping)
+        
+        lal = len(accessed_list)
+        if lal == 1:
+            accessed_list = accessed_list[0]
         return accessed_list
     
     elif isinstance(array, np.ndarray):
         accessed_array = array[idx2access]
+        
+        laa = len(accessed_array)
+        if laa == 1:
+            accessed_array = accessed_array[0]
         return accessed_array
     
     
