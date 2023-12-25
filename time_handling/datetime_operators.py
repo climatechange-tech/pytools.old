@@ -329,9 +329,9 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
   
 #%%
 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Error message strings #
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""

@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import os
 from pathlib import Path
 import sys
 
@@ -21,8 +20,9 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/files_and_directories" 
-custom_mod2_path = f"{fixed_path}/operative_systems" 
-custom_mod3_path = f"{fixed_path}/strings"
+custom_mod2_path = f"{fixed_path}/operative_systems"
+custom_mod3_path = f"{fixed_path}/parameters_and_constants"  
+custom_mod4_path = f"{fixed_path}/strings"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -30,12 +30,14 @@ custom_mod3_path = f"{fixed_path}/strings"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
+sys.path.append(custom_mod4_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_handler
 import file_and_directory_paths
+import global_parameters
 import os_operations
 import string_handler
 
@@ -47,6 +49,8 @@ remove_files_byExts = file_and_directory_handler.remove_files_byExts
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_fileString_paths = file_and_directory_paths.find_fileString_paths
+
+common_splitchar_list = global_parameters.common_splitchar_list
 
 catch_shell_prompt_output = os_operations.catch_shell_prompt_output
 exec_shell_command = os_operations.exec_shell_command
@@ -223,11 +227,11 @@ def pdf_file_tweaker(path, cat_out_obj):
     
     if isinstance(path, str) and isinstance(cat_out_obj, str):
         
-        if cat_out_splitchar not in cat_out_obj:
+        if splitchar not in cat_out_obj:
             raise SyntaxError(syntax_error_string)
             
-        cat_str = cat_out_obj.split(cat_out_splitchar)[0]
-        output_path_aux = cat_out_obj.split(cat_out_splitchar)[1]
+        cat_str = cat_out_obj.split(splitchar)[0]
+        output_path_aux = cat_out_obj.split(splitchar)[1]
         
         output_path = aux_ext_adder(output_path_aux, extensions[0])        
         tweak_pages(path, cat_str, output_path)
@@ -454,15 +458,27 @@ def msg2pdf(path_to_walk_into,
 # Check whether essential programs are installed #
 checkEssentialProgInstallStatus()
 
-#------------------#
-# Local parameters # 
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+# File and directory handling #
+#-----------------------------#
 
 # Documents directory #
 alldoc_dirpath = Path(fixed_path).parent
 
+# File extensions #
 extensions = ["pdf", "eml", "msg", "jar"]
-cat_out_splitchar = ";"
+
+# Essential programs #
+essential_program_list = ["ps2pdf", "pdftk", "wkhtmltopdf", "msgconvert"]
+
+# String splitting character #
+splitchar = common_splitchar_list[2]
+
+# Output preformatted strings #
+#-----------------------------#
 
 syntax_error_string = """
 Please write a semicolon (';') to separate
@@ -489,5 +505,3 @@ required to perform the msg-to-pdf conversion.\n
 Install it by typing:\n\n
 sudo apt install {}
 """
-
-essential_program_list = ["ps2pdf", "pdftk", "wkhtmltopdf", "msgconvert"]

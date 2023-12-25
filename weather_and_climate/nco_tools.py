@@ -20,19 +20,22 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/files_and_directories"
-custom_mod2_path = f"{fixed_path}/operative_systems"     
+custom_mod2_path = f"{fixed_path}/parameters_and_constants"
+custom_mod3_path = f"{fixed_path}/operative_systems"     
 
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
 # Perform the module importations #
 #---------------------------------#
 
 import file_and_directory_handler
 import file_format_tweaker
+import global_parameters
 import os_operations
 
 #----------------------------------------------------#
@@ -40,7 +43,8 @@ import os_operations
 #----------------------------------------------------#
 
 rename_objects = file_and_directory_handler.rename_objects
-aux_path_strAdd = file_format_tweaker.aux_path_strAdd 
+aux_path_strAdd = file_format_tweaker.aux_path_strAdd
+basic_four_rules = global_parameters.basic_four_rules
 exec_shell_command = os_operations.exec_shell_command
 
 #-------------------------#
@@ -70,6 +74,7 @@ def modify_variable_units_and_values(file_list,
         = f"ncatted -a units,{variable_name},o,c,'{new_unit}' '{file_name}'"
         exec_shell_command(var_chunit_command)
         
+        # TODO: ondoko aukera guztiak hiztegi-aukeraketaren 'SWITCH' motako funtzio bidez egingarria denentz berrikusi
         if operator == "+":
             
             print(f"Adding the value of {value} to "
@@ -156,8 +161,8 @@ def modify_variable_units_and_values(file_list,
             rename_objects(temp_file, file_name)
                                      
         else:
-            raise ValueError("Wrong basic operator chosen. "
-                             "Options are {'+', '-', '*', '/'}")
+            raise ValueError("Wrong basic operator chosen.\n"
+                             f"Options are {basic_four_rules}")
 
 
 def modify_coordinate_values_byThreshold(file_list,
@@ -321,8 +326,8 @@ def modify_coordinate_values_byThreshold(file_list,
             rename_objects(temp_file, file_name)
                                                   
         else:
-            raise ValueError("Wrong basic operator chosen. "
-                             "Options are {'+', '-', '*', '/'}")
+            raise ValueError("Wrong basic operator chosen.\n"
+                             f"Options are {basic_four_rules}")
 
 # TODO: koordenatu guztiei balio bera sar dakieeneko ondoko funtzioa atondu.
 def modify_coordinate_allValues(file_list,
@@ -487,4 +492,4 @@ def modify_coordinate_allValues(file_list,
                                                   
         else:
             raise ValueError("Wrong basic operator chosen. "
-                             "Options are {'+', '-', '*', '/'}")
+                             f"Options are {basic_four_rules}")

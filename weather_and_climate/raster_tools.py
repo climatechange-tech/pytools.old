@@ -19,24 +19,29 @@ fixed_path = get_pytools_path.return_custom_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod1_path = f"{fixed_path}/strings"
-custom_mod2_path = f"{fixed_path}/operative_systems"     
+custom_mod1_path = f"{fixed_path}/parameters_and_constants"  
+custom_mod2_path = f"{fixed_path}/strings"
+custom_mod3_path = f"{fixed_path}/operative_systems"     
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
+sys.path.append(custom_mod3_path)
 
 # Perform the module importations #
 #---------------------------------#
 
+import global_parameters
 import os_operations
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
+
+common_splitchar_list = global_parameters.common_splitchar_list
 
 exec_shell_command = os_operations.exec_shell_command
 
@@ -107,7 +112,6 @@ def merge_independent_rasters(raster_files_dict,
         raise ValueError("Not every key list is of the same length!")
     
     else:
-        
         lls_num = list(list_lengths_set)[0]
         obj2change = "name_noext_parts"
         
@@ -150,8 +154,8 @@ def merge_independent_rasters(raster_files_dict,
             exec_shell_command(zsh_raster_merge)
 
 
-#-------------------------#
-# Define global variables #
-#-------------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
     
-splitchar = "_"
+splitchar = common_splitchar_list[0]

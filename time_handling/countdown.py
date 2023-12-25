@@ -70,21 +70,22 @@ def countdown(t, string_arr1, string_arr2,
             zero_pad_ans = input("Would you like to include zero padding? [y/n] ")
             while (zero_pad_ans != "y" and zero_pad_ans != "n"):
                 zero_pad_ans = input("Please write 'y' for 'yes' or 'n' for 'no' ")
-                
-            if zero_pad_ans == "n":
-                for s2find_2, s2replace_2 in zip(string_arr2[:,0], 
-                                                 string_arr2[:,1]):
+            
+            else:
+                if zero_pad_ans == "n":
+                    for s2find_2, s2replace_2 in zip(string_arr2[:,0], 
+                                                     string_arr2[:,1]):
+                        
+                        time_fmt_str = substring_replacer(time_fmt_str, 
+                                                          s2find_2,
+                                                          s2replace_2)
                     
-                    time_fmt_str = substring_replacer(time_fmt_str, 
-                                                      s2find_2,
-                                                      s2replace_2)
-                
-            while (t):        
-                time_str = time_dt.strftime(time_fmt_str)
-                print(time_str, end="\r")
-                
-                time.sleep(1)
-                time_dt -= datetime.timedelta(seconds=1)              
+                while (t):        
+                    time_str = time_dt.strftime(time_fmt_str)
+                    print(time_str, end="\r")
+                    
+                    time.sleep(1)
+                    time_dt -= datetime.timedelta(seconds=1)              
                 
         except OverflowError:
             print("Time up!")
@@ -99,12 +100,13 @@ def countdown(t, string_arr1, string_arr2,
             
             time.sleep(1)
             t_secs -= 1
-            
-        print("Time up!")
+	
+        else:
+            print("Time up!")
 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Additional parameters #
 #-----------------------#
@@ -132,11 +134,11 @@ try:
     
     while (print_str != "y" and print_str != "n"):
         print_str = input("Please write 'y' for 'yes' or 'n' for 'no' ")
-        
-    try:            
-        countdown(t, string_arr1, string_arr2, print_str=print_str)    
-    except KeyboardInterrupt:
-        print("\nCountdown stopped.")
+    else: 
+        try:            
+            countdown(t, string_arr1, string_arr2, print_str=print_str)    
+        except KeyboardInterrupt:
+            print("\nCountdown stopped.")
         
     
 except:

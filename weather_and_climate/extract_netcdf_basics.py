@@ -37,7 +37,7 @@ sys.path.append(custom_mod2_path)
 # Perform the module importations #
 #---------------------------------#
 
-import time_formatters
+import program_snippet_exec_timers
 import netcdf_handler
 
 #----------------------------------------------------#
@@ -56,15 +56,20 @@ extract_and_store_time_formats = netcdf_handler.extract_and_store_time_formats
 
 program_exec_timer("start")
 
+
+#------------------#
+# Input parameters #
+#------------------#
+
+# Delta and value roundoffs for coordinate values #
+DELTA_ROUNDOFF = 3
+VALUE_ROUNDOFF = 5
+
 #-----------------------------------------------------------------------#
 # Extract every netCDF file´s basic information present in this project #
 #-----------------------------------------------------------------------#
 
-# Define the delta and value roundoffs for coordinate values #
-delta_roundoff = 3
-value_roundoff = 5
-
-extract_and_store_latlon_bounds(delta_roundoff, value_roundoff)
+extract_and_store_latlon_bounds(DELTA_ROUNDOFF, VALUE_ROUNDOFF)
 extract_and_store_period_bounds()
 extract_and_store_time_formats()
 

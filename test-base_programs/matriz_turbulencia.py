@@ -199,11 +199,9 @@ def completeDataReachThreshold(WS_arr,
                         N = np.sum(np.array(list_slice)[:,-1])
                     
                     if N < valid_data_threshold:
-                        
                         if M < lav:                        
                             if MF > lav -1:
                                 pass
-                                    
                             else:
                                 # Concatenable slice of the next bin with its information #
                                 list2append = arr_varcase_ref[MF].tolist()
@@ -220,133 +218,135 @@ def completeDataReachThreshold(WS_arr,
                             
                     else:
                         break
-
-                """
-                Consider the necessary data to complete the missing 
-                data set of the current bin.
-                """
-                lls = len(list_slice)
-                keyDataList = []
-                
-                NT = 0
-                
-                for j in range(lls):
                     
+                else:
+    
                     """
-                    From now on, 0th index will always be 
-                    the binned wind speed column.
+                    Consider the necessary data to complete the missing 
+                    data set of the current bin.
                     """
+                    lls = len(list_slice)
+                    keyDataList = []
                     
-                    WS_bin, N = select_list_elements(list_slice[j], [0,-1])
-                    NT += N        
-                  
-                    """
-                    Pandas's indexing method has been chosen over np.where
-                    because it causes increasing performance loss over WS bin iterations.
-                    """
+                    NT = 0
                     
-                    if lkvil == 0:
-                        sigma_idx\
-                        = WS_binned_df[WS_binned_df[WS_sum_cols[0]]==WS_bin].index
-                   
-                    elif lkvil == 1:
-                        sigma_idx\
-                        = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
-                                        & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])].index
-                    
-                    elif lkvil == 2:
-                        sigma_idx\
-                        = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
-                                        & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])
-                                        & (WS_binned_df[WS_sum_cols[2]]==key_var_idx_list[1])].index
+                    for j in range(lls):
                         
-                    elif lkvil == 3:
-                        sigma_idx\
-                        = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
-                                        & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])
-                                        & (WS_binned_df[WS_sum_cols[2]]==key_var_idx_list[1])
-                                        & (WS_binned_df[WS_sum_cols[3]]==key_var_idx_list[2])].index
-
-
-                    arr_binned_WS_sigma_idx = WS_arr_binned[sigma_idx]
-                    arr_WS_sigma_idx = WS_arr[sigma_idx][:, np.newaxis]
+                        """
+                        From now on, 0th index will always be 
+                        the binned wind speed column.
+                        """
+                        
+                        WS_bin, N = select_list_elements(list_slice[j], [0,-1])
+                        NT += N        
+                      
+                        """
+                        Pandas's indexing method has been chosen over np.where
+                        because it causes increasing performance loss over WS bin iterations.
+                        """
+                        
+                        if lkvil == 0:
+                            sigma_idx\
+                            = WS_binned_df[WS_binned_df[WS_sum_cols[0]]==WS_bin].index
+                       
+                        elif lkvil == 1:
+                            sigma_idx\
+                            = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
+                                            & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])].index
+                        
+                        elif lkvil == 2:
+                            sigma_idx\
+                            = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
+                                            & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])
+                                            & (WS_binned_df[WS_sum_cols[2]]==key_var_idx_list[1])].index
+                            
+                        elif lkvil == 3:
+                            sigma_idx\
+                            = WS_binned_df[(WS_binned_df[WS_sum_cols[0]]==WS_bin)
+                                            & (WS_binned_df[WS_sum_cols[1]]==key_var_idx_list[0])
+                                            & (WS_binned_df[WS_sum_cols[2]]==key_var_idx_list[1])
+                                            & (WS_binned_df[WS_sum_cols[3]]==key_var_idx_list[2])].index
+    
+    
+                        arr_binned_WS_sigma_idx = WS_arr_binned[sigma_idx]
+                        arr_WS_sigma_idx = WS_arr[sigma_idx][:, np.newaxis]
+                        
+                        arr_WS_sigma_idx = np.append(arr_WS_sigma_idx, 
+                                                     arr_binned_WS_sigma_idx, 
+                                                     axis=1)
+                                            
+                        """The last column will always be filled-in sigma"""
+                        sigma_bin = arr_WS_sigma_idx[:,-1]
+    
+                        if NT < valid_data_threshold:
+                            keyDataList.append((sigma_bin, N))
+                            
+                        else:                
+                            N1 = valid_data_threshold + N - NT
+                            
+                            curr_bin_left = curr_bin.left
+                            Bin_left = WS_bin.left
+                            d_bin = Bin_left - curr_bin_left
+                         
+                            if d_bin < 0:
+                                """Take the N1 values closest to the right boundary
+                                of the considered bin.
+                                """
+                                
+                                sigma_bin_toComplMinN\
+                                = sort_array_rows_by_column(arr_WS_sigma_idx, 0)[-N1:,-1]
+                                
+                                
+                            elif d_bin > 0:
+                                """Take the N1 values closest to the left boundary
+                                of the considered bin.
+                                """
+                                sigma_bin_toComplMinN\
+                                = sort_array_rows_by_column(arr_WS_sigma_idx, 0)[:N1,-1]
+    
+                                
+                            keyDataList.append((sigma_bin_toComplMinN, N1))
+                       
+                    # Calculate the weighted mean of each sigma's subset array #
+                    sigma_means = [nanmean
+                                   for tupl in keyDataList
+                                   if not np.isnan(nanmean:=np.nanmean(tupl[0]))]
                     
-                    arr_WS_sigma_idx = np.append(arr_WS_sigma_idx, 
-                                                 arr_binned_WS_sigma_idx, 
-                                                 axis=1)
-                                        
-                    """The last column will always be filled-in sigma"""
-                    sigma_bin = arr_WS_sigma_idx[:,-1]
-
-                    if NT < valid_data_threshold:
-                        keyDataList.append((sigma_bin, N))
-                        
-                    else:                
-                        N1 = valid_data_threshold + N - NT
-                        
-                        curr_bin_left = curr_bin.left
-                        Bin_left = WS_bin.left
-                        d_bin = Bin_left - curr_bin_left
-                     
-                        if d_bin < 0:
-                            """Take the N1 values closest to the right boundary
-                            of the considered bin.
-                            """
-                            
-                            sigma_bin_toComplMinN\
-                            = sort_array_rows_by_column(arr_WS_sigma_idx, 0)[-N1:,-1]
-                            
-                            
-                        elif d_bin > 0:
-                            """Take the N1 values closest to the left boundary
-                            of the considered bin.
-                            """
-                            sigma_bin_toComplMinN\
-                            = sort_array_rows_by_column(arr_WS_sigma_idx, 0)[:N1,-1]
-
-                            
-                        keyDataList.append((sigma_bin_toComplMinN, N1))
-                   
-                # Calculate the weighted mean of each sigma's subset array #
-                sigma_means = [nanmean
+                    weights = [w
                                for tupl in keyDataList
-                               if not np.isnan(nanmean:=np.nanmean(tupl[0]))]
-                
-                weights = [w
-                           for tupl in keyDataList
-                           if (w:=tupl[1])>0]
-                
-                lsm = len(sigma_means)
-                lw = len(weights)
-                
-                """
-                In some cases, due to the already used intervals and
-                insufficient or non-existent data in the original series (WS_series)
-                the sliced list (list_slice) will be empty.
-                  
-                In these cases, the mean of the sigma will be set to NaN
-                and further treatmen will be required to handle them
-                once the matrix is filled-in.
-                """
-                
-                if lsm == 0 and lw == 0:
-                    weighted_sigma_mean = fixedInvalidSigmaValue
-                else:
-                    weighted_sigma_mean = np.average(sigma_means, weights=weights)
+                               if (w:=tupl[1])>0]
                     
-                
-                # If the current bin has been completed up to the minimum 
-                # available data, set the new 'N' equal to the theshold.
-                
-                if NT >= valid_data_threshold:                    
-                    arr_varcase[i, key_var_idx] \
-                    = curr_bin, weighted_sigma_mean, valid_data_threshold
-                
-                # If it is not the case, then set the new 'N' 
-                # equal to the extent that the sum has been updated.
-                else:
-                    arr_varcase[i, key_var_idx] \
-                    = curr_bin, weighted_sigma_mean, NT
+                    lsm = len(sigma_means)
+                    lw = len(weights)
+                    
+                    """
+                    In some cases, due to the already used intervals and
+                    insufficient or non-existent data in the original series (WS_series)
+                    the sliced list (list_slice) will be empty.
+                      
+                    In these cases, the mean of the sigma will be set to NaN
+                    and further treatmen will be required to handle them
+                    once the matrix is filled-in.
+                    """
+                    
+                    if lsm == 0 and lw == 0:
+                        weighted_sigma_mean = fixedInvalidSigmaValue
+                    else:
+                        weighted_sigma_mean = np.average(sigma_means, weights=weights)
+                        
+                    
+                    # If the current bin has been completed up to the minimum 
+                    # available data, set the new 'N' equal to the theshold.
+                    
+                    if NT >= valid_data_threshold:                    
+                        arr_varcase[i, key_var_idx] \
+                        = curr_bin, weighted_sigma_mean, valid_data_threshold
+                    
+                    # If it is not the case, then set the new 'N' 
+                    # equal to the extent that the sum has been updated.
+                    else:
+                        arr_varcase[i, key_var_idx] \
+                        = curr_bin, weighted_sigma_mean, NT
                     
             else:
                 pass

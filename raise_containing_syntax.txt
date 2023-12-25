@@ -1,0 +1,172 @@
+miscellaneous/merge_audio_and_video_main.py:        raise ValueError(f"Wrong '{arg_names[ot_arg_pos]}' option. "
+miscellaneous/merge_audio_and_video_main.py:        raise TypeError(f"Argument '{arg_names[zp_arg_pos]}' "
+miscellaneous/merge_audio_and_video_main.py:        raise ValueError("A path string or PosixPath must be given.")
+miscellaneous/merge_audio_and_video_main.py:        raise TypeError("Index range format must be of range(min, max).")
+miscellaneous/merge_audio_and_video_main.py:            raise ValueError(f"'{arg_names[stn_arg_pos]}' argument "
+sets_and_intervals/operators_sets.py:        raise ValueError(f"Wrong '{arg_names[operation_arg_pos]}' argument. "
+sets_and_intervals/operators_sets.py:        raise ValueError(f"Wrong '{arg_names[obj_type_arg_pos]}' argument. "
+sets_and_intervals/operators_sets.py:        raise NotImplementedError("Please for now set argument "
+sets_and_intervals/interval_operators.py:        raise ValueError(f"Wrong '{arg_names[method_arg_pos]}' option. "
+sets_and_intervals/interval_operators.py:        raise ValueError(f"Wrong '{arg_names[op_arg_pos]}' option. "
+sets_and_intervals/interval_operators.py:        raise ValueError(f"Wrong '{arg_names[obj_type_pos]}' option. "
+files_and_directories/bulk_numRename_main.py:        raise ValueError(f"Wrong '{arg_names[ot_arg_pos]}' option. "
+files_and_directories/bulk_numRename_main.py:        raise TypeError(f"Argument '{arg_names[zp_arg_pos]}' "
+files_and_directories/bulk_numRename_main.py:        raise ValueError("A path string or PosixPath must be given.")
+files_and_directories/bulk_numRename_main.py:        raise TypeError("Index range format must be of range(min, max).")
+files_and_directories/bulk_numRename_main.py:            raise ValueError(f"'{arg_names[stn_arg_pos]}' argument "
+files_and_directories/file_and_directory_paths.py:            raise NotImplementedError("Please, for now provide a name "
+files_and_directories/file_and_directory_paths.py:            raise NotImplementedError("Please, for now provide a name "
+files_and_directories/file_and_directory_paths.py:            raise NotImplementedError("Please, for now provide a name "
+files_and_directories/pdf_file_tweaker_exec.py:    raise ValueError("Wrong case usage. Options are:\n"
+files_and_directories/file_format_tweaker.py:            raise SyntaxError(syntax_error_string)
+files_and_directories/file_format_tweaker.py:        raise TypeError(type_error_string_complete.format(arg_names[0], 
+files_and_directories/file_format_tweaker.py:        raise TypeError(type_error_string_complete.format(arg_names[0], 
+files_and_directories/file_format_tweaker.py:            raise ModuleNotFoundError(mnfe_string.format(ess_prog))
+files_and_directories/change_permissions_main.py:        raise TypeError(typeErrorStr.format(arg_names[attr_arg_pos]))
+files_and_directories/change_permissions_main.py:        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))        
+files_and_directories/change_permissions_main.py:            raise PermissionError(permissionErrorStr)
+files_and_directories/change_permissions_main.py:        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))
+files_and_directories/change_permissions_main.py:        raise ValueError(valueErrorStr.format(arg_names[mod_arg_pos], modules))
+files_and_directories/change_permissions_main.py:                raise PermissionError(permissionErrorStr)
+files_and_directories/change_permissions_main.py:                raise PermissionError(permissionErrorStr)
+files_and_directories/file_and_directory_handler.py:            raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("File string and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("File string and destination directory lists "
+files_and_directories/file_and_directory_handler.py:                raise ValueError("File string and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:                raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:                raise ValueError("Extension and destination directory lists "
+files_and_directories/file_and_directory_handler.py:            raise ValueError("Files and renaming file lists "
+files_and_directories/file_and_directory_handler.py:        raise ValueError("Both input arguments must either be "
+time_handling/calendar_attibute_operators.py:        raise ValueError(f"Wrong '{arg_names[obj_type_arg_pos]}' argument. "
+time_handling/calendar_attibute_operators.py:            raise ValueError("Not every object in the list is of the same type.")
+time_handling/calendar_attibute_operators.py:                                raise ValueError("Please specify and order for the "
+time_handling/calendar_attibute_operators.py:                            raise ValueError("Wrong extension choice. "
+time_handling/calendar_attibute_operators.py:        raise ValueError("The date given is not a Timestamp") 
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[print_arg_pos],
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos],
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:            raise ValueError(ValueErrorForTypeCaseStr.format\
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:            raise Exception(notSatisfactoryDTObjectErrorStr.format\
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:            raise Exception(notSatisfactoryDTObjectErrorStr.format\
+time_handling/time_formatters.py:                raise ValueError(ValueErrorForTypeCaseStr.format\
+time_handling/time_formatters.py:            raise ValueError(ValueErrorForTypeCaseStr.format\
+time_handling/time_formatters.py:                raise TypeError(unhandleableErrorStr.format(arg_names[t_arg_pos],
+time_handling/time_formatters.py:                    raise ValueError(ValueErrorForTypeCaseStr.format\
+time_handling/time_formatters.py:                        raise Exception(unconverteablePandasDTObjectErrorStr.format\
+time_handling/time_formatters.py:                raise Exception(unconverteablePandasDTObjectErrorStr.format\
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos], 
+time_handling/time_formatters.py:            raise ValueError(f"Method '{method_name}' does neither accept "
+time_handling/program_snippet_exec_timers.py:                raise TypeError(f"Argument '{arg_names[roundoff_arg_pos]}' "
+time_handling/program_snippet_exec_timers.py:                raise TypeError(f"Argument '{arg_names[roundoff_arg_pos]}' "
+time_handling/datetime_operators.py:        raise ValueError(ChoiceErrorStr.format(arg_names[type_arg_pos],
+time_handling/datetime_operators.py:        raise TypeError("Current time is already a string type.")
+time_handling/datetime_operators.py:        raise AttributeError(AttributeErrorStr.format(attr_arg_pos,
+time_handling/datetime_operators.py:        raise ValueError(ChoiceErrorStr.format(arg_names[operator_arg_pos],
+time_handling/datetime_operators.py:        raise TypeError(TypeErrorStr2.format(arg_names[df1_arg_pos],
+time_handling/datetime_operators.py:        raise TypeError(TypeErrorStr2.format(arg_names[df2_arg_pos],
+time_handling/datetime_operators.py:            raise AttributeError(AttributeErrorStr.format(arg_names[df2_arg_pos],
+time_handling/datetime_operators.py:        raise ValueError(TypeErrorStr1(arg_names[shift_mon_arg_pos],
+weather_and_climate/raster_tools.py:        raise ValueError("Not every key list is of the same length!")
+weather_and_climate/climate_statistics.py:        raise ValueError("You have entered the wrong statistic, "\
+weather_and_climate/climate_statistics.py:            raise ValueError("Wrong time-frequency.\n"\
+weather_and_climate/climate_statistics.py:            raise ValueError("You must specify the season months in a list. "\
+weather_and_climate/climate_statistics.py:                raise ValueError("Season length must strictly be of 3 months.")
+weather_and_climate/climate_statistics.py:                raise ValueError("Wrong time-frequency.\n"\
+weather_and_climate/climate_statistics.py:                raise ValueError("You must specify the season months in a list. "\
+weather_and_climate/climate_statistics.py:                    raise ValueError("Season length must strictly be of 3 months.")
+weather_and_climate/climate_statistics.py:                raise ValueError("Wrong time-frequency.\n"\
+weather_and_climate/climate_statistics.py:                raise ValueError("You must specify the season months in a list. "\
+weather_and_climate/climate_statistics.py:                    raise ValueError("Season length must strictly be of 3 months.")
+weather_and_climate/climate_statistics.py:        raise ValueError("Cannot operate with this data type.")
+weather_and_climate/climate_statistics.py:            raise ValueError(f"Wrong time-frequency. Options are {time_freqs}.")
+weather_and_climate/climate_statistics.py:                raise ValueError("You must specify the season months in a list. "\
+weather_and_climate/climate_statistics.py:                raise ValueError("You must specify the season months in a list. "\
+weather_and_climate/climate_statistics.py:        raise ValueError(f"Wrong delta type. Options are {delta_types}")
+weather_and_climate/climate_statistics.py:        raise ValueError(f"Wrong preference type. Options are {preferences_over}")
+weather_and_climate/climate_statistics.py:        raise ValueError("Given array is an empty one!")
+weather_and_climate/consecutive_idx_statistics.py:        raise ValueError("You have entered the wrong threshold mode, "\
+weather_and_climate/nco_tools.py:            raise ValueError("Wrong basic operator chosen. "
+weather_and_climate/nco_tools.py:            raise ValueError("Wrong basic operator chosen. "
+weather_and_climate/nco_tools.py:            raise ValueError("Wrong basic operator chosen. "
+weather_and_climate/netcdf_handler.py:                raise ValueError(f"Arguments '{arg_names[verb_arg_pos]}' "
+weather_and_climate/netcdf_handler.py:        raise ValueError("Wrong regridding method. "
+weather_and_climate/netcdf_handler.py:            raise ValueError("Object is already located at a point data")
+weather_and_climate/netcdf_handler.py:                raise ValueError("Latitude point coordinate not given")
+weather_and_climate/netcdf_handler.py:                raise ValueError("Longitude point coordinate not given")
+weather_and_climate/netcdf_handler.py:                raise ValueError("Both latitude and longitude "
+weather_and_climate/netcdf_handler.py:        raise ValueError("You must provide a coordinate or ID")
+weather_and_climate/netcdf_handler.py:        raise ValueError("You must provide a CSV file name.")
+weather_and_climate/netcdf_handler.py:        raise ValueError("You must provide a CSV file name.")
+weather_and_climate/netcdf_handler.py:            raise ValueError("No 'time' dimension found in file {nc_file_name}")
+weather_and_climate/netcdf_handler.py:            raise ValueError("No 'latitude' or 'longitude' coordinates found "
+weather_and_climate/meteorological_variables.py:        raise ValueError("Wrong unit converter. Options are {'2ms', '2kmh'}.")
+weather_and_climate/meteorological_variables.py:        raise ValueError("Wrong unit converter. "
+weather_and_climate/meteorological_variables.py:        raise ValueError("Temperature and relative humidity arrays"
+weather_and_climate/meteorological_variables.py:        raise ValueError("Temperature and relative humidity arrays"
+weather_and_climate/cdo_tools.py:            raise ValueError(f"Variable '{var_file}' found at file '{file}' "
+weather_and_climate/cdo_tools.py:        raise ValueError("Wrong remapping option. Available options are:\n"
+weather_and_climate/cdo_tools.py:        raise ValueError(f"Wrong statistic. Options are {statistics}.")
+weather_and_climate/cdo_tools.py:        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+weather_and_climate/cdo_tools.py:        raise ValueError("The model name's position contained on the file name "\
+weather_and_climate/cdo_tools.py:        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+weather_and_climate/cdo_tools.py:        raise ValueError("Wrong basic operator. Options are "
+weather_and_climate/cdo_tools.py:        raise ValueError("The model name's position contained on the file name "\
+weather_and_climate/cdo_tools.py:        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+weather_and_climate/cdo_tools.py:        raise ValueError("Wrong basic operator. Options are "
+test-base_programs/climate-change/codes/download_EOBS.py:        raise ValueError(f"Wrong file format. Options are '{available_formats}'.")
+test-base_programs/climate-change/codes/download_EOBS.py:        raise ValueError(f"Wrong grid resolution. Options are {available_resolutions}")
+test-base_programs/climate-change/codes/download_EOBS.py:        raise ValueError(f"Wrong product. Options are '{available_products}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong product. Options are '{available_domains}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:            raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:                raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:            raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong GCM. Options are '{available_gcms}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong rcm. Options are '{available_rcms}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong file format. Options are '{available_formats}'.")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong horizontal resolution. Options are {available_h_resolutions}")
+test-base_programs/climate-change/codes/download_CORDEX.py:        raise ValueError(f"Wrong temporal resolution. Options are {available_t_resolutions}")    
+test-base_programs/climate-change/codes/download_ERA5-Land.py:        raise ValueError(f"Wrong file format. Options are '{available_formats}'.")
+test-base_programs/climate-change/codes/download_ERA5.py:        raise ValueError(f"Wrong file format. Options are '{available_formats}'.")
+test-base_programs/1st_loop_common-union_datetimes.py:    raise ValueError(f"Parent station '{stat_name_parent}' "
+test-base_programs/deskargatu_bideoak_vimeotik.py:                        raise OSError(f"Could not execute command '{yt_dlp_download_comm}'")
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    raise OSError(f"Could not execute command '{yt_dlp_list_comm}'")
+test-base_programs/deskargatu_bideoak_vimeotik.py:                        raise OSError(f"Could not execute command '{yt_dlp_download_comm}'")
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    raise OSError(f"Could not execute command '{yt_dlp_list_comm}'")
+strings/information_output_formatters.py:        raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
+strings/information_output_formatters.py:        raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
+strings/information_output_formatters.py:        raise TypeError("Argument must be of type ´str´ only.")
+strings/string_handler.py:        raise ValueError(f"Wrong '{arg_names[method_arg_pos]}' option. "
+strings/string_handler.py:        raise ValueError(f"Wrong '{arg_names[osk_arg_pos]}' option. "
+strings/string_handler.py:            raise ValueError("You must specify a string-splitting character "
+strings/string_handler.py:        raise ValueError(f"Wrong '{arg_names[obj2ch_arg_pos]}' option. "
+strings/string_handler.py:                raise TypeError(f"If the object to modify is '{objSpecsKeys[3]}', "
+dictionaries/dict_operators.py:        raise ValueError ("Wrong basic operator sign. Accepted operators are: "\
+dictionaries/dict_operators.py:        raise ValueError("2 dictionaries at least must be passed.")
+numeral_systems/base_converters.py:        raise ValueError(f"Wrong method. Options are {method_list}.")
+pandas_data_frames/data_frame_handler.py:          to raise a ValueError that indicates so.
+pandas_data_frames/data_frame_handler.py:        raise ValueError("Could not determine the time frequency.")
+pandas_data_frames/data_frame_handler.py:        raise ValueError("Grouper name 'date' or similar not found")
+pandas_data_frames/data_frame_handler.py:        raise ValueError("Wrong type of frame. "
+pandas_data_frames/data_frame_handler.py:        raise ValueError("At least 2 files must be given "
+pandas_data_frames/data_frame_handler.py:        raise OSError("Some files have sheet names in common. "
+pandas_data_frames/data_frame_handler.py:        raise TypeError("Wrong type of data. It must be of type 'pd.DataFrame'.")
+pandas_data_frames/data_frame_handler.py:        raise ValueError("At least 2 files must be given "
+pandas_data_frames/data_frame_handler.py:        raise ValueError("You must provide an object containing values to"
+arrays_and_lists/array_handler.py:        raise TypeError("Wrong type of data. "
+arrays_and_lists/array_handler.py:        raise TypeError("Input argument to be extended must either be of type "
+arrays_and_lists/array_handler.py:            raise Exception("Cannot handle lists containing D > 3 arrays.")
+arrays_and_lists/array_handler.py:        raise ValueError("Wrong sort order option. "
+arrays_and_lists/array_handler.py:        raise TypeError("Cannot perform operation with numpy arrays "
+arrays_and_lists/array_handler.py:        raise TypeError("Cannot perform operation with numpy arrays "
+arrays_and_lists/array_handler.py:        raise ValueError(f"Wrong option of the original data type "
+arrays_and_lists/array_handler.py:            raise ValueError("Please introduce a valid "
+arrays_and_lists/array_handler.py:                    raise TypeError(f"Cannot convert object to type '{new_type}'.")
+arrays_and_lists/array_handler.py:            raise ValueError(f"Please set the argument '{arg_names[3]}' "
+arrays_and_lists/array_handler.py:                    raise TypeError(f"Cannot convert object to type '{new_type}'.")
+arrays_and_lists/array_handler.py:            raise TypeError("For a list-type input argument, "\
+arrays_and_lists/array_handler.py:        raise TypeError("Input argument must either be of type ´list´ or numpy array.")

@@ -20,9 +20,10 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/files_and_directories" 
-custom_mod2_path = f"{fixed_path}/operative_systems"     
-custom_mod3_path = f"{fixed_path}/strings"
-custom_mod4_path = f"{fixed_path}/weather_and_climate"
+custom_mod2_path = f"{fixed_path}/operative_systems"  
+custom_mod3_path = f"{fixed_path}/parameters_and_constants"  
+custom_mod4_path = f"{fixed_path}/strings"
+custom_mod5_path = f"{fixed_path}/weather_and_climate"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -36,6 +37,8 @@ sys.path.append(custom_mod4_path)
 #---------------------------------#
 
 import file_and_directory_handler
+import global_parameters
+import information_output_formatters
 import netcdf_handler
 import os_operations
 import string_handler
@@ -45,6 +48,11 @@ import string_handler
 #----------------------------------------------------#
 
 rename_objects = file_and_directory_handler.rename_objects
+
+basic_four_rules = global_parameters.basic_four_rules
+common_splitchar_list = global_parameters.common_splitchar_list
+
+format_string = information_output_formatters.format_string
 
 get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
@@ -411,60 +419,17 @@ def cdo_remap(file_list,
                                                           region,
                                                           extension)
     
-    cdo_remap_options = ['ordinary', 'bilinear', 'nearest_neighbour',
-                         'bicubic', 'conservative1', 'conservative2'
-                         'distance_weighted_average', 'vertical_hybrid', 
-                         'vertical_hybrid_sigma', 'vertical_hybrid_z'
-                         'remapeta_z', 'largest_area_fraction', 'sum', 
-                         'conservative1_y']
-    
-    if remap_method == "ordinary":
-        remap_method_cdo = "remap"
-    
-    if remap_method == "bilinear":
-        remap_method_cdo = "remapbil"
-                        
-    elif remap_method == "nearest_neighbour":
-        remap_method_cdo = "remapnn"
-                        
-    elif remap_method == "bicubic":
-        remap_method_cdo = "remapbic"
-                        
-    elif remap_method == "conservative1":
-        remap_method_cdo = "remapcon"
-                        
-    elif remap_method == "conservative2":
-        remap_method_cdo = "remapcon2"
-        
-    elif remap_method == "distance_weighted_average":
-        remap_method_cdo = "remapdis"
-                        
-    elif remap_method == "vertical_hybrid":
-        remap_method_cdo = "remapeta"
-                        
-    elif remap_method == "vertical_hybrid_sigma":
-        remap_method_cdo = "remapeta_s"
-                        
-    elif remap_method == "vertical_hybrid_z":
-        remap_method_cdo = "remapeta_z"
-                        
-    elif remap_method == "largest_area_fraction":
-        remap_method_cdo = "remaplaf"
-                        
-    elif remap_method == "sum":
-        remap_method_cdo = "remapsum"
-                        
-    elif remap_method == "conservative1_y":
-        remap_method_cdo = "remapycon"
-        
-    else:
-        raise ValueError("Wrong remapping option. Available options are:\n"
+    if remap_method not in cdo_remap_options:
+        ValueError("Wrong remapping option. Available options are:\n"
                          f"{cdo_remap_options}")
- 
-    for file in file_list:            
-        remap_command = f"cdo {remap_method_cdo},{remap_method_str} "\
-                        f"'{file}' {standardized_output_file_name}" 
-        exec_shell_command(remap_command)
+         
+    else:
+        remap_method_cdo = cdo_remap_option_dict.get(remap_method_str)
+     
+        for file in file_list:            
+            remap_command = f"cdo {remap_method_cdo},{remap_method_str} "\
+                            f"'{file}' {standardized_output_file_name}" 
+            exec_shell_command(remap_command)
         
         
 def create_grid_header_file(output_file, **kwargs):
@@ -484,8 +449,6 @@ def create_grid_header_file(output_file, **kwargs):
 
     """
     
-    keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
-    
     kwargs_values = list(kwargs.values())
     kwargs_keys = list(kwargs.keys())
     kwargs_keys.sort()
@@ -494,32 +457,27 @@ def create_grid_header_file(output_file, **kwargs):
         kwargs = {key : val 
                   for key,val in zip(keylist,kwargs_values)}
     
-    grid = (
-        'gridtype  = lonlat\n'
-        'xsize     = %d\n'
-        'ysize     = %d\n'
-        'xname     = longitude\n'
-        'xlongname = "Longitude values"\n'
-        'xunits    = "degrees_east"\n'
-        'yname     = latitude\n'
-        'ylongname = "Latitude values"\n'
-        'yunits    = "degrees_north"\n'
-        'xfirst    = %.20f\n'
-        'xinc      = %.20f\n'
-        'yfirst    = %.20f\n'
-        'yinc      = %.20f'
-        % (
-            kwargs[keylist[0]],
-            kwargs[keylist[1]],
-            kwargs[keylist[2]],
-            kwargs[keylist[3]],
-            kwargs[keylist[4]],
-            kwargs[keylist[5]]
-        )
-    )
-   
+    #%%
+    grid = \
+"""gridtype  = lonlat
+xsize     = {0:d}
+ysize     = {1:d}
+xname     = longitude
+xlongname = "Longitude values"
+xunits    = "degrees_east"
+yname     = latitude
+ylongname = "Latitude values"
+yunits    = "degrees_north"
+xfirst    = {2:.20f}
+xinc      = {3:.20f}
+yfirst    = {4:.20f}
+"""
+    
+    arg_tuple = tuple([kwargs[keylist[i]] for i in range(6)])
+    grid_formatted = format_string(grid, arg_tuple)
+        
     output_file_object = open(output_file, 'w')
-    output_file_object.write(grid)
+    output_file_object.write(grid_formatted)
     output_file_object.close()
 
         
@@ -535,14 +493,6 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
     those functions that calculate deltas,
     since doing so lowers disk I/O performance.
     """
-    
-    statistics = ["max", "min", "sum", 
-                  "mean", "avg", 
-                  "var", "var1",
-                  "std", "std1"]
-    
-    time_freqs = ['hourly', 'daily', 'monthly', 'seasonal', 'yearly']
-    period_abbrs = ['hour', 'day', 'mon', 'seas', 'year']
     
     # Quality control #
     if statistic not in statistics:
@@ -596,10 +546,7 @@ def calculate_periodic_deltas(projected_ncfile,
                               delta_period="monthly",
                               proj_model=None):
     
-    time_freqs = ['hourly', 'monthly', 'seasonal']
-    period_abbrs = ['hour', 'mon', 'seas']
-    
-    period_abbr_idx = find_substring_index(time_freqs, delta_period) 
+    period_abbr_idx = find_substring_index(time_freqs_delta, delta_period) 
     deltaApply_fn = addExtraName2File(historical_ncfile, 
                                       return_file_name_noext=True)
 
@@ -611,39 +558,33 @@ def calculate_periodic_deltas(projected_ncfile,
                          "for projections.")
 
     if period_abbr_idx == -1:
-        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+        raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
     else:
-        period_abbr = period_abbrs[period_abbr_idx]
+        period_abbr = period_abbrs_delta[period_abbr_idx]
     
-        
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     proj_mean_command = f"-y{period_abbr}mean {projected_ncfile}"
 
     string2add = f"{period_abbr}Deltas_{proj_model}.nc"
     deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
     
-    if operator == "+":
-        deltaCalc_command = f"cdo add {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn_longer}"
-   
-    elif operator == "-":
-        deltaCalc_command = f"cdo sub {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn_longer}"
-                             
-    elif operator == "*":
-        deltaCalc_command = f"cdo mul {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn_longer}"
-                             
-    elif operator == "/":
-        deltaCalc_command = f"cdo div {hist_mean_command} {proj_mean_command}"\
-                            f"{deltaApply_fn_longer}"
-                             
-    else:
-        raise ValueError("Wrong basic operator. Options are "
-                         "{'+', '-', '*', '/'}.")
-                    
-    exec_shell_command(deltaCalc_command)
-        
+    if operator not in basic_four_rules:
+        raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
+    else:  
+        deltaApply_command_dict = {
+            basic_four_rules[0] : f"cdo add {hist_mean_command} {proj_mean_command}"\
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[1] : f"cdo sub {hist_mean_command} {proj_mean_command}"\
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[2] : f"cdo mul {hist_mean_command} {proj_mean_command}"\
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[3] : f"cdo div {hist_mean_command} {proj_mean_command}"\
+                                  f"{deltaApply_fn_longer}"
+            }
+                                           
+        deltaCalc_command = deltaApply_command_dict.get(operator)                
+        exec_shell_command(deltaCalc_command)
+    
 
 def apply_periodic_deltas(projected_ncfile,
                           historical_ncfile,
@@ -651,10 +592,8 @@ def apply_periodic_deltas(projected_ncfile,
                           delta_period="monthly",
                           proj_model=None):
     
-    time_freqs = ['hourly', 'monthly', 'seasonal']
-    period_abbrs = ['hour', 'month', 'seas']
     
-    period_abbr_idx = find_substring_index(time_freqs, delta_period)
+    period_abbr_idx = find_substring_index(time_freqs_delta, delta_period)
     deltaApply_fn = addExtraName2File(historical_ncfile, 
                                       return_file_name_noext=True)
     
@@ -666,45 +605,77 @@ def apply_periodic_deltas(projected_ncfile,
                          "for projections.")
 
     if period_abbr_idx == -1:
-        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+        raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
     else:
-        period_abbr = period_abbrs[period_abbr_idx]
+        period_abbr = period_abbrs_delta[period_abbr_idx]
 
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
     deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
     
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
-        
-    if operator == "+":
-        deltaApply_command = f"cdo y{period_abbr}add {projected_ncfile} "\
-                             f"{hist_mean_command} " \
-                             f"{deltaApply_fn_longer}"
-   
-    elif operator == "-":
-        deltaApply_command = f"cdo y{period_abbr}sub {projected_ncfile} "\
-                             f"{hist_mean_command} " \
-                             f"{deltaApply_fn_longer}"
-                             
-    elif operator == "*":
-        deltaApply_command = f"cdo y{period_abbr}mul {projected_ncfile} "\
-                             f"{hist_mean_command} " \
-                             f"{deltaApply_fn_longer}"
-                             
-    elif operator == "/":
-        deltaApply_command = f"cdo y{period_abbr}div {projected_ncfile} "\
-                             f"{hist_mean_command} " \
-                             f"{deltaApply_fn_longer}"
-                             
-    else:
-        raise ValueError("Wrong basic operator. Options are "
-                         "{'+', '-', '*', '/'}.")
-                      
-    exec_shell_command(deltaApply_command)
     
-#------------------#
-# Local parameters #
-#------------------#
+    if operator not in basic_four_rules:
+        raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
+    else:  
+        deltaApply_command_dict = {
+            basic_four_rules[0] : f"cdo y{period_abbr}add {projected_ncfile} "\
+                                  f"{hist_mean_command} " \
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[1] : f"cdo y{period_abbr}sub {projected_ncfile} "\
+                                  f"{hist_mean_command} " \
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[2] : f"cdo y{period_abbr}mul {projected_ncfile} "\
+                                  f"{hist_mean_command} " \
+                                  f"{deltaApply_fn_longer}",
+            basic_four_rules[3] : f"cdo y{period_abbr}div {projected_ncfile} "\
+                                  f"{hist_mean_command} " \
+                                  f"{deltaApply_fn_longer}"
+            }
+            
+        deltaApply_command = deltaApply_command_dict.get(operator)                  
+        exec_shell_command(deltaApply_command)
+        
+    
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
-splitchar1 = "_"
-splitchar2 = "-"
+# String-splitting characters #
+splitchar1 = common_splitchar_list[0]
+splitchar2 = common_splitchar_list[1]
+
+# Statistics #
+statistics = ["max", "min", "sum", 
+              "mean", "avg", 
+              "var", "var1",
+              "std", "std1"]
+
+# Calendar and date-time parameters #
+time_freqs = ['hourly', 'daily', 'monthly', 'seasonal', 'yearly']
+period_abbrs = ['hour', 'day', 'mon', 'seas', 'year']
+
+time_freqs_delta = [time_freqs[0]] + time_freqs[2:4]
+period_abbrs_delta = [period_abbrs[0]] + period_abbrs[2:4]
+  
+# CDO remapping options #
+cdo_remap_option_dict = {
+    'ordinary' : 'remap',
+    'bilinear' : 'remapbil',
+    'nearest_neighbour' : 'remapnn',
+    'bicubic' : 'remapbic',
+    'conservative1' : 'remapcon',
+    'conservative2' : 'remapcon2',
+    'conservative1_y' : 'remapycon',
+    'distance_weighted_average' : 'remapdis',
+    'vertical_hybrid' : 'remapeta',
+    'vertical_hybrid_sigma' : 'remapeta_s',
+    'vertical_hybrid_z' : 'remapeta_z',
+    'largest_area_fraction' : 'remaplaf',
+    'sum' : 'remapsum',
+    }
+
+cdo_remap_options = list(cdo_remap_option_dict.keys())
+
+# Grid header file function key list #
+keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']

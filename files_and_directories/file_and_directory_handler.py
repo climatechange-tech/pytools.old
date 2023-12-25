@@ -1062,9 +1062,9 @@ def rename_objects(relative_paths,
         raise ValueError("Both input arguments must either be "
                          "strings or lists simultaneously.")
                          
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Get the directory from where this code is being called #
 cwd = Path.cwd()

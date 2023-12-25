@@ -86,8 +86,8 @@ def conv_arbBases(x, base):
     y = int(x, base=base)
     return y
     
-    
-# Local parameters #
-#------------------#
+
+# Parameters and constants #
+#--------------------------#
 
 method_opts = ['default', 'format_string']

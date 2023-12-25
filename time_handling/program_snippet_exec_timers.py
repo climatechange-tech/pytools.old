@@ -137,9 +137,9 @@ def snippet_exec_timer(snippet_str,
        
 #%%
 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Time units #
 sec_time_unit_str = 's'

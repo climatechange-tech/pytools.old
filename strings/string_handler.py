@@ -261,100 +261,77 @@ def get_obj_specs(obj_path,
                                        "obj_spec_key",
                                        find_whole_words=True)
     
-    if obj_spec_key not in objSpecsKeys_short:
+    if obj_spec_key not in objSpecsKeys:
         raise ValueError(f"Wrong '{arg_names[osk_arg_pos]}' option. "
-                         f"Options are {objSpecsKeys_short}.")
+                         f"Options are {objSpecsKeys}.")
         
+    # Get the object specification name #
     if not isinstance(obj_path, dict):
         obj_specs_dict = obj_path_specs(obj_path, splitchar)
-    
-    if obj_spec_key == "parent":
-        osk = objSpecsKeys[0]
         
-    elif obj_spec_key == "name":
-        osk = objSpecsKeys[1]
-    
-    elif obj_spec_key == "name_noext":
-        osk = objSpecsKeys[2]
-        
-    elif obj_spec_key == "name_noext_parts" and splitchar is not None:
-        osk = objSpecsKeys[3]
-        
-    elif obj_spec_key == "name_noext_parts" and splitchar is None:
-        raise ValueError("You must specify a string-splitting character "
-                         f"if '{arg_names[osk_arg_pos]}' == {obj_spec_key}.")
-        
-    elif obj_spec_key == "ext":
-        osk = objSpecsKeys[4]
-    
-    obj_spec = obj_specs_dict[osk]
-    return obj_spec
-    
-    
+    else:
+        if obj_spec_key == objSpecsKeys[3] and splitchar is None:
+            raise ValueError("You must specify a string-splitting character "
+                             f"if '{arg_names[osk_arg_pos]}' == '{obj_spec_key}'.")
+        else:
+            obj_spec = obj_specs_dict.get(obj_spec_key)
+            return obj_spec
+
+
 def modify_obj_specs(target_path_obj,
                      obj2modify,
                      new_obj=None,
                      str2add=None):
     
-    # target_path_obj : str or dict
+    """
+    target_path_obj : str or dict
+    """
     
+    # Proper argument selection control #
     arg_names = modify_obj_specs.__code__.co_varnames
     obj2ch_arg_pos = find_substring_index(arg_names, "obj2")
     
-    if obj2modify not in objSpecsKeys_short:
-        raise ValueError(f"Wrong {arg_names[obj2ch_arg_pos]} option. "
-                         "Options are {objSpecsKeys_short}.")
+    if obj2modify not in objSpecsKeys:
+        raise ValueError(f"Wrong '{arg_names[obj2ch_arg_pos]}' option. "
+                         f"Options are {objSpecsKeys}.")
     
+    # Get the object specification name #
     if not isinstance(target_path_obj, dict):
         obj_specs_dict = obj_path_specs(target_path_obj)
         
-    if obj2modify == "name_noext_parts" and not isinstance(new_obj, tuple):
-        raise TypeError("If the object to modify is '{objSpecsKeys_short[3]}', "
-                        "then the provided new object must also be of type 'tuple'")
-            
-    if obj2modify == "parent":
-        osk = objSpecsKeys[0]
-        
-    elif obj2modify == "name":
-        osk = objSpecsKeys[1]
-            
-    elif obj2modify == "name_noext":
-        osk = objSpecsKeys[2]
-
-        if str2add is not None:
-            obj_specs_dict[osk] += str2add    
-            lengthened_fileName = join_obj_path_specs(obj_specs_dict)
-            new_obj = lengthened_fileName
-        
-    elif obj2modify == "name_noext_parts" and isinstance(new_obj, tuple):
-        osk = objSpecsKeys[2]
-        name_noext = get_obj_specs(target_path_obj, osk)
-        new_obj_aux = substring_replacer(name_noext, new_obj[0], new_obj[1])
-        new_obj = new_obj_aux
-            
-    elif obj2modify == "ext":
-        osk = objSpecsKeys[4]
-
-    item2updateDict = {osk : new_obj}
-    obj_specs_dict.update(item2updateDict)
+    else:
+        obj_spec = obj_specs_dict.get(obj2modify)
     
-    new_obj_path_joint = join_obj_path_specs(obj_specs_dict)
-    return new_obj_path_joint
+        if obj2modify == objSpecsKeys[2]:
+            if str2add is not None:
+                new_obj = obj_spec + str2add
+            
+        elif obj2modify == objSpecsKeys[3]:
+            if not isinstance(new_obj, tuple):
+                raise TypeError(f"If the object to modify is '{objSpecsKeys[3]}', "
+                                "then the provided new object must also be of type 'tuple'")
+            
+            else:
+                name_noext = get_obj_specs(target_path_obj, obj_spec)
+                new_obj = substring_replacer(name_noext, new_obj[0], new_obj[1])
+            
+        item2updateDict = {obj_spec : new_obj}
+        obj_specs_dict.update(item2updateDict)
         
+        new_obj_path_joint = join_obj_path_specs(obj_specs_dict)
+        return new_obj_path_joint
+
 
 def join_obj_path_specs(obj_specs_dict):
            
-    obj_path_ext = obj_specs_dict[objSpecsKeys[-1]]
-    obj_path_name_noext = obj_specs_dict[objSpecsKeys[2]]
+    obj_path_ext = obj_specs_dict.get(objSpecsKeys[-1])
+    obj_path_name_noext = obj_specs_dict.get(objSpecsKeys[2])
   
     try:
-        obj_path_parent = obj_specs_dict[objSpecsKeys[0]]
+        obj_path_parent = obj_specs_dict.get(objSpecsKeys[0])
+        joint_obj_path = f"{obj_path_parent}/{obj_path_name_noext}.{obj_path_ext}"
     except:
         obj_path_parent = None
-    
-    if obj_path_parent is not None:
-        joint_obj_path = f"{obj_path_parent}/{obj_path_name_noext}.{obj_path_ext}"
-    else:
         joint_obj_path = f"{obj_path_name_noext}.{obj_path_ext}"
         
     return joint_obj_path
@@ -388,17 +365,9 @@ def substring_replacer(string, string2find, string2replace, count=-1):
     return string_replaced
 
 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
-objSpecsKeys = ["obj_path_parent",
-                "obj_path_name", 
-                "obj_path_name_noext",
-                "obj_path_name_noext_parts",
-                "obj_path_ext"]
-
-objSpecsKeys_short = [substring_replacer(s, "obj_path_", "")
-                      for s in objSpecsKeys]
-
+objSpecsKeys = ['parent', 'name', 'name_noext', 'name_noext_parts', 'ext']
 list_wholewords_methods = ['default', 'numpy']

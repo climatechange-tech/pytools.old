@@ -2,7 +2,6 @@
 # Import modules #
 #----------------#
 
-import os
 from pathlib import Path
 import sys
 
@@ -25,9 +24,10 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/files_and_directories"      
 custom_mod2_path = f"{fixed_path}/pandas_data_frames"
-custom_mod3_path = f"{fixed_path}/operative_systems"
-custom_mod4_path = f"{fixed_path}/strings"
-custom_mod5_path = f"{fixed_path}/weather_and_climate"
+custom_mod3_path = f"{fixed_path}/parameters_and_constants"
+custom_mod4_path = f"{fixed_path}/operative_systems"
+custom_mod5_path = f"{fixed_path}/strings"
+custom_mod6_path = f"{fixed_path}/weather_and_climate"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -37,6 +37,7 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
+sys.path.append(custom_mod6_path)
 
 # Perform the module importations #
 #---------------------------------#
@@ -44,6 +45,7 @@ sys.path.append(custom_mod5_path)
 import data_frame_handler
 import file_and_directory_paths
 import file_and_directory_handler
+import global_parameters
 import os_operations
 import string_handler
 
@@ -57,6 +59,8 @@ move_files_byFS_fromCodeCallDir = file_and_directory_handler.move_files_byFS_fro
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
+
+common_splitchar_list = global_parameters.common_splitchar_list
 
 exec_shell_command = os_operations.exec_shell_command
 
@@ -125,12 +129,11 @@ def netcdf_file_scanner(path_to_walk_into,
             file_name = ncf[-1]
             
             if verbose and extra_verbose:
-                raise ValueError(f"Arguments {arg_names[verb_arg_pos]} "
-                                 f"and {arg_names[xverb_arg_pos]} "
+                raise ValueError(f"Arguments '{arg_names[verb_arg_pos]}' "
+                                 f"and '{arg_names[xverb_arg_pos]}' "
                                  "cannot be ´True´ at the same time.")
                 
             else:
-                    
                 if verbose:
                     print(scan_progress_table.format(file_num, lncfl,
                                                      ptwi),
@@ -279,25 +282,14 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
           Output data set regridded according to the grid specs of ds_in.
     """
     
-    method_list = [
-        "bilinear",
-        "conservative",
-        "conservative_normed",
-        "nearest_s2d",
-        "nearest_d2s",
-        "patch"
-        ]
-    
     if method not in method_list:
-        raise ValueError("Wrong regridding method. "
-                         "Options are {'bilinear', 'conservative', "
-                         "'conservative_normed', 'nearest_s2d', "
-                         "'nearest_d2s', 'patch'}.")
+        raise ValueError("Wrong regridding method.\n"
+                         f"Options are {method_list}.")
         
-    regridder = xe.Regridder(ds_in, ds_image, method)
-    ds_out = regridder(ds_in)
-    
-    return ds_out
+    else:
+        regridder = xe.Regridder(ds_in, ds_image, method)
+        ds_out = regridder(ds_in)
+        return ds_out
     
 
 def saveNCdataAsCSV(nc_file, 
@@ -462,22 +454,22 @@ def saveNCdataAsCSV(nc_file,
     #-----------------------------------------------------------------#
     
     if isinstance(nc_file, str) and csv_file_name == "default":
-            
         obj2change = "ext"
         csv_file_name = get_obj_specs(nc_file, obj2change, extensions[1])
     
     elif not isinstance(nc_file, str) and csv_file_name == "default":
         raise ValueError("You must provide a CSV file name.")
         
-    # Save data as desired format file #   
-    #----------------------------------#
-    
-    save2csv(csv_file_name,
-             data_frame,
-             separator,
-             save_index,
-             save_header,
-             date_format)
+    else:
+        # Save data as desired format file #   
+        #----------------------------------#
+        
+        save2csv(csv_file_name,
+                 data_frame,
+                 separator,
+                 save_index,
+                 save_header,
+                 date_format)
     
     
 def saveDataArrayAsCSV(data_array, 
@@ -537,12 +529,13 @@ def saveDataArrayAsCSV(data_array,
         raise ValueError("You must provide a CSV file name.")
         
     # Save data as desired format file #     
-    save2csv(csv_file_name,
-             data_frame,
-             separator,
-             save_index,
-             save_header,
-             date_format)
+    else:
+        save2csv(csv_file_name,
+                 data_frame,
+                 separator,
+                 save_index,
+                 save_header,
+                 date_format)
         
 #-----------------------#
 # Basic data extractors #
@@ -1002,7 +995,7 @@ def find_coordinate_variables(nc_file_name):
         
         else:
             raise ValueError("No 'latitude' or 'longitude' coordinates found "
-                             f"in file {nc_file_name}")
+                             f"in file '{nc_file_name}'")
             
     ds.close()
     
@@ -1102,11 +1095,11 @@ def get_model_list(path_list, split_pos):
     
     grib_file_list = [path.name
                  if len(fwd_slash_containing_files) > 0
-                 and file_path_splitchar in path
+                 and splitchar in path
                  else path
                  for path in path_list]
     
-    unique_model_list = np.unique([f.split(file_path_splitchar)[split_pos]
+    unique_model_list = np.unique([f.split(splitchar)[split_pos]
                                    for f in grib_file_list
                                    if len(grib_file_list) > 0])
     
@@ -1301,7 +1294,6 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
 def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
         
     if on_shell:
-        
         if isinstance(grib_file_list, str):
             nc_file_new = modify_obj_specs(grib_file_list, "ext", extensions[0])
             
@@ -1324,9 +1316,10 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
                                                                 regex_grib2nc,
                                                                 advanced_search=True)
                 
-            nc_file_new_noext = modify_obj_specs(nc_file_new_noext,
-                                                 obj2modify="ext",
-                                                 new_obj=extensions[0])
+            else:
+                nc_file_new_noext = modify_obj_specs(nc_file_new_noext,
+                                                     obj2modify="ext",
+                                                     new_obj=extensions[0])
             
         if option_str is None:
             grib2netcdf_comm = f"grib_to_netcdf -o {nc_file_new} {grib_allfile_str}"                
@@ -1344,9 +1337,9 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
             ds = xr.open_dataset(grib_file, engine="cfgrib")
             saveXarrayDSAsNetCDF(ds, grib_file_noext)
                 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Directory from where this code is being called #
 codeCallDir = Path.cwd()
@@ -1354,8 +1347,8 @@ codeCallDir = Path.cwd()
 # File extensions #
 extensions = ["nc", "csv"]
 
-# File name separator character #
-file_path_splitchar = "_"
+# String splitting character #
+splitchar = common_splitchar_list[0]
 
 # RegEx control for GRIB-to-netCDF single file name #
 regex_grib2nc = "^[a-zA-Z0-9\._-]$"
@@ -1420,3 +1413,13 @@ report_table =\
 
 ·Faulty files:
 """
+
+# Regridding method options #
+method_list = [
+    "bilinear",
+    "conservative",
+    "conservative_normed",
+    "nearest_s2d",
+    "nearest_d2s",
+    "patch"
+    ]

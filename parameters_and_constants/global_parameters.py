@@ -90,3 +90,15 @@ basic_object_types = ["file", "directory"]
 #---------------------# 
 
 regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'
+
+#------------------------# 
+# Mathematical operators #
+#------------------------# 
+
+basic_four_rules = ["+", "-", "*", "/"]
+
+#---------------------# 
+# String manipulation #
+#---------------------# 
+
+common_splitchar_list = ['_', '-', ';', ',']

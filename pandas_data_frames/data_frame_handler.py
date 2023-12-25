@@ -359,11 +359,11 @@ def save2excel(file_name,
             while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
-                
-            if overWriteStdIn == "y":
-                writer.close() 
-            else:
-                pass
+            else:    
+                if overWriteStdIn == "y":
+                    writer.close() 
+                else:
+                    pass
         
         else:
             writer.close()
@@ -380,15 +380,15 @@ def save2excel(file_name,
             while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                 overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
-                
-            if overWriteStdIn == "y":
-                remove_files_byFS(file_name, fn_parent)
-                frame_obj.to_excel(file_name, 
-                                   sheet_name=indiv_sheet_name,
-                                   index=save_index,
-                                   header=save_header)
             else:
-                pass
+                if overWriteStdIn == "y":
+                    remove_files_byFS(file_name, fn_parent)
+                    frame_obj.to_excel(file_name, 
+                                       sheet_name=indiv_sheet_name,
+                                       index=save_index,
+                                       header=save_header)
+                else:
+                    pass
             
         else:
             frame_obj.to_excel(file_name, save_index, save_header)
@@ -541,17 +541,17 @@ def save2csv(file_name,
                 while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
-                    
-                if overWriteStdIn == "y":
-                    remove_files_byFS(file_name, fn_parent)
-                    data_frame.to_csv(file_name,
-                                      sep=separator,
-                                      decimal=decimal,
-                                      index=save_index,
-                                      header=save_header)
-                    
                 else:
-                    pass
+                    if overWriteStdIn == "y":
+                        remove_files_byFS(file_name, fn_parent)
+                        data_frame.to_csv(file_name,
+                                          sep=separator,
+                                          decimal=decimal,
+                                          index=save_index,
+                                          header=save_header)
+                        
+                    else:
+                        pass
                 
             else:
                 data_frame.to_csv(file_name,
@@ -571,18 +571,18 @@ def save2csv(file_name,
                 while (overWriteStdIn != "y" and overWriteStdIn != "n"):
                     overWriteStdIn = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
-                    
-                if overWriteStdIn == "y":
-                    remove_files_byFS(file_name, fn_parent)
-                    data_frame.to_csv(file_name,
-                                      sep=separator,
-                                      decimal=decimal,
-                                      date_format=date_format,
-                                      index=save_index,
-                                      header=save_header)
-                    
                 else:
-                    pass
+                    if overWriteStdIn == "y":
+                        remove_files_byFS(file_name, fn_parent)
+                        data_frame.to_csv(file_name,
+                                          sep=separator,
+                                          decimal=decimal,
+                                          date_format=date_format,
+                                          index=save_index,
+                                          header=save_header)
+                        
+                    else:
+                        pass
                 
             else:
                 data_frame.to_csv(file_name,
@@ -1002,12 +1002,13 @@ def countDataByConcept(df, df_cols):
     return dataCount    
 
 
-#-----------------------------------------------#
-# Define global parameters below every function #
-#-----------------------------------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
-"""Declare those global so as not to use them
-repeatedly inside functions above.
+"""
+Declare them global in the functions to be used
+to avoid declaring as input arguments.
 """
 
 extensions = ["csv", "xlsx"]

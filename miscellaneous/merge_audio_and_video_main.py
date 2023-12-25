@@ -1,3 +1,9 @@
+# TODO: ondokoa 'ffmpeg'-ren bidez gauzatzeko antolatu
+#       sarrerako fitxategien audio eta bideo-kopurua,
+#       eta baita irteerakoena ere BETI BERA IZAN BEHAR DA
+
+# sintaxia: ffmpeg -i {'video.mp4'} -i {'audio.wav' | 'audio.mp3' | e.a} -c:v copy -c:a aac {'output.mp4'}
+
 #----------------#
 # Import modules #
 #----------------#

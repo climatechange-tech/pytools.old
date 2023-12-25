@@ -193,12 +193,15 @@ def modify_obj_owner(path,
             except PermissionError:
                 raise PermissionError(permissionErrorStr)
     
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+# OS-related #
+#------------#
 
 modules = ["os", "shutil"]
-bo_types = basic_object_types
+bo_types = basic_object_types.copy()
 
 # Error indicator tables #
 #------------------------#

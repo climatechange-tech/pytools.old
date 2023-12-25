@@ -544,9 +544,9 @@ def time2seconds(t, time_fmt_str=None):
         return(t_secs)
     
 
-#------------------#
-# Local parameters #
-#------------------#
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
 
 # Global method options #
 method_options = ["datetime", "datetime_list", "datetime_pydt", "model_datetime",
