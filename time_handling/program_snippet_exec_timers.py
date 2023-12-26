@@ -36,12 +36,16 @@ sys.path.append(custom_mod2_path)
 # Perform the module importations #
 #---------------------------------#
 
+import information_output_formatters
 import string_handler
 import time_formatters
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 find_substring_index = string_handler.find_substring_index
 time_format_tweaker = time_formatters.time_format_tweaker
@@ -104,9 +108,8 @@ def snippet_exec_timer(snippet_str,
             time_unit_str = default_time_unit_str
         
         # Complete and display the corresponding output information table #
-        print(output_info_table_norep.format(time_unit_str,
-                                             trials,
-                                             exec_time_norep))
+        arg_tuple_exec_timer1 = (time_unit_str, trials, exec_time_norep)
+        print_format_string(output_info_table_norep, arg_tuple_exec_timer1)
       
     # Execution time in the specified number of trials for several repeats #
     else:
@@ -130,10 +133,8 @@ def snippet_exec_timer(snippet_str,
             time_unit_str = default_time_unit_str
           
         # Complete and display the corresponding output information table #
-        print(output_info_table_rep.format(time_unit_str, 
-                                           repeats, 
-                                           trials, 
-                                           exec_time_rep))
+        arg_tuple_exec_timer2 = (time_unit_str, repeats, trials, exec_time_rep)
+        print_format_string(output_info_table_rep, arg_tuple_exec_timer2)
        
 #%%
 

@@ -34,6 +34,7 @@ sys.path.append(custom_mod2_path)
 #---------------------------------#
 
 import file_and_directory_paths
+import information_output_formatters
 import os_operations
 
 #----------------------------------------------------#
@@ -41,6 +42,8 @@ import os_operations
 #----------------------------------------------------#
 
 posixpath_converter = file_and_directory_paths.posixpath_converter
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 exec_shell_command = os_operations.exec_shell_command
 
 #------------------#
@@ -967,7 +970,7 @@ def copy_entire_directories(directories,
             
             for dirc in directories:
                 for dd in destination_directories:
-                    exec_shell_command(cp_command.format(dirc, dd))
+                    exec_shell_command(format_string(cp_command, (dirc, dd)))
                         
         elif isinstance(directories, list)\
         and isinstance(destination_directories, list)\
@@ -981,22 +984,22 @@ def copy_entire_directories(directories,
                                  "are not of the same length.")
             else:
                 for dirc, dd in zip(directories, destination_directories):
-                    exec_shell_command(cp_command.format(dirc, dd))
+                    exec_shell_command(format_string(cp_command, (dirc, dd)))
                     
         elif isinstance(directories, list)\
         and not isinstance(destination_directories, list):
             for dirc in directories:
-                exec_shell_command(cp_command.format(dirc, 
-                                                     destination_directories))
+                exec_shell_command(format_string(cp_command, (dirc, 
+                                                              destination_directories)))
                     
         elif not isinstance(directories, list)\
         and isinstance(destination_directories, list):        
             for dd in destination_directories:
-                exec_shell_command(cp_command.format(directories, dd))
+                exec_shell_command(format_string(cp_command, (directories, dd)))
                     
         else:
-            exec_shell_command(cp_command.format(directories,
-                                                 destination_directories))     
+            exec_shell_command(format_string(cp_command, (directories,
+                                                          destination_directories)))
 
 # Operations involving both files and directories #
 #-------------------------------------------------#

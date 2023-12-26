@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -21,7 +23,9 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/files_and_directories"
 custom_mod2_path = f"{fixed_path}/parameters_and_constants"
-custom_mod3_path = f"{fixed_path}/operative_systems"     
+custom_mod3_path = f"{fixed_path}/operative_systems"   
+custom_mod4_path = f"{fixed_path}/strings"   
+  
 
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -29,6 +33,7 @@ custom_mod3_path = f"{fixed_path}/operative_systems"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
+sys.path.append(custom_mod4_path)
 
 # Perform the module importations #
 #---------------------------------#
@@ -36,6 +41,7 @@ sys.path.append(custom_mod3_path)
 import file_and_directory_handler
 import file_format_tweaker
 import global_parameters
+import information_output_formatters
 import os_operations
 
 #----------------------------------------------------#
@@ -45,6 +51,10 @@ import os_operations
 rename_objects = file_and_directory_handler.rename_objects
 aux_path_strAdd = file_format_tweaker.aux_path_strAdd
 basic_four_rules = global_parameters.basic_four_rules
+
+format_string = information_output_formatters.format_string
+print_format_string = information_output_formatters.print_format_string
+
 exec_shell_command = os_operations.exec_shell_command
 
 #-------------------------#
@@ -69,101 +79,37 @@ def modify_variable_units_and_values(file_list,
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
+        isactuallyfloat_int = int(isactuallyfloat)
         
         var_chunit_command\
         = f"ncatted -a units,{variable_name},o,c,'{new_unit}' '{file_name}'"
         exec_shell_command(var_chunit_command)
         
-        # TODO: ondoko aukera guztiak hiztegi-aukeraketaren 'SWITCH' motako funtzio bidez egingarria denentz berrikusi
-        if operator == "+":
+        if operator not in basic_four_rules:
+            raise ValueError(wrong_operator_errtext)
+        else:            
+            # Print progress information #
+            operator_gerund = operator_gerund_dict.get(operator)
+            arg_tuple_print = (ncap2_comm_args, 
+                               operator_gerund, value, variable_name, 
+                               file_num, lfl)
+            print_format_string(prefmt_str_progress_UV, arg_tuple_print)
             
-            print(f"Adding the value of {value} to "
-                  f"'{variable_name}' variable's values for file "
-                  f"{file_num} out of {lfl}...")
+            # Get the command from the corresponding switch dictionary #
+            arg_tuple_command = (ncap2_comm_args,
+                                 variable_name, variable_name, value,
+                                 file_name, temp_file)
             
-            if isactuallyfloat:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}+{value}.0f' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            else:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}+{value}' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
+            varval_mod_command = \
+            format_string(varval_mod_command_dict_UV
+                          .get(operator)
+                          .get(isactuallyfloat_int),
+                          arg_tuple_command)
+        
+            # Execute the command through the shell #
             exec_shell_command(varval_mod_command)            
             rename_objects(temp_file, file_name)
-                                     
-                                     
-        elif operator == "-":
-            
-            print(f"Subtracting the value of {value} to "
-                  f"'{variable_name}' variable's values for file "
-                  f"{file_num} out of {lfl}...")
-            
-            if isactuallyfloat:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}-{value}.0f' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            else:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}-{value}' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(varval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "*":
-            
-            print(f"Multiplying the value of {value} to "
-                  f"'{variable_name}' variable's values for file "
-                  f"{file_num} out of {lfl}...")
-            
-            if isactuallyfloat:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}*{value}.0f' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            else:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}*{value}' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(varval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "/":
-            
-            print(f"Dividing the value of {value} to "
-                  f"'{variable_name}' variable's values for file "
-                  f"{file_num} out of {lfl}...")
-            
-            if isactuallyfloat:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}/{value}.0f' "\
-                f"'{file_name}' '{temp_file}'"
-                                     
-            else:
-                varval_mod_command =\
-                f"ncap2 -O -s "\
-                f"'{variable_name}={variable_name}/{value}' "\
-                f"'{file_name}' '{temp_file}'"
-            
-            exec_shell_command(varval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        else:
-            raise ValueError("Wrong basic operator chosen.\n"
-                             f"Options are {basic_four_rules}")
-
+                                                 
 
 def modify_coordinate_values_byThreshold(file_list,
                                          dimension_name,
@@ -184,152 +130,43 @@ def modify_coordinate_values_byThreshold(file_list,
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
-                                
-        if operator == "+":
-            
-            print(f"Adding, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
+        isactuallyfloat_int = int(isactuallyfloat)
         
-            if threshold_mode == "max":      
-                if isactuallyfloat:                    
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:                    
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "-":
-            
-            print(f"Subtracting, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":      
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                                 
-        elif operator == "*":
-            
-            print(f"Multiplying, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":      
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "/":
-            
-            print(f"Dividing, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":                
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                                  
+        if operator not in basic_four_rules:
+            raise ValueError(wrong_operator_errtext)
         else:
-            raise ValueError("Wrong basic operator chosen.\n"
-                             f"Options are {basic_four_rules}")
+            if threshold_mode not in threshold_mode_opts:
+                raise ValueError(format_string(prefmt_wrong_threshold_mode,
+                                               threshold_mode_opts))
+            
+            else:
+                # Print progress information #
+                operator_gerund = operator_gerund_dict.get(operator)
+                    
+                arg_tuple_print = (ncap2_comm_args, 
+                                   operator_gerund, value, dimension_name, 
+                                   file_num, lfl)
+                
+                print_format_string(prefmt_str_progress_BTH, arg_tuple_print)
+                
+                # Get the command from the corresponding switch dictionary #
+                arg_tuple_command = (ncap2_comm_args,
+                                     dimension_name, threshold,
+                                     dimension_name, dimension_name, value,
+                                     file_name, temp_file)
+                
+                dimval_mod_command = \
+                format_string(varval_mod_command_dict_BTH
+                              .get(operator)
+                              .get(threshold_mode)
+                              .get(isactuallyfloat_int),
+                              arg_tuple_command)
+            
+                # Execute the command through the shell #
+                exec_shell_command(dimval_mod_command)            
+                rename_objects(temp_file, file_name)
+            
 
-# TODO: koordenatu guztiei balio bera sar dakieeneko ondoko funtzioa atondu.
 def modify_coordinate_allValues(file_list,
                                 dimension_name,
                                 threshold,
@@ -349,147 +186,221 @@ def modify_coordinate_allValues(file_list,
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
-                                
-        if operator == "+":
-            
-            print(f"Adding, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
+        isactuallyfloat_int = int(isactuallyfloat)
         
-            if threshold_mode == "max":      
-                if isactuallyfloat:                    
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:                    
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}+{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "-":
-            
-            print(f"Subtracting, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":      
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}-{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                                 
-        elif operator == "*":
-            
-            print(f"Multiplying, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":      
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                   
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}*{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                     
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                     
-        elif operator == "/":
-            
-            print(f"Dividing, where necessary, the value of {value} to "
-                  f"'{dimension_name}' dimension's values for file "
-                  f"{file_num} out of {lfl}...")
-        
-            if threshold_mode == "max":                
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}<{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-            elif threshold_mode == "min":
-                if isactuallyfloat:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}' "\
-                    f"'{file_name}' '{temp_file}'"
-                    
-                else:
-                    dimval_mod_command =\
-                    f"ncap2 -O -s 'where({dimension_name}>{threshold}) "\
-                    f"{dimension_name}={dimension_name}/{value}.0f' "\
-                    f"'{file_name}' '{temp_file}'"
-                                         
-            exec_shell_command(dimval_mod_command)            
-            rename_objects(temp_file, file_name)
-                                                  
+        if operator not in basic_four_rules:
+            raise ValueError(wrong_operator_errtext)
         else:
-            raise ValueError("Wrong basic operator chosen. "
-                             f"Options are {basic_four_rules}")
+            if threshold_mode not in threshold_mode_opts:
+                raise ValueError(format_string(prefmt_wrong_threshold_mode,
+                                               threshold_mode_opts))
+            
+            else:
+                # Print progress information #
+                operator_gerund = operator_gerund_dict.get(operator)
+                    
+                arg_tuple_print = (ncap2_comm_args, 
+                                   operator_gerund, value, dimension_name, 
+                                   file_num, lfl)
+                
+                print_format_string(prefmt_str_progress_BTH, arg_tuple_print)
+                
+                # Get the command from the corresponding switch dictionary #
+                arg_tuple_command = (ncap2_comm_args,
+                                     dimension_name, dimension_name, value,
+                                     file_name, temp_file)
+                
+                dimval_mod_command = \
+                format_string(varval_mod_command_dict_all
+                              .get(operator)
+                              .get(threshold_mode)
+                              .get(isactuallyfloat_int),
+                              arg_tuple_command)
+            
+                # Execute the command through the shell #
+                exec_shell_command(dimval_mod_command)            
+                rename_objects(temp_file, file_name)
+
+            
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+# Fixed and preformatted strings #
+#--------------------------------#
+
+# NCAP2 command #
+ncap2_comm_args = "ncap2 -O -s"
+
+# Progress verbose #
+prefmt_str_progress_UV = \
+"""{} the value of {} to '{}' variable's value for file
+{} out of {}..."""
+
+prefmt_str_progress_BTH = \
+"""{}, where necessary, the value of {} to '{}' dimension's values for file
+{} out of {}..."""
+
+prefmt_str_progress_all = \
+"""{} the value of {} to '{}' dimension's values for file
+{} out of {}..."""
+
+# NCAP2 command's argument syntaxes, for all values or dimensions #
+prefmt_str_addvalue = """{} '{}={}+{}' '{}' '{}'"""
+prefmt_str_subtrvalue = """{} '{}={}-{}' '{}' '{}'"""
+prefmt_str_multvalue = """{} '{}={}*{}' '{}' '{}'"""
+prefmt_str_divvalue = """{} '{}={}/{}' '{}' '{}'"""
+
+prefmt_str_addvalue_float = """{} '{}={}+{}.0f' '{}' '{}'"""
+prefmt_str_subtrvalue_float = """{} '{}={}-{}.0f' '{}' '{}'"""
+prefmt_str_multvalue_float = """{} '{}={}*{}.0f' '{}' '{}'"""
+prefmt_str_divvalue_float = """{} '{}={}/{}.0f' '{}' '{}'"""
+
+# NCAP2 command's argument syntaxes, conditional #
+prefmt_str_addvalue_where_max = """{} 'where({}<{}) {}={}+{}' '{}' '{}'"""
+prefmt_str_subtrvalue_where_max = """{} 'where({}<{}) {}={}-{}' '{}' '{}'"""
+prefmt_str_multvalue_where_max = """{} 'where({}<{}) {}={}*{}' '{}' '{}'"""
+prefmt_str_divvalue_where_max = """{} 'where({}<{}) {}={}/{}' '{}' '{}'"""
+
+prefmt_str_addvalue_where_max_float = """{} 'where({}<{}) {}={}+{}.0f' '{}' '{}'"""
+prefmt_str_subtrvalue_where_max_float = """{} 'where({}<{}) {}={}-{}.0f' '{}' '{}'"""
+prefmt_str_multvalue_where_max_float = """{} 'where({}<{}) {}={}*{}.0f' '{}' '{}'"""
+prefmt_str_divvalue_where_max_float = """{} 'where({}<{}) {}={}/{}.0f' '{}' '{}'"""
+
+
+prefmt_str_addvalue_where_min = """{} 'where({}>{}) {}={}+{}' '{}' '{}'"""
+prefmt_str_subtrvalue_where_min = """{} 'where({}>{}) {}={}-{}' '{}' '{}'"""
+prefmt_str_multvalue_where_min = """{} 'where({}>{}) {}={}*{}' '{}' '{}'"""
+prefmt_str_divvalue_where_min = """{} 'where({}>{}) {}={}/{}' '{}' '{}'"""
+
+prefmt_str_addvalue_where_min_float = """{} 'where({}>{}) {}={}+{}.0f' '{}' '{}'"""
+prefmt_str_subtrvalue_where_min_float = """{} 'where({}>{}) {}={}-{}.0f' '{}' '{}'"""
+prefmt_str_multvalue_where_min_float = """{} 'where({}>{}) {}={}*{}.0f' '{}' '{}'"""
+prefmt_str_divvalue_where_min_float = """{} 'where({}>{}) {}={}/{}.0f' '{}' '{}'"""
+
+# Error messages #
+wrong_operator_errtext = \
+f"Wrong basic operator chosen. Options are {basic_four_rules}."
+prefmt_wrong_threshold_mode = \
+"""Wrong threshold mode. Options are {}."""
+
+
+# Locally available threshold mode list #
+#---------------------------------------#
+
+threshold_mode_opts = ["max", "min"]
+
+# Switch cases #
+#--------------#
+
+operator_gerund_dict = {
+    basic_four_rules[0] : "Adding",
+    basic_four_rules[1] : "Subtracting",
+    basic_four_rules[2] : "Multiplying",
+    basic_four_rules[3] : "Dividing"
+    }
+
+varval_mod_command_dict_UV = {
+    basic_four_rules[0] : {
+        1 : prefmt_str_addvalue,
+        0 : prefmt_str_addvalue_float
+    },
+    basic_four_rules[1] : {
+        1 : prefmt_str_subtrvalue,
+        0 : prefmt_str_subtrvalue_float
+    },
+    basic_four_rules[2] : {
+        1 : prefmt_str_multvalue,
+        0 : prefmt_str_multvalue_float
+    },
+    basic_four_rules[3] : {
+        1 : prefmt_str_divvalue,
+        0 : prefmt_str_divvalue_float
+    }
+}
+
+varval_mod_command_dict_BTH = {
+    basic_four_rules[0] : {
+        "max" : {
+            1 : prefmt_str_addvalue_where_max,
+            0 : prefmt_str_addvalue_where_max_float
+        },
+        "min" : {
+            1 : prefmt_str_addvalue_where_min,
+            0 : prefmt_str_addvalue_where_min_float
+        },
+    },
+    basic_four_rules[1] : {
+        "max" : {
+            1 : prefmt_str_subtrvalue_where_max,
+            0 : prefmt_str_subtrvalue_where_max_float
+        },
+        "min" : {
+            1 : prefmt_str_subtrvalue_where_min,
+            0 : prefmt_str_subtrvalue_where_min_float
+        },
+    },
+    basic_four_rules[2] : {
+        "max" : {
+            1 : prefmt_str_multvalue_where_max,
+            0 : prefmt_str_multvalue_where_max_float
+        },
+        "min" : {
+            1 : prefmt_str_multvalue_where_min,
+            0 : prefmt_str_multvalue_where_min_float
+        },
+    },
+    basic_four_rules[3] : {
+        "max" : {
+            1 : prefmt_str_divvalue_where_max,
+            0 : prefmt_str_divvalue_where_max_float
+        },
+        "min" : {
+            1 : prefmt_str_divvalue_where_min,
+            0 : prefmt_str_divvalue_where_min_float
+        }
+    }
+}
+
+varval_mod_command_dict_all = {
+    basic_four_rules[0] : {
+        "max" : {
+            1 : prefmt_str_addvalue,
+            0 : prefmt_str_addvalue_float
+        },
+        "min" : {
+            1 : prefmt_str_addvalue,
+            0 : prefmt_str_addvalue_float
+        },
+    },
+    basic_four_rules[1] : {
+        "max" : {
+            1 : prefmt_str_subtrvalue,
+            0 : prefmt_str_subtrvalue_float
+        },
+        "min" : {
+            1 : prefmt_str_subtrvalue,
+            0 : prefmt_str_subtrvalue_float
+        },
+    },
+    basic_four_rules[2] : {
+        "max" : {
+            1 : prefmt_str_multvalue,
+            0 : prefmt_str_multvalue_float
+        },
+        "min" : {
+            1 : prefmt_str_multvalue,
+            0 : prefmt_str_multvalue_float
+        },
+    },
+    basic_four_rules[3] : {
+        "max" : {
+            1 : prefmt_str_divvalue,
+            0 : prefmt_str_divvalue_float
+        },
+        "min" : {
+            1 : prefmt_str_divvalue,
+            0 : prefmt_str_divvalue_float
+        }
+    }
+}

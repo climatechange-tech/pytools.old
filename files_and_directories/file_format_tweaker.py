@@ -38,6 +38,7 @@ sys.path.append(custom_mod4_path)
 import file_and_directory_handler
 import file_and_directory_paths
 import global_parameters
+import information_output_formatters
 import os_operations
 import string_handler
 
@@ -51,6 +52,8 @@ find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_fileString_paths = file_and_directory_paths.find_fileString_paths
 
 common_splitchar_list = global_parameters.common_splitchar_list
+
+format_string = information_output_formatters.format_string
 
 catch_shell_prompt_output = os_operations.catch_shell_prompt_output
 exec_shell_command = os_operations.exec_shell_command
@@ -256,8 +259,8 @@ def pdf_file_tweaker(path, cat_out_obj):
                 tweak_pages(p, cat_str, output_path)            
         
     else:
-        raise TypeError(type_error_string_complete.format(arg_names[0], 
-                                                          arg_names[1]))
+        arg_tuple_pdftweaker = (arg_names[0], arg_names[1])
+        raise TypeError(format_string(type_error_string_complete, arg_tuple_pdftweaker))
         
         
 def pdf_file_compressor(in_path, out_path=None):
@@ -310,8 +313,8 @@ def pdf_file_compressor(in_path, out_path=None):
     if not (isinstance(in_path, str) and isinstance(out_path, str)\
         or (isinstance(in_path, list)) and isinstance(out_path, list)):
         
-        raise TypeError(type_error_string_complete.format(arg_names[0], 
-                                                          arg_names[1]))
+        arg_tuple_pdfcompress = (arg_names[0], arg_names[1])
+        raise TypeError(format_string(type_error_string_complete, arg_tuple_pdfcompress))
         
     else:
         if isinstance(in_path, str):
@@ -336,7 +339,7 @@ def pdf_file_compressor(in_path, out_path=None):
   
 def checkEssentialProgInstallStatus():
     
-    none_keyword_list = ["none", "ninguno"]
+    none_keyword_list = "instal"
     
     """
     This function checks whether at least one of the programs is installed,
@@ -348,13 +351,15 @@ def checkEssentialProgInstallStatus():
         apt_cache_comm = f"apt-cache policy {ess_prog}"
         
         progInstalledStatusString = catch_shell_prompt_output(apt_cache_comm)
+        progInstalledStatusString = progInstalledStatusString.lower()
         kw_idx = find_substring_index(progInstalledStatusString, 
-                                      kw, 
+                                      kw,
                                       advanced_search=True,
                                       find_whole_words=True)
         
         if kw_idx == -1:
-            raise ModuleNotFoundError(mnfe_string.format(ess_prog))
+            arg_tuple_check = tuple(2*[ess_prog])
+            raise ModuleNotFoundError(format_string(mnfe_string, arg_tuple_check))
             
     else:
         print(f"{ess_prog} program installed, continuing.")
@@ -451,12 +456,6 @@ def msg2pdf(path_to_walk_into,
         # Delete every email file #
         remove_files_byExts(extension, path_to_walk_into)
         
-#------------------#
-# Local operations #
-#------------------#
-
-# Check whether essential programs are installed #
-checkEssentialProgInstallStatus()
 
 #--------------------------#
 # Parameters and constants #
@@ -500,8 +499,14 @@ type(path) == list and type(cat_out_obj) == list\n
 """
 
 mnfe_string = """
-'{}' is not installed,\nwhich is 
+'{}' is not installed, which is 
 required to perform the msg-to-pdf conversion.\n
-Install it by typing:\n\n
-sudo apt install {}
+Install it by typing: sudo apt install '{}'
 """
+
+#------------------#
+# Local operations #
+#------------------#
+
+# Check whether essential programs are installed #
+checkEssentialProgInstallStatus()

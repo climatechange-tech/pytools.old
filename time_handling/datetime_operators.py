@@ -46,6 +46,7 @@ sys.path.append(custom_mod5_path)
 
 import data_frame_handler
 import global_parameters
+import information_output_formatters
 import string_handler
 import time_formatters
 
@@ -55,6 +56,7 @@ import time_formatters
 
 MATHEMATICAL_YEAR_DAYS = global_parameters.MATHEMATICAL_YEAR_DAYS
 find_date_key = data_frame_handler.find_date_key
+format_string = information_output_formatters.format_string
 find_substring_index = string_handler.find_substring_index
 time_format_tweaker = time_formatters.time_format_tweaker
 
@@ -75,8 +77,8 @@ def get_current_time(Type="datetime", time_fmt_str=None):
                                         find_whole_words=True)
     
     if Type not in type_options:
-        raise ValueError(ChoiceErrorStr.format(arg_names[type_arg_pos],
-                                               type_options))
+        arg_tuple_current_time = (arg_names[type_arg_pos], type_options)
+        raise ValueError(format_string(ChoiceErrorStr, arg_tuple_current_time))
     
     if Type == "datetime":
         current_datetime = datetime.datetime.now()
@@ -96,22 +98,6 @@ def get_current_time(Type="datetime", time_fmt_str=None):
         return current_datetime
     
 
-# def program_exec_timer(mode, return_days=False):
-    
-#     global ti
-    
-#     if mode == "start":  
-#         ti = time.time()
-        
-#     elif mode == "stop":
-#         tf = time.time()
-#         elapsed_time = abs(ti-tf)
-        
-#         return time_format_tweaker(elapsed_time,
-#                                    return_str="extended", 
-#                                    return_days=return_days)
-        
-
 def get_obj_operation_datetime(objList,
                                attr="modification", 
                                time_fmt_str=None):
@@ -125,8 +111,9 @@ def get_obj_operation_datetime(objList,
                                         find_whole_words=True)
     
     if attr not in attr_options:
-        raise AttributeError(AttributeErrorStr.format(attr_arg_pos,
-                                                      attr_options))
+        arg_tuple_operation_datetime = (attr_arg_pos, attr_options)
+        raise AttributeError(format_string(AttributeErrorStr, 
+                                           arg_tuple_operation_datetime))
         
     if isinstance(objList, str):
         objList = [objList]
@@ -181,29 +168,29 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
     
     # Operator argument choice #    
     if operator not in operators:
-        raise ValueError(ChoiceErrorStr.format(arg_names[operator_arg_pos],
-                                               operators))
+        arg_tuple_dt_range_op1 = (arg_names[operator_arg_pos], operators)
+        raise ValueError(format_string(ChoiceErrorStr, arg_tuple_dt_range_op1))
         
     # Right input argument types #
     if not isinstance(df1, pd.DataFrame):
-        raise TypeError(TypeErrorStr2.format(arg_names[df1_arg_pos],
-                                             df1_arg_pos,
-                                            'pandas.DataFrame',
-                                            'pandas.Series'))
+        arg_tuple_dt_range_op2 = (arg_names[df1_arg_pos], df1_arg_pos,
+                                  'pandas.DataFrame', 'pandas.Series')
+        raise TypeError(format_string(TypeErrorStr2, arg_tuple_dt_range_op2))
         
     if not isinstance(df2, pd.DataFrame)\
     and not isinstance(df2, pd.Series):
-        raise TypeError(TypeErrorStr2.format(arg_names[df2_arg_pos],
-                                             df2_arg_pos,
-                                            'pandas.DataFrame',
-                                            'pandas.Series'))
+        arg_tuple_dt_range_op3 = (arg_names[df2_arg_pos], df2_arg_pos,
+                                  'pandas.DataFrame', 'pandas.Series')
+        raise TypeError(format_string(TypeErrorStr2, arg_tuple_dt_range_op3))
         
         
     elif isinstance(df2, pd.Series):
         if not hasattr(df2, "name"):
-            raise AttributeError(AttributeErrorStr.format(arg_names[df2_arg_pos],
-                                                          'pandas.Series',
-                                                          arg_names[df2_arg_pos]))            
+            arg_tuple_dt_range_op4 = (arg_names[df2_arg_pos],
+                                      'pandas.Series',
+                                      arg_names[df2_arg_pos])
+            raise AttributeError(format_string(AttributeErrorStr, 
+                                               arg_tuple_dt_range_op4))
             
     # Operations #
     #------------#
@@ -322,7 +309,8 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         {dt_start_natural} -- {dt_end_natural}
         """
            
-        print(natural_year_range_table.format(dt_start_std, dt_end_std))
+        arg_tuple_natural_year = (dt_start_std, dt_end_std)
+        print_format_str(natural_year_range_table, arg_tuple_natural_year)
     
     else:
         return dt_start_natural, dt_end_natural

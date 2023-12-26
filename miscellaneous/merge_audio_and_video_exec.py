@@ -1,12 +1,8 @@
-# TODO: ondokoa 'ffmpeg'-ren bidez gauzatzeko antolatu
-#       sarrerako fitxategien audio eta bideo-kopurua,
-#       eta baita irteerakoena ere BETI BERA IZAN BEHAR DA
-
 """
 **Note**
 
 This program is an application of the main module 'merge_audio_and_video_main.py',
-and it uses the '{JARRI HEMEN FUNTZIOAREN IZENA}' attribute or function.
+and it uses the 'merge_audio_and_video_files' attributes and/or functions.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,
 as the module is designed to work with absolute paths.
 """
@@ -32,7 +28,7 @@ fixed_path = get_pytools_path.return_custom_path()
 # Enumerate custom modules and their paths #
 #------------------------------------------#
 
-custom_mod_path = f"{fixed_path}/files_and_directories"
+custom_mod_path = f"{fixed_path}/miscellaneous"
                                         
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -42,37 +38,32 @@ sys.path.append(custom_mod_path)
 # Perform the module importations #
 #---------------------------------#
 
-import bulk_numRename_main
+import merge_audio_and_video_main
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
 
-reorder_objs = bulk_numRename_main.reorder_objs
+merge_audio_and_video_files = merge_audio_and_video_main.merge_audio_and_video_files
 
 #-------------------------#
 # Define input parameters #
 #-------------------------#
 
-path = "/home/jonander/Pictures/2023/Tenerife_test_rename_pytools"
-obj_type = "file"
+input_video_file_list = [
+    ]
 
-zero_padding = 3
-extensions2skip = ""
+input_audio_file_list = [
+    ]
 
-starting_number = "default"
-index_range = "all"
-
-splitchar=None
+# output_file_name_list = None
+output_file_name_list = [
+    ]
 
 #------------------#
 # Perform the task #
 #------------------#
 
-reorder_objs(path,
-             obj_type,
-             extensions2skip,
-             index_range,
-             starting_number,
-             zero_padding,
-             splitchar=splitchar)
+merge_audio_and_video_files(input_video_file_list,
+                            input_audio_file_list,
+                            output_file_name_list=None)

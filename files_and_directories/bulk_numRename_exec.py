@@ -2,7 +2,7 @@
 **Note**
 
 This program is an application of the main module 'bulk_numRename_main.py',
-and it uses the 'reorder_objs' attribute or function.
+and it uses the 'reorder_objs' attributes and/or functions.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,
 as the module is designed to work with absolute paths.
 """
@@ -53,7 +53,7 @@ reorder_objs = bulk_numRename_main.reorder_objs
 path = "/home/jonander/Pictures/2023/Tenerife_test_rename_pytools"
 obj_type = "file"
 
-zero_padding = 3
+ZERO_PADDING = 3
 extensions2skip = ""
 
 starting_number = "default"
@@ -70,5 +70,5 @@ reorder_objs(path,
              extensions2skip,
              index_range,
              starting_number,
-             zero_padding,
+             ZERO_PADDING,
              splitchar=splitchar)

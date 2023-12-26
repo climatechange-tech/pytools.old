@@ -39,8 +39,9 @@ sys.path.append(custom_mod5_path)
 
 import array_handler
 import file_and_directory_paths
-import file_and_directory_handler
+import file_and_directory_handler 
 import global_parameters
+import information_output_formatters
 import string_handler
 import time_formatters
 
@@ -56,6 +57,9 @@ find_fileString_paths = file_and_directory_paths.find_fileString_paths
 
 find_allDirectories = file_and_directory_paths.find_allDirectories
 find_fileString_directories = file_and_directory_paths.find_fileString_directories
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 find_substring_index = string_handler.find_substring_index
 obj_path_specs = string_handler.obj_path_specs
@@ -87,13 +91,13 @@ def loop_renamer(objList,
                                       "obj_type",
                                       find_whole_words=True)
     
-    if obj_type not in bo_types:
+    if obj_type not in basic_object_types:
         raise ValueError(f"Wrong '{arg_names[ot_arg_pos]}' option. "
-                         f"Options are {bo_types}.")
+                         f"Options are {basic_object_types}.")
         
     num_formatted_objs = []
     
-    if obj_type == bo_types[0]:
+    if obj_type == basic_object_types[0]:
         obj2change = "name_noext"
     else:
         obj2change = "name_noext_parts"
@@ -111,7 +115,7 @@ def loop_renamer(objList,
         else:
             num_format = f"{obj_num:0{zero_padding}d}"    
             
-        if obj_type == bo_types[0]:
+        if obj_type == basic_object_types[0]:
             num_formatted_obj = modify_obj_specs(obj_name,
                                                    obj2change, 
                                                    num_format)
@@ -180,11 +184,11 @@ def reorder_objs(path,
     if isinstance(index_range, str) or index_range != "all":
         raise TypeError("Index range format must be of range(min, max).")
     
-    if obj_type == bo_types[0]:
+    if obj_type == basic_object_types[0]:
         ext_list = find_allfile_extensions(extensions2skip, path, top_path_only=True)
         objList_uneven = find_ext_file_paths(ext_list, path, top_path_only=True)
     
-    elif obj_type == bo_types[1]:
+    elif obj_type == basic_object_types[1]:
         objList_uneven = find_allDirectories(path, 
                                              top_path_only=True,
                                              include_root=True)
@@ -245,13 +249,13 @@ def reorder_objs(path,
         # Check for equally named conflicting objs #
         #-------------------------------------------#
         
-        if obj_type == bo_types[0]:
+        if obj_type == basic_object_types[0]:
             conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR2).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR2 in num_formatted_objs_dryRun_2]
             
-        elif obj_type == bo_types[1]:
+        elif obj_type == basic_object_types[1]:
             conflicting_objs = [find_fileString_directories(f"*{Path(nff_dR2).stem}*",
                                                             path,
                                                             top_path_only=True)
@@ -261,9 +265,9 @@ def reorder_objs(path,
         
         if lcos > 0:
             
-            if obj_type == bo_types[0]:
+            if obj_type == basic_object_types[0]:
                 report_file_name = "conflicting_files_report"    
-            elif obj_type == bo_types[1]:
+            elif obj_type == basic_object_types[1]:
                 report_file_name = "conflicting_directories_report"    
                 
             report_file_path = return_report_file_fixedPath(path,
@@ -289,17 +293,18 @@ def reorder_objs(path,
                                        num_formatted_objs_dryRun_2,
                                        conflicting_objs):
             
-                rf.write(conf_obj_table.format(fu, timestamp_str_fu,
-                                                nff_dR2, timestamp_str_nff_dR2,
-                                                cf, timestamp_str_cf))
+                arg_tuple_reorder_objs1 = (fu, timestamp_str_fu,
+                                           nff_dR2, timestamp_str_nff_dR2,
+                                           cf, timestamp_str_cf)
+                rf.write(format_string(conf_obj_table, arg_tuple_reorder_objs1))
                          
             rf.close()
                 
-            if obj_type == bo_types[0]:
+            if obj_type == basic_object_types[0]:
                 print(f"\n\nSome renamed files conflict! Information is stored "
                       f"at file '{report_file_name}'.")
                 
-            elif obj_type == bo_types[1]:
+            elif obj_type == basic_object_types[1]:
                 print("\n\nSome renamed directories conflict! "
                       f"Information is stored at file '{report_file_name}'.") 
  
@@ -312,17 +317,18 @@ def reorder_objs(path,
             rf = open(report_file_path, "w")                    
             
             for fu, nff_dR2 in zip(objList_uneven, num_formatted_objs_dryRun_2):
-                rf.write(conf_obj_table.format(fu, timestamp_str_fu,
-                                                nff_dR2, timestamp_str_nff_dR2))
+                arg_tuple_reorder_objs2 = (fu, timestamp_str_fu,
+                                           nff_dR2, timestamp_str_nff_dR2)
+                rf.write(conf_obj_table, arg_tuple_reorder_objs2)
                          
             rf.close()
                 
-            if obj_type == bo_types[0]:
+            if obj_type == basic_object_types[0]:
                 print("No conflicting files found. "
                       "Please check the dry-run renaming information "
                       f"at file '{report_file_name}'.")
                 
-            elif obj_type == bo_types[1]:
+            elif obj_type == basic_object_types[1]:
                 print("No conflicting directories found. "
                       "Please check the dry-run renaming information "
                       f"at file '{report_file_name}'.")
@@ -357,13 +363,13 @@ def reorder_objs(path,
         # Check for equally named conflicting objs #
         #-------------------------------------------#
         
-        if obj_type == bo_types[0]:
+        if obj_type == basic_object_types[0]:
             conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR in num_formatted_objs_dryRun]
         
-        elif obj_type == bo_types[1]:
+        elif obj_type == basic_object_types[1]:
             conflicting_objs = [find_fileString_directories(f"*{Path(nff_dR).stem}*",
                                                             path,
                                                             top_path_only=True)
@@ -373,9 +379,9 @@ def reorder_objs(path,
         
         if lcos > 0:
             
-            if obj_type == bo_types[0]:
+            if obj_type == basic_object_types[0]:
                 report_file_name = "conflicting_files_report"    
-            elif obj_type == bo_types[1]:
+            elif obj_type == basic_object_types[1]:
                 report_file_name = "conflicting_directories_report"    
                 
             report_file_path = return_report_file_fixedPath(path,
@@ -401,9 +407,10 @@ def reorder_objs(path,
                                        num_formatted_objs_dryRun,
                                        conflicting_objs):
             
-                rf.write(conf_obj_table.format(fus, timestamp_str_fus,
-                                                nff_dR, timestamp_str_nff_dR,
-                                                cf, timestamp_str_cf))
+                arg_tuple_reorder_objs3 = (fus, timestamp_str_fus,
+                                           nff_dR, timestamp_str_nff_dR,
+                                           cf, timestamp_str_cf)
+                rf.write(format_string(conf_obj_table, arg_tuple_reorder_objs3))
                          
             rf.close()
                 
@@ -420,7 +427,8 @@ def reorder_objs(path,
             
             for fus, nff_dr in zip(objList_uneven_slice, 
                                    num_formatted_objs_dryRun):
-                rf.write(dry_run_table.format(fus, nff_dR))
+                arg_tuple_reorder_objs4 = (fus, nff_dR)
+                rf.write(format_string(dry_run_table, arg_tuple_reorder_objs4))
                          
             rf.close()
                 
@@ -457,6 +465,3 @@ conf_obj_table\
 = """{} <--> {} renamed to {} <--> {} conflicts with {} <--> {}\n"""
 
 dry_run_table = """{} renamed to {}\n"""
-
-# Basic object types #
-bo_types = basic_object_types

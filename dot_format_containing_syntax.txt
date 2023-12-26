@@ -1,0 +1,37 @@
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[print_arg_pos],
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos],
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:            raise ValueError(noStringFormatErrorStr.format(type(t), 
+time_handling/time_formatters.py:                raise TypeError(unhandleableErrorStr.format(arg_names[t_arg_pos],
+time_handling/time_formatters.py:        raise ValueError(ValueErrorStr.format(arg_names[method_arg_pos], 
+test-base_programs/deskargatu_bideoak_vimeotik.py:                yt_dlp_specsyn = yt_dlp_flist.format(troncalVidURL, default_fn)
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    print(download_process_table.format(troncalVidURLListNum,
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    yt_dlp_download_syn = yt_dlp_download.format(format_ID, 
+test-base_programs/deskargatu_bideoak_vimeotik.py:                yt_dlp_specsyn = yt_dlp_flist.format(vidclassURL, default_fn)
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    print(download_process_table.format(vidclassURLListNum,
+test-base_programs/deskargatu_bideoak_vimeotik.py:                    yt_dlp_download_syn = yt_dlp_download.format(format_ID, 
+test-base_programs/indexing_then_localizing_performance_test.py:print(res_table.format(repeats, number, 
+test-base_programs/matriz_turbulencia.py:                    print(sigmaFIllRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaFIllRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaFIllRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaFIllRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaFIllRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaFIllRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaFIllRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                    print(sigmaAssignRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaAssignRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaAssignRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:                print(sigmaAssignRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaAssignRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaAssignRemainCasesTable.format("(not selected)",
+test-base_programs/matriz_turbulencia.py:            print(sigmaAssignRemainCasesTable.format(lhours-h,
+test-base_programs/matriz_turbulencia.py:        print(fixed_df_Table.format(sigmaFilledDf))
+test-base_programs/matriz_turbulencia.py:        print(fixed_df_Table.format(df_10min_filled))
+test-base_programs/indexing_performance_test.py:header_formatted = header_str.format(repeats, trials)
+test-base_programs/indexing_performance_test.py:print(res_table.format(header_formatted, 
+test-base_programs/1st_loop_common-union_datetimes.py:print(comparation_table.format(stat_comp_header,
+strings/information_output_formatters.py:        formatted_string = format_string.format(*arg_obj)
+strings/information_output_formatters.py:        formatted_string = format_string.format(**arg_obj)
+strings/information_output_formatters.py:        formatted_string = format_string.format(arg_obj)
+setup_repo.py:custom_path_retriever.write(custom_path_establisher_func.format(custom_path))

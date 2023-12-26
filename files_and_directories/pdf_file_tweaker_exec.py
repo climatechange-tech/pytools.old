@@ -2,7 +2,7 @@
 **Note**
 
 This program is an application of the main module 'file_format_tweaker.py',
-and it uses the 'pdf_file_tweaker' attribute or function.
+and it uses the 'pdf_file_tweaker' attributes and/or functions.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,
 as the module is designed to work with absolute paths.
 """
@@ -196,12 +196,14 @@ cat_out_dictList\
 # Cut the provided files according to the catenation string object #
 #------------------------------------------------------------------#
 
-if case_usage == "single-single":
-    pdf_file_tweaker(path_str, cat_out_str)
-elif case_usage == "single-multiple":
-    pdf_file_tweaker(path_str, cat_out_dict)
-elif case_usage == "multiple-multiple":
-    pdf_file_tweaker(path_list, cat_out_dictList)
+case_usage_dict = {
+    "single-single" : "pdf_file_tweaker(path_str, cat_out_str)",
+    "single-multiple" : "pdf_file_tweaker(path_str, cat_out_dict)",
+    "multiple-multiple" : "pdf_file_tweaker(path_list, cat_out_dictList)"
+    }
+
+case_usage_options = list(case_usage_dict.keys())
+if case_usage not in case_usage_options:
+    raise ValueError("Wrong case usage. Options are: {case_usage_options}")
 else:
-    raise ValueError("Wrong case usage. Options are:\n"
-                     "{'single-single', 'single-multiple', 'multiple-multiple'}")
+    eval(case_usage_dict.get(case_usage))

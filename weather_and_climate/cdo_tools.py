@@ -1,4 +1,6 @@
-#----------------#
+# -*- coding: utf-8 -*-
+
+#----------------#5
 # Import modules #
 #----------------#
 
@@ -51,6 +53,8 @@ rename_objects = file_and_directory_handler.rename_objects
 
 basic_four_rules = global_parameters.basic_four_rules
 common_splitchar_list = global_parameters.common_splitchar_list
+freq_abbrs = global_parameters.time_frequencies_shorter_1
+time_freqs = global_parameters.time_frequencies_short_1
 
 format_string = information_output_formatters.format_string
 
@@ -504,7 +508,7 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
     if period_abbr_idx == -1:
         raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
     else:
-        period_abbr = period_abbrs[period_abbr_idx]
+        period_abbr = freq_abbrs[period_abbr_idx]
         
     # Determine whether to calculate the climatological statistic #
     if not isclimatic:
@@ -512,7 +516,7 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
     else:
         statname = f"y{period_abbr}{statistic}"
         
-    if period_abbr == period_abbrs[3]:
+    if period_abbr == freq_abbrs[3]:
         if season_str is not None:
             statname += f" -select,season={season_str}"
             
@@ -547,7 +551,7 @@ def calculate_periodic_deltas(projected_ncfile,
                               proj_model=None):
     
     period_abbr_idx = find_substring_index(time_freqs_delta, delta_period) 
-    deltaApply_fn = addExtraName2File(historical_ncfile, 
+    deltaCalc_fn = addExtraName2File(historical_ncfile, 
                                       return_file_name_noext=True)
 
     if proj_model is None:
@@ -560,29 +564,24 @@ def calculate_periodic_deltas(projected_ncfile,
     if period_abbr_idx == -1:
         raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
     else:
-        period_abbr = period_abbrs_delta[period_abbr_idx]
+        period_abbr = freq_abbrs_delta[period_abbr_idx]
     
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     proj_mean_command = f"-y{period_abbr}mean {projected_ncfile}"
 
     string2add = f"{period_abbr}Deltas_{proj_model}.nc"
-    deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
+    deltaCalc_fn_longer = addExtraName2File(deltaCalc_fn, string2add)
     
     if operator not in basic_four_rules:
         raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
     else:  
-        deltaApply_command_dict = {
-            basic_four_rules[0] : f"cdo add {hist_mean_command} {proj_mean_command}"\
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[1] : f"cdo sub {hist_mean_command} {proj_mean_command}"\
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[2] : f"cdo mul {hist_mean_command} {proj_mean_command}"\
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[3] : f"cdo div {hist_mean_command} {proj_mean_command}"\
-                                  f"{deltaApply_fn_longer}"
-            }
+        cdo_operator_str = cdo_operator_str_dict.get(operator)
+        arg_tuple_deltaCalc = (cdo_operator_str,
+                              hist_mean_command, proj_mean_command,
+                              deltaCalc_fn_longer)
                                            
-        deltaCalc_command = deltaApply_command_dict.get(operator)                
+        deltaCalc_command = format_string(deltaCalc_command_dict.get(operator),
+                                           arg_tuple_deltaCalc)
         exec_shell_command(deltaCalc_command)
     
 
@@ -607,7 +606,7 @@ def apply_periodic_deltas(projected_ncfile,
     if period_abbr_idx == -1:
         raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
     else:
-        period_abbr = period_abbrs_delta[period_abbr_idx]
+        period_abbr = freq_abbrs_delta[period_abbr_idx]
 
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
@@ -617,23 +616,14 @@ def apply_periodic_deltas(projected_ncfile,
     
     if operator not in basic_four_rules:
         raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
-    else:  
-        deltaApply_command_dict = {
-            basic_four_rules[0] : f"cdo y{period_abbr}add {projected_ncfile} "\
-                                  f"{hist_mean_command} " \
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[1] : f"cdo y{period_abbr}sub {projected_ncfile} "\
-                                  f"{hist_mean_command} " \
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[2] : f"cdo y{period_abbr}mul {projected_ncfile} "\
-                                  f"{hist_mean_command} " \
-                                  f"{deltaApply_fn_longer}",
-            basic_four_rules[3] : f"cdo y{period_abbr}div {projected_ncfile} "\
-                                  f"{hist_mean_command} " \
-                                  f"{deltaApply_fn_longer}"
-            }
-            
-        deltaApply_command = deltaApply_command_dict.get(operator)                  
+    else:   
+        cdo_operator_str = cdo_operator_str_dict.get(operator)
+        arg_tuple_deltaApply = (period_abbr, cdo_operator_str,
+                                projected_ncfile, hist_mean_command,
+                                deltaApply_fn_longer)
+                                           
+        deltaApply_command = format_string(deltaApply_command_dict.get(operator),
+                                           arg_tuple_deltaApply)
         exec_shell_command(deltaApply_command)
         
     
@@ -652,11 +642,8 @@ statistics = ["max", "min", "sum",
               "std", "std1"]
 
 # Calendar and date-time parameters #
-time_freqs = ['hourly', 'daily', 'monthly', 'seasonal', 'yearly']
-period_abbrs = ['hour', 'day', 'mon', 'seas', 'year']
-
 time_freqs_delta = [time_freqs[0]] + time_freqs[2:4]
-period_abbrs_delta = [period_abbrs[0]] + period_abbrs[2:4]
+freq_abbrs_delta = [freq_abbrs[0]] + freq_abbrs[2:4]
   
 # CDO remapping options #
 cdo_remap_option_dict = {
@@ -679,3 +666,18 @@ cdo_remap_options = list(cdo_remap_option_dict.keys())
 
 # Grid header file function key list #
 keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
+
+# Preformatted output strings #
+prefmt_str_cdo_operator = """cdo {} {} {} {}"""
+prefmt_str_cdo_delta = """cdo y{}{} {} {} {}"""
+                          
+# Switch cases #
+cdo_operator_str_dict = {
+    basic_four_rules[0] : "add",
+    basic_four_rules[1] : "sub",
+    basic_four_rules[2] : "mul",
+    basic_four_rules[3] : "div"
+    }
+
+deltaCalc_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_operator)
+deltaApply_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_delta)

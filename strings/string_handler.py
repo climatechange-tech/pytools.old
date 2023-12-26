@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules # 
 #----------------#
@@ -111,8 +113,7 @@ def find_substring_index(string,
             substrLowestIdxNoFilt = string.iloc[:,0].str.contains[substring].index
         
         substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
-        print(substrLowestIdx)
-        
+       
     
     if isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 0:
         return -1

@@ -41,6 +41,7 @@ sys.path.append(custom_mod3_path)
 
 import file_and_directory_handler
 import file_and_directory_paths
+import information_output_formatters
 import global_parameters
 import string_handler
 
@@ -51,6 +52,9 @@ import string_handler
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
 find_allDirectories = file_and_directory_handler.find_allDirectories
 find_ext_file_paths = file_and_directory_handler.find_ext_file_paths
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 find_substring_index = string_handler.find_substring_index
 basic_object_types = global_parameters.basic_object_types
@@ -85,12 +89,13 @@ def modify_obj_permissions(path,
                                         find_whole_words=True)
     
     if isinstance(attr_id, str):
-        raise TypeError(typeErrorStr.format(arg_names[attr_arg_pos]))
+        raise TypeError(format_string(typeErrorStr, arg_names[attr_arg_pos]))
         
     le2s = len(extensions2skip)
     
     if obj_type not in bo_types:
-        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))        
+        arg_tuple_mod_perms1 = (arg_names[ot_arg_pos], bo_types)
+        raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms1))
   
     if obj_type == bo_types[0]:
         
@@ -142,10 +147,12 @@ def modify_obj_owner(path,
     le2s = len(extensions2skip)
     
     if obj_type not in bo_types:
-        raise ValueError(valueErrorStr.format(arg_names[ot_arg_pos], bo_types))
+        arg_tuple_mod_perms2 = (arg_names[ot_arg_pos], bo_types)
+        raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms2))
         
     if module not in modules:
-        raise ValueError(valueErrorStr.format(arg_names[mod_arg_pos], modules))
+        arg_tuple_mod_perms3 = (arg_names[mod_arg_pos], modules)
+        raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms3))
         
     if obj_type == bo_types[0]:
         

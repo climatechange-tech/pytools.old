@@ -45,6 +45,7 @@ sys.path.append(custom_mod6_path)
 import data_frame_handler
 import file_and_directory_paths
 import file_and_directory_handler
+import information_output_formatters
 import global_parameters
 import os_operations
 import string_handler
@@ -61,6 +62,9 @@ find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
 
 common_splitchar_list = global_parameters.common_splitchar_list
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 exec_shell_command = os_operations.exec_shell_command
 
@@ -135,14 +139,15 @@ def netcdf_file_scanner(path_to_walk_into,
                 
             else:
                 if verbose:
-                    print(scan_progress_table.format(file_num, lncfl,
-                                                     ptwi),
-                          end="\r")
+                    arg_tuple_file_scan1 = (file_num, lncfl, ptwi)
+                    print_format_string(scan_progress_table,
+                                        arg_tuple_file_scan1,
+                                        end="\r")
                 elif extra_verbose:
-                    print(scan_progress_table_evb.format(file_name,
-                                                         file_num, lncfl,
-                                                         ptwi),
-                          end="\r")
+                    arg_tuple_file_scan2 = (file_name, file_num, lncfl, ptwi)
+                    print_format_string(scan_progress_table_evb,
+                                        arg_tuple_file_scan2,
+                                        end="\r")
         
             integrity_status = ncfile_integrity_status(file_name)
             
@@ -158,9 +163,10 @@ def netcdf_file_scanner(path_to_walk_into,
             ofile_name = f"{codeCallDir}/{report_fn_noext}.txt"
             ofile = open(ofile_name, "w")
             
-            ofile.write(report_table.format(ptwi,
-                                            faulty_ncf_counter[0], 
-                                            faulty_ncf_counter[-1]))
+            arg_tuple_file_scan3 = (ptwi,
+                                    faulty_ncf_counter[0], 
+                                    faulty_ncf_counter[-1])
+            ofile.write(format_string(report_table, arg_tuple_file_scan3))
             
             for faulty_ncf in faulty_ncf_list:
                 ofile.write(f" {faulty_ncf}\n")
@@ -644,13 +650,17 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                             
                             deltas = get_latlon_deltas(lats, lons, delta_roundoff)
                             
-                            ofile.write(latlon_table.format(ncf_name,
-                                                            lats, 
-                                                            lons,
-                                                            llats,
-                                                            llons,
-                                                            deltas[0],
-                                                            deltas[1]))
+                            arg_tuple_latlons1 = (
+                                ncf_name,
+                                lats, 
+                                lons,
+                                llats,
+                                llons,
+                                deltas[0],
+                                deltas[1]
+                                )
+                            ofile.write(format_string(latlon_table, 
+                                                      arg_tuple_latlons1))
                         except:
                             llats = 1
                             llons = 1
@@ -658,13 +668,15 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                             lat_delta = 0
                             lon_delta = 0
                         
-                            ofile.write(latlon_table.format(ncf_name,
-                                                            lats, 
-                                                            lons,
-                                                            llats,
-                                                            llons,
-                                                            lat_delta,
-                                                            lon_delta))
+                            arg_tuple_latlons2 = (ncf_name,
+                                                  lats, 
+                                                  lons,
+                                                  llats,
+                                                  llons,
+                                                  lat_delta,
+                                                  lon_delta)
+                            ofile.write(format_string(latlon_table,
+                                                      arg_tuple_latlons2))
                                                 
                 else: 
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
@@ -722,10 +734,13 @@ def extract_and_store_period_bounds():
                         times = get_times(ncf_name, time_var)
                         records = len(times)
                                         
-                        ofile.write(period_table.format(ncf_name,
-                                                        times[0].values,
-                                                        times[-1].values,
-                                                        records))
+                        arg_tuple_bounds1 = (
+                            ncf_name,
+                            times[0].values,
+                            times[-1].values,
+                            records
+                            )
+                        ofile.write(format_string(period_table, arg_tuple_bounds1))
                 else: 
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                 
@@ -781,9 +796,12 @@ def extract_and_store_time_formats():
                         times = get_times(ncf_name, time_var)
                         records = len(times)
                             
-                        ofile.write(time_format_table.format(ncf_name,
-                                                             times.values,
-                                                             records))
+                        arg_tuple_bounds2 = (
+                            ncf_name,
+                            times.values,
+                            records
+                            )
+                        ofile.write(format_string(time_format_table, arg_tuple_bounds2))
                         
                 else:
                     ofile.write(f"FAULTY FILE {ncf_name}\n")

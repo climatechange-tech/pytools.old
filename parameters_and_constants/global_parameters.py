@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun  9 12:14:15 2022
@@ -72,6 +71,10 @@ season_timeFreq_dict = {
 }
 
 MATHEMATICAL_YEAR_DAYS = 360
+
+time_frequencies_complete = ["year", "season", "month", "day", "hour", "minute", "second"]
+time_frequencies_short_1 = ["yearly", "seasonal", "monthly", "daily", "hourly"]
+time_frequencies_shorter_1 = ['year', 'seas', 'mon', 'day', 'hour']
 
 #----------------# 
 # Climate change #

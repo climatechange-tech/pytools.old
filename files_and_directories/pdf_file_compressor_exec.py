@@ -2,7 +2,7 @@
 **Note**
 
 This program is an application of the main module 'file_format_tweaker.py',
-and it uses the 'pdf_file_compressor' attribute or function.
+and it uses the 'pdf_file_compressor' attributes and/or functions.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,
 as the module is designed to work with absolute paths.
 """

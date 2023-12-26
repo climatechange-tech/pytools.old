@@ -39,11 +39,15 @@ sys.path.append(custom_mod2_path)
 # Perform the module importations #
 #---------------------------------#
 
+import information_output_formatters
 import string_handler
 
 #----------------------------------------------------#
 # Define imported module(s)´ function call shortcuts #
 #----------------------------------------------------#
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 find_substring_index = string_handler.find_substring_index
 substring_replacer = string_handler.substring_replacer
@@ -58,12 +62,8 @@ def time_format_tweaker(t,
                         return_days=False,
                         method="datetime",
                         standardizeHourRange=False):
+    
     """
-    
-    
-    
-    
-    
     Parameters
     ----------
     t: int, float, str or tuple, 

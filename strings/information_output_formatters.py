@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #-------------------------#
 # Define custom functions #
 #-------------------------#
@@ -19,10 +21,10 @@ def format_string(format_string, arg_obj):
         raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
 
 
-def print_format_string(string2format, arg_obj):
+def print_format_string(string2format, arg_obj, end="\n"):
     try:
         formatted_string = format_string(string2format, arg_obj)
-        print(formatted_string)
+        print(formatted_string, end=end)
     except:
         raise TypeError("Argument must either be of type alphanumeric, ´tuple´ or ´dict´.")
 
