@@ -227,22 +227,13 @@ def read_table(file_name,
     new_df : pandas.Dataset
           Text file converted to a data frame.
     """
-    
-    # if delim_whitespace:    
+     
     df = pd.read_table(file_name,
                        engine=engine,
                        encoding=encoding,
                        header=header,
                        delim_whitespace=delim_whitespace,
                        dtype=dtype)
-        
-    # else:
-    #     df = pd.read_table(file_name,
-    #                        sep=separator,
-    #                        engine=engine,
-    #                        encoding=encoding,
-    #                        header=header)
-    
     return df
 
 

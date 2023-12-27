@@ -12,16 +12,16 @@ def check_input_number_format(x):
         x_str = x
     return x_str
 
-def method_checker(method_list, arg):
-    if arg not in method_list:
-        raise ValueError(f"Wrong method. Options are {method_list}.")
+def method_checker(arg):
+    if arg not in method_opts:
+        raise ValueError(f"Wrong method. Options are {method_opts}.")
         
 # Operations with frequently used bases #
 #---------------------------------------#
 
 # Bases: 2, 8, 10, 16
 def base2bin(n, method="format_string", zero_pad=4):
-    method_checker(method_opts, method)
+    method_checker(method)
 
     if method == "default":
         n_bin = bin(n)
@@ -30,7 +30,7 @@ def base2bin(n, method="format_string", zero_pad=4):
     return n_bin
 
 def base2oct(n, method="format_string", zero_pad=4):
-    method_checker(method_opts, method)
+    method_checker(method)
 
     if method == "default":
         n_oct = oct(n)
@@ -39,7 +39,7 @@ def base2oct(n, method="format_string", zero_pad=4):
     return n_oct
 
 def base2hex(n, method="format_string", zero_pad=4):
-    method_checker(method_opts, method)
+    method_checker(method)
 
     if method == "default":
         n_hex = hex(n)
@@ -86,7 +86,7 @@ def conv_arbBases(x, base):
     y = int(x, base=base)
     return y
     
-
+#--------------------------#
 # Parameters and constants #
 #--------------------------#
 

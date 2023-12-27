@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -95,8 +98,7 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError("Extension and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
         else:
             for ext, dd in zip(extensions, destination_directories):
                 extension_allfiles = cwd.glob(f"*.{ext}")
@@ -192,8 +194,7 @@ def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
         len_dds = len(destination_directories)
         
         if len_fs != len_dds:
-            raise ValueError("File string and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_FS_dirs))
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
@@ -369,8 +370,7 @@ def copy_files_byExts_fromCodeCallDir(extensions,
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError("Extension and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
         else:
             for ext, dd in zip(extensions, destination_directories):
                 extension_allfiles = cwd.glob(f"*.{ext}")   
@@ -475,8 +475,7 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
         len_dds = len(destination_directories)
         
         if len_fs != len_dds:
-            raise ValueError("Extension and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
@@ -606,16 +605,14 @@ def remove_files_byExts(extensions,
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError("File string and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
         else:
             for fs, dd in zip(extensions, destination_directories):
                 
                 if not find_hidden_files:
                     string_allfiles = dd.glob(f"*.{ext}")
                 else:
-                    string_allfiles = [file
-                                       for file in dd.glob(f"*.{ext}")]
+                    string_allfiles = [file for file in dd.glob(f"*.{ext}")]
                 
                 for file in string_allfiles:
                     os.remove(file)
@@ -631,8 +628,7 @@ def remove_files_byExts(extensions,
                 string_allfiles = destination_directories.glob(f"*.{ext}")
             else:
                 string_allfiles\
-                = [file
-                   for file in destination_directories.glob(f"*.{ext}")]
+                = [file for file in destination_directories.glob(f"*.{ext}")]
             
             for file in string_allfiles:
                 os.remove(file)
@@ -645,8 +641,7 @@ def remove_files_byExts(extensions,
             if not find_hidden_files:
                 string_allfiles = dd.glob(f"*.{extensions}")
             else:
-                string_allfiles = [file
-                                   for file in dd.glob(f"*.{extensions}")]
+                string_allfiles = [file for file in dd.glob(f"*.{extensions}")]
             
             for file in string_allfiles:
                 os.remove(file)
@@ -658,8 +653,7 @@ def remove_files_byExts(extensions,
             string_allfiles = destination_directories.glob(f"*.{extensions}")
         else:
             string_allfiles\
-            = [file
-               for file in destination_directories.glob(f"*.{extensions}")]
+            = [file for file in destination_directories.glob(f"*.{extensions}")]
         
         for file in string_allfiles:
             os.remove(file)
@@ -753,8 +747,7 @@ def remove_files_byFS(file_strings,
             len_dds = len(destination_directories)
             
             if len_fs != len_dds:
-                raise ValueError("File string and destination directory lists "
-                                 "are not of the same length.")
+                raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_FS_dirs))
             else:
                 for fs, dd in zip(file_strings, destination_directories):
                     
@@ -850,28 +843,29 @@ def remove_entire_directories(directory_list):
 
 def rsync(source_paths,
           destination_paths,
-          mode="arvh",
+          mode="avh",
           delete_at_destination=True,
           source_allfiles_only=False):
     
     for sp, dp in zip(source_paths, destination_paths):
         
         if delete_at_destination and not source_allfiles_only:
-            
-            zsh_command = f"rsync -{mode} --delete '{sp}' '{dp}'"
-            exec_shell_command(zsh_command)
+            option_num = 1
             
         elif not delete_at_destination and not source_allfiles_only:
-            zsh_command = f"rsync -{mode} '{sp}' '{dp}'"
-            exec_shell_command(zsh_command)
+            option_num = 2
             
         elif delete_at_destination and source_allfiles_only:
-            zsh_command = f"rsync -{mode} --delete '{sp}'/* '{dp}'"
-            exec_shell_command(zsh_command)
+            option_num = 3
             
         elif not delete_at_destination and source_allfiles_only:
-            zsh_command = f"rsync -{mode} '{sp}'/* '{dp}'"
-            exec_shell_command(zsh_command)
+            option_num = 4
+            
+        rsync_command_prefmt = rsync_command_dict.get(option_num)
+        arg_tuple_rsync = (mode, sp, dp)
+        
+        rsync_command = format_string(rsync_command_prefmt, arg_tuple_rsync)
+        exec_shell_command(rsync_command)
     
 
 def move_entire_directories(directories, destination_directories):
@@ -892,8 +886,7 @@ def move_entire_directories(directories, destination_directories):
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError("Extension and destination directory lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
         else:
             for dirc, dd in zip(directories, destination_directories):
                 shutil.move(dirc,
@@ -943,8 +936,7 @@ def copy_entire_directories(directories,
             len_dds = len(destination_directories)
             
             if len_exts != len_dds:
-                raise ValueError("Extension and destination directory lists "
-                                 "are not of the same length.")
+                raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
             else:
                 for dirc, dd in zip(directories, destination_directories):
                     shutil.copytree(dirc, dd, dirs_exist_ok=True)
@@ -1050,8 +1042,7 @@ def rename_objects(relative_paths,
         len_rf = len(renaming_relative_paths)
         
         if len_files != len_rf:
-            raise ValueError("Files and renaming file lists "
-                             "are not of the same length.")
+            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_rename_objs))
         else:
             for rp, rrp in zip(relative_paths, renaming_relative_paths):
                 os.rename(rp, rrp)
@@ -1062,8 +1053,7 @@ def rename_objects(relative_paths,
         os.rename(relative_paths, renaming_relative_paths)
                 
     else:
-        raise ValueError("Both input arguments must either be "
-                         "strings or lists simultaneously.")
+        raise TypeError(objTypeErrorStr)
                          
 #--------------------------#
 # Parameters and constants #
@@ -1075,3 +1065,20 @@ alldoc_dirpath = Path(fixed_path).parent
 
 # Bash 'cp' command #
 cp_command = """cp -rv {}/* {}""" # TODO: 'bash' agindua saihes daiteke?
+
+# Switch dictionaries #
+rsync_command_dict = {
+    1 : """rsync -{} --delete '{}' '{}' """,
+    2 : """rsync -{} '{}' '{}' """,
+    3 : """rsync -{} --delete '{}'/ '{}' """,
+    4 : """rsync -{} '{}'/ '{}' """
+    }
+
+# Tuples to pass in into preformatted strings #
+arg_tuple_exts_dirs = ("Extension", "destination directory")
+arg_tuple_FS_dirs = ("File string", "destination directory")
+arg_tuple_rename_objs = ("Files", "renaming file")
+
+# Output preformatted strings #
+notEqualLengthErrorStr = """{} and {} lists are not of the same length."""
+objTypeErrorStr = "Both input arguments must either be strings or lists simultaneously."

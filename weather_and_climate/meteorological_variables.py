@@ -8,35 +8,25 @@ import numpy as np
 # Define custom functions #
 #-------------------------#
 
-def ws_unit_converter(data, unit_converter):
-    
-    if unit_converter == "2ms":
-        data_converted = data*5/18
-        return data_converted
-    
-    elif unit_converter == "2kmh":
-        data_converted = data*18/5
-        return data_converted
-    
-    else:
-        raise ValueError("Wrong unit converter. Options are {'2ms', '2kmh'}.")
-        
-
+# Angle converter #
 def angle_converter(angle, method):
-
-    if method == "deg2rad":
-        radians = np.deg2rad(angle)
-        return radians
-
-    elif method == "rad2deg":
-        degrees = np.rad2deg(angle)
-        return degrees
-
+    conv_options = list(unit_converter_dict.keys())[:2]
+    if method not in conv_options:
+        raise ValueError(f"Wrong unit converter. Options are {conv_options}.")
     else:
-        raise ValueError("Wrong unit converter. "
-                         "Options are {'deg2rad', 'rad2deg'}.")
-        
+        converted_angle = eval(unit_converter_dict.get(method))
+        return converted_angle
 
+# Wind speed unit converter #
+def ws_unit_converter(data, method):
+    conv_options = list(unit_converter_dict.keys())[2:]
+    if method not in conv_options:
+        raise ValueError("Wrong unit converter. Options are {conv_options}.")
+    else:
+        converted_speed = eval(unit_converter_dict.get(method))
+        return converted_speed
+
+# Wind direction calculator based on meteorological criteria #
 def meteorological_wind_direction(u, v):
     
     """
@@ -120,6 +110,7 @@ def meteorological_wind_direction(u, v):
     return wind_dir_meteo_array
 
 
+# Dewpoint temperature #
 def dewpoint_temperature(T, rh):
     
     # Adapted from https://content.meteoblue.com/es/especificaciones/variables-meteorologicas/humedad
@@ -164,6 +155,7 @@ def dewpoint_temperature(T, rh):
     return Td
 
 
+# Relative humidity #
 def relative_humidity(T, Td):
     
     # Adapted from https://content.meteoblue.com/es/especificaciones/variables-meteorologicas/humedad
@@ -205,7 +197,7 @@ def relative_humidity(T, Td):
 
     return rh
 
-
+# Constant mini data base #
 def return_constants():
     
     # Adapted from https://content.meteoblue.com/es/especificaciones/variables-meteorologicas/humedad 
@@ -219,3 +211,14 @@ def return_constants():
     c3n = 245.425  
     
     return c2p, c2n, c3p, c3n
+
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+unit_converter_dict = {
+    "deg2rad" : "np.deg2rad(angle)",
+    "rad2deg" : "np.rad2deg(angle)",
+    "2ms"     : "wind_speed*5/18",
+    "2kph"    : "wind_speed*18/5"
+    }

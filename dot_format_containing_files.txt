@@ -1,8 +1,0 @@
-time_handling/time_formatters.py
-test-base_programs/deskargatu_bideoak_vimeotik.py
-test-base_programs/indexing_then_localizing_performance_test.py
-test-base_programs/matriz_turbulencia.py
-test-base_programs/indexing_performance_test.py
-test-base_programs/1st_loop_common-union_datetimes.py
-strings/information_output_formatters.py
-setup_repo.py

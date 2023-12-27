@@ -108,9 +108,6 @@ def countdown(t, string_arr1, string_arr2,
 # Parameters and constants #
 #--------------------------#
 
-# Additional parameters #
-#-----------------------#
-
 string_arr1 = np.array([["%d", "%d-1"],
                         ["%m", "%m-1"],
                         ["%Y", "%Y-1"],
@@ -121,6 +118,7 @@ string_arr2 = np.array([["%d", "%-d"],
                         ["%Y", "%-Y"],
                         ["%y", "%-y"]])
 
+#---------------#
 # Function gear #
 #---------------#
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #----------------#
 # Import modules #
 #----------------#
@@ -96,11 +98,7 @@ def loop_renamer(objList,
                          f"Options are {basic_object_types}.")
         
     num_formatted_objs = []
-    
-    if obj_type == basic_object_types[0]:
-        obj2change = "name_noext"
-    else:
-        obj2change = "name_noext_parts"
+    obj2change = obj2change_dict.get(obj_type)
 
     for obj in enumerate(objList, start=starting_number):
         
@@ -117,13 +115,13 @@ def loop_renamer(objList,
             
         if obj_type == basic_object_types[0]:
             num_formatted_obj = modify_obj_specs(obj_name,
-                                                   obj2change, 
-                                                   num_format)
+                                                 obj2change, 
+                                                 num_format)
             
         else:
             fpn_parts = obj_path_specs(obj_name,
-                                      obj_spec_key="name_noext_parts",
-                                      splitchar=splitchar)
+                                       obj_spec_key="name_noext_parts",
+                                       splitchar=splitchar)
                     
             nf_changes_tuple = (fpn_parts[0], num_format)
             num_formatted_obj = modify_obj_specs(obj_name,
@@ -264,15 +262,10 @@ def reorder_objs(path,
         lcos = len(conflicting_objs)
         
         if lcos > 0:
-            
-            if obj_type == basic_object_types[0]:
-                report_file_name = "conflicting_files_report"    
-            elif obj_type == basic_object_types[1]:
-                report_file_name = "conflicting_directories_report"    
-                
+            report_file_name = report_filename_dict.get(obj_type)     
             report_file_path = return_report_file_fixedPath(path,
-                                                           report_file_name,
-                                                           fixed_ext)
+                                                            report_file_name,
+                                                            fixed_ext)
             
             rf = open(report_file_path, "w")                    
          
@@ -301,12 +294,12 @@ def reorder_objs(path,
             rf.close()
                 
             if obj_type == basic_object_types[0]:
-                print(f"\n\nSome renamed files conflict! Information is stored "
-                      f"at file '{report_file_name}'.")
+                arg_tuple_reorder1 = ("files", report_file_name)
+                print_format_string(conflictingObjectsWarning, arg_tuple_reorder1)
                 
             elif obj_type == basic_object_types[1]:
-                print("\n\nSome renamed directories conflict! "
-                      f"Information is stored at file '{report_file_name}'.") 
+                arg_tuple_reorder2 = ("directories", report_file_name)
+                print_format_string(conflictingObjectsWarning, arg_tuple_reorder2) 
  
         else:
             
@@ -324,15 +317,13 @@ def reorder_objs(path,
             rf.close()
                 
             if obj_type == basic_object_types[0]:
-                print("No conflicting files found. "
-                      "Please check the dry-run renaming information "
-                      f"at file '{report_file_name}'.")
+                arg_tuple_reorder3 = ("files", report_file_name)
+                print_format_string(noConflictingObjectsMessage, arg_tuple_reorder3)
                 
             elif obj_type == basic_object_types[1]:
-                print("No conflicting directories found. "
-                      "Please check the dry-run renaming information "
-                      f"at file '{report_file_name}'.")
-           
+                arg_tuple_reorder4 = ("directories", report_file_name)
+                print_format_string(noConflictingObjectsMessage, arg_tuple_reorder4)
+                
             ansPerformChanges\
             = input("Would you like to perform the changes? [y/n] ")
  
@@ -378,15 +369,10 @@ def reorder_objs(path,
         lcos = len(conflicting_objs)
         
         if lcos > 0:
-            
-            if obj_type == basic_object_types[0]:
-                report_file_name = "conflicting_files_report"    
-            elif obj_type == basic_object_types[1]:
-                report_file_name = "conflicting_directories_report"    
-                
+            report_file_name = report_filename_dict.get(obj_type)
             report_file_path = return_report_file_fixedPath(path,
-                                                          report_file_name,
-                                                          fixed_ext)
+                                                            report_file_name,
+                                                            fixed_ext)
             
             rf = open(report_file_path, "w")                    
               
@@ -460,8 +446,27 @@ fixed_ext = "txt"
 # Fixed length of the list containing the conflicting file or directory names #
 lcos_upperLimit = 50
 
-# obj comparison tables #
+# Object comparison tables #
 conf_obj_table\
 = """{} <--> {} renamed to {} <--> {} conflicts with {} <--> {}\n"""
 
 dry_run_table = """{} renamed to {}\n"""
+
+# Output preformatted strings #
+conflictingObjectsWarning = """\n\nSome renamed {} conflict!
+Information is stored at file '{}.'"""
+
+noConflictingObjectsMessage = """No conflicting {} found
+Please check the dry-run renaming information at file '{}'."""
+
+
+# Switch dictionaries #
+report_filename_dict = {
+    basic_object_types[0] : "conflicting_files_report",
+    basic_object_types[1] : "conflicting_directories_report"
+    }
+
+obj2change_dict = {
+    basic_object_types[0] : "name_noext",
+    basic_object_types[1] : "name_noext_parts"
+    }

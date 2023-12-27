@@ -424,8 +424,8 @@ def cdo_remap(file_list,
                                                           extension)
     
     if remap_method not in cdo_remap_options:
-        ValueError("Wrong remapping option. Available options are:\n"
-                         f"{cdo_remap_options}")
+        arg_tuple_remap = ("remapping option", cdo_remap_options)
+        raise ValueError(choiceErrorStr, arg_tuple_remap)
          
     else:
         remap_method_cdo = cdo_remap_option_dict.get(remap_method_str)
@@ -500,13 +500,14 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
     
     # Quality control #
     if statistic not in statistics:
-        raise ValueError(f"Wrong statistic. Options are {statistics}.")
+        raise ValueError(format_string(choiceErrorStr, statistics))
         
     # Identify the abbreviature for the selected time frequency #
     period_abbr_idx = find_substring_index(time_freqs, freq)
   
     if period_abbr_idx == -1:
-        raise ValueError(f"Wrong time frequency. Options are {time_freqs}.")
+        arg_tuple_period_stats = ("time-frequency", time_freqs)
+        raise ValueError(choiceErrorStr, arg_tuple_period_stats)
     else:
         period_abbr = freq_abbrs[period_abbr_idx]
         
@@ -562,7 +563,7 @@ def calculate_periodic_deltas(projected_ncfile,
                          "for projections.")
 
     if period_abbr_idx == -1:
-        raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
+        raise ValueError(format_string(choiceErrorStr, arg_tuple_delta1))
     else:
         period_abbr = freq_abbrs_delta[period_abbr_idx]
     
@@ -573,12 +574,12 @@ def calculate_periodic_deltas(projected_ncfile,
     deltaCalc_fn_longer = addExtraName2File(deltaCalc_fn, string2add)
     
     if operator not in basic_four_rules:
-        raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
+        raise ValueError(format_string(choiceErrorStr, arg_tuple_delta2))
     else:  
         cdo_operator_str = cdo_operator_str_dict.get(operator)
         arg_tuple_deltaCalc = (cdo_operator_str,
-                              hist_mean_command, proj_mean_command,
-                              deltaCalc_fn_longer)
+                               hist_mean_command, proj_mean_command,
+                               deltaCalc_fn_longer)
                                            
         deltaCalc_command = format_string(deltaCalc_command_dict.get(operator),
                                            arg_tuple_deltaCalc)
@@ -604,10 +605,10 @@ def apply_periodic_deltas(projected_ncfile,
                          "for projections.")
 
     if period_abbr_idx == -1:
-        raise ValueError(f"Wrong time frequency. Options are {time_freqs_delta}.")
+        arg_tuple_periodic_delta1 = ("time-frequency", time_freqs_delta)
+        raise ValueError(format_string(choiceErrorStr, arg_tuple_periodic_delta1))
     else:
         period_abbr = freq_abbrs_delta[period_abbr_idx]
-
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
     deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
@@ -615,7 +616,8 @@ def apply_periodic_deltas(projected_ncfile,
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     
     if operator not in basic_four_rules:
-        raise ValueError(f"Wrong basic operator. Options are {basic_four_rules}.")
+        arg_tuple_periodic_delta2 = ("basic operator", basic_four_rules)
+        raise ValueError(format_string(choiceErrorStr, arg_tuple_periodic_delta2))
     else:   
         cdo_operator_str = cdo_operator_str_dict.get(operator)
         arg_tuple_deltaApply = (period_abbr, cdo_operator_str,
@@ -681,3 +683,10 @@ cdo_operator_str_dict = {
 
 deltaCalc_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_operator)
 deltaApply_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_delta)
+
+# Tuples to pass in into preformatted strings #
+arg_tuple_delta1 = ("time-frequency", time_freqs_delta)
+arg_tuple_delta2 = ("basic operator", basic_four_rules)
+
+# Output preformatted strings #
+choiceErrorStr = "Wrong {}. Options are {}."

@@ -74,12 +74,13 @@ def modify_obj_permissions(path,
                            extensions2skip="",
                            attr_id=664):
     
-    # Default permission ID configuration (as when touching files
-    # or creating directories) is as follows:
-    # 
-    # Files: attr_id = 664
-    # Directories: attr_id = 775
-        
+    """
+    Default permission ID configuration (as when touching files
+    or creating directories) is as follows:
+    
+    Files: attr_id = 664
+    Directories: attr_id = 775
+    """    
     arg_names = modify_obj_permissions.__code__.co_varnames
     ot_arg_pos = find_substring_index(arg_names, 
                                       "obj_type",
@@ -93,18 +94,18 @@ def modify_obj_permissions(path,
         
     le2s = len(extensions2skip)
     
-    if obj_type not in bo_types:
-        arg_tuple_mod_perms1 = (arg_names[ot_arg_pos], bo_types)
+    if obj_type not in basic_object_types:
+        arg_tuple_mod_perms1 = (arg_names[ot_arg_pos], basic_object_types)
         raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms1))
   
-    if obj_type == bo_types[0]:
+    if obj_type == basic_object_types[0]:
         
         if le2s > 0:
-            print(f"Modifying permissions of all files in {path} "
-                  "except the following extensioned ones...\n"
-                  f"{extensions2skip}")
+            arg_tuple_mod_perms2 = ("permissions", path, extensions2skip)
+            print_format_string(perms_progress_except_prefmt_str, arg_tuple_mod_perms2)
         else:
-            print(f"Modifying permissions of all files in {path}...")
+            arg_tuple_mod_perms3 = ("permissions", "files", path)
+            print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms3)
             
         file_extension_list = find_allfile_extensions(extensions2skip, 
                                                       path, 
@@ -113,14 +114,15 @@ def modify_obj_permissions(path,
                                             path, 
                                             top_path_only=True)
             
-    elif obj_type == bo_types[1]:
-        print(f"Modifying permissions of all directories in {path}...")
+    elif obj_type == basic_object_types[1]:
+        arg_tuple_mod_perms4 = ("permissions", "directories", path)
+        print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms4)
         obj_path_list = find_allDirectories(path)
         
 
     for obj_path in obj_path_list:
         try:
-            os.chmod(obj_path, attr_id)    
+            os.chmod(obj_path, attr_id)
         except PermissionError:
             raise PermissionError(permissionErrorStr)
                 
@@ -131,10 +133,12 @@ def modify_obj_owner(path,
                      extensions2skip="",
                      new_owner=None,
                      new_group=None):    
-    # Note
-    # ----
-    # In order to modify file and/or directory owner and/or group names,
-    # both os.chown and shutil.chown need the user to be rooted.
+    """
+    Note
+    ----
+    In order to modify file and/or directory owner and/or group names,
+    both os.chown and shutil.chown need the user to be rooted.
+    """
     
     arg_names = modify_obj_permissions.__code__.co_varnames
     mod_arg_pos = find_substring_index(arg_names, 
@@ -146,22 +150,22 @@ def modify_obj_owner(path,
     
     le2s = len(extensions2skip)
     
-    if obj_type not in bo_types:
-        arg_tuple_mod_perms2 = (arg_names[ot_arg_pos], bo_types)
+    if obj_type not in basic_object_types:
+        arg_tuple_mod_perms2 = (arg_names[ot_arg_pos], basic_object_types)
         raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms2))
         
     if module not in modules:
         arg_tuple_mod_perms3 = (arg_names[mod_arg_pos], modules)
         raise ValueError(format_string(valueErrorStr, arg_tuple_mod_perms3))
         
-    if obj_type == bo_types[0]:
+    if obj_type == basic_object_types[0]:
         
         if le2s > 0:
-            print(f"Modifying permissions of all files in {path} "
-                  "except the following extensioned ones...\n"
-                  f"{extensions2skip}")
+            arg_tuple_mod_perms5 = ("owner", "files", path, extensions2skip)
+            print_format_string(perms_progress_except_prefmt_str, arg_tuple_mod_perms5)
         else:
-            print(f"Modifying permissions of all files in {path}...")
+            arg_tuple_mod_perms6 = ("owner", "files", path)
+            print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms6)
             
         file_extension_list = find_allfile_extensions(extensions2skip, 
                                                       path, 
@@ -170,8 +174,9 @@ def modify_obj_owner(path,
                                             path, 
                                             top_path_only=True)
         
-    elif obj_type == bo_types[1]:
-        print(f"Modifying permissions of all directories in {path}...")
+    elif obj_type == basic_object_types[1]:
+        arg_tuple_mod_perms7 = ("permissions", "directories", path)
+        print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms7)
         obj_path_list = find_allDirectories(path)
     
     for obj_path in obj_path_list:
@@ -208,11 +213,17 @@ def modify_obj_owner(path,
 #------------#
 
 modules = ["os", "shutil"]
-bo_types = basic_object_types.copy()
+
+# Preformatted strings #
+#----------------------#
 
 # Error indicator tables #
-#------------------------#
-
 typeErrorStr = """Argument '{}' "must be of type 'int'"""
 permissionErrorStr = "Please execute the program as sudo."
 valueErrorStr = """Wrong '{}' option. Options are {}."""
+
+# Progress information #
+perms_progress_except_prefmt_str = """Modifying {} of all {} in {}\
+except the following extensioned ones...\n{}"""
+
+perms_progress_prefmt_str = """Modifying {} of all {} in {}..."""

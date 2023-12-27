@@ -1,6 +1,1 @@
-1. '== zerbait' duten programa guztietan SWITCH motako hiztegia erabil daiteke?
-2. Gauza bera, baina '!=' alderatzaileakin
-3. Askotan deitzen diren parametroak 'global_parameters'-en definitu, eta ikus zein programatan komeni den inportatzea.
-4. ".format" dagoeneko programa oro '(print_)format_string" funtzioaren bidez gauzatu.
-5. Pisutsuena, 'for-else' non den komenigarria ikusi. ZENTZUDUNA izango da bakarrik baldintza bat betetzea bilatzen edo 'eskaneatzen' ari bagara
-
+Pisutsuena, 'for-else' non den komenigarria ikusi. ZENTZUDUNA izango da bakarrik baldintza bat betetzea bilatzen edo 'eskaneatzen' ari bagara

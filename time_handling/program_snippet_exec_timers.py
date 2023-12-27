@@ -95,8 +95,7 @@ def snippet_exec_timer(snippet_str,
         
         if roundoff is not None:
             if not isinstance(roundoff, int):
-                raise TypeError(f"Argument '{arg_names[roundoff_arg_pos]}' "
-                                "must be of type ´int´.")
+                raise TypeError(format_string(typeErrorStr, '{arg_names[roundoff_arg_pos]}'))
             else:
                 exec_time_norep = np.round(exec_time_norep)
                 time_unit_str = sec_time_unit_str
@@ -120,8 +119,7 @@ def snippet_exec_timer(snippet_str,
         
         if roundoff is not None:
             if not isinstance(roundoff, int):
-                raise TypeError(f"Argument '{arg_names[roundoff_arg_pos]}' "
-                                "must be of type ´int´.")
+                raise TypeError(format_string(typeErrorStr, '{arg_names[roundoff_arg_pos]}'))
             else:
                 exec_time_rep = np.round(exec_time_rep)
                 time_unit_str = sec_time_unit_str
@@ -151,3 +149,6 @@ output_info_table_norep = \
 
 output_info_table_rep = \
 """Snippet execution time ({}), for {} trials with and {} repeats:\n{}"""
+
+# Output preformatted texts #
+typeErrorStr = "Argument {} must be of type ´int´."

@@ -3,8 +3,9 @@
 #----------------#
 
 import datetime
-import os
 import time
+
+import os
 
 from pathlib import Path
 import sys
@@ -57,6 +58,7 @@ import time_formatters
 MATHEMATICAL_YEAR_DAYS = global_parameters.MATHEMATICAL_YEAR_DAYS
 find_date_key = data_frame_handler.find_date_key
 format_string = information_output_formatters.format_string
+print_format_string = information_output_formatters.print_format_string
 find_substring_index = string_handler.find_substring_index
 time_format_tweaker = time_formatters.time_format_tweaker
 
@@ -67,8 +69,6 @@ time_format_tweaker = time_formatters.time_format_tweaker
 #------------------#
 
 def get_current_time(Type="datetime", time_fmt_str=None):
-    
-    type_options = ["datetime", "str", "timestamp"]
     arg_names = get_current_time.__code__.co_varnames
         
     type_arg_pos = find_substring_index("Type", 
@@ -76,17 +76,13 @@ def get_current_time(Type="datetime", time_fmt_str=None):
                                         advanced_search=True,
                                         find_whole_words=True)
     
-    if Type not in type_options:
-        arg_tuple_current_time = (arg_names[type_arg_pos], type_options)
+    if Type not in current_time_type_options:
+        arg_tuple_current_time = (arg_names[type_arg_pos], current_time_type_options)
         raise ValueError(format_string(ChoiceErrorStr, arg_tuple_current_time))
     
-    if Type == "datetime":
-        current_datetime = datetime.datetime.now()
-    elif Type == "str":
-        current_datetime = time.ctime()
     else:
-        current_datetime = pd.Timestamp.now()
-        
+        current_datetime = current_datetime_dict.get(Type)
+    
     if Type == "str" and time_fmt_str is not None:
         raise TypeError("Current time is already a string type.")
         
@@ -102,7 +98,7 @@ def get_obj_operation_datetime(objList,
                                attr="modification", 
                                time_fmt_str=None):
     
-    attr_options = ["creation", "modification", "access"]
+    attr_options = list(structTime_attr_dict.keys())
     arg_names = get_obj_operation_datetime.__code__.co_varnames
     
     attr_arg_pos = find_substring_index(arg_names,
@@ -121,13 +117,8 @@ def get_obj_operation_datetime(objList,
     obj_timestamp_arr = []
     
     for obj in objList:    
-        if attr == "creation":
-            structTime_attr_obj = time.gmtime(os.path.getctime(obj))
-        elif attr == "modification":
-            structTime_attr_obj = time.gmtime(os.path.getmtime(obj))
-        else:
-            structTime_attr_obj = time.gmtime(os.path.getatime(obj))
-            
+        structTime_attr_obj = structTime_attr_dict.get(attr) 
+        
         timestamp_str_attr_obj\
         = time_format_tweaker(structTime_attr_obj, time_fmt_str)
         
@@ -164,11 +155,9 @@ def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=Fa
                            advanced_search=True,
                            find_whole_words=True)
     
-    operators = ["inner", "outer", "cross", "left", "right"]
-    
     # Operator argument choice #    
-    if operator not in operators:
-        arg_tuple_dt_range_op1 = (arg_names[operator_arg_pos], operators)
+    if operator not in dt_range_operators:
+        arg_tuple_dt_range_op1 = (arg_names[operator_arg_pos], dt_range_operators)
         raise ValueError(format_string(ChoiceErrorStr, arg_tuple_dt_range_op1))
         
     # Right input argument types #
@@ -252,9 +241,9 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
                                              find_whole_words=True)
     
     if not isinstance(months_shift, int):
-        raise ValueError(TypeErrorStr1(arg_names[shift_mon_arg_pos],
-                                       shift_mon_arg_pos,
-                                       'int'))
+        arg_tuple_natural_year1 = (arg_names[shift_mon_arg_pos], 
+                                   shift_mon_arg_pos, 'int')
+        raise ValueError(format_string(TypeErrorStr1, arg_tuple_natural_year1))
     
     # Case study #
     #------------#
@@ -309,8 +298,8 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         {dt_start_natural} -- {dt_end_natural}
         """
            
-        arg_tuple_natural_year = (dt_start_std, dt_end_std)
-        print_format_str(natural_year_range_table, arg_tuple_natural_year)
+        arg_tuple_natural_year2 = (dt_start_std, dt_end_std)
+        print_format_string(natural_year_range_table, arg_tuple_natural_year2)
     
     else:
         return dt_start_natural, dt_end_natural
@@ -320,6 +309,11 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
 #--------------------------#
 # Parameters and constants #
 #--------------------------#
+
+# Option lists #
+dt_range_operators = ["inner", "outer", "cross", "left", "right"]
+current_time_type_options = ["datetime", "str", "timestamp"]
+
 
 # Error message strings #
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
@@ -331,3 +325,16 @@ AttributeErrorStr =\
 unnamed. Please set a name using {}.name attribute."""
 
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
+
+# Switch dictionaries #
+structTime_attr_dict = {
+    "creation"     : "time.gmtime(os.path.getctime(obj))",
+    "modification" : "time.gmtime(os.path.getmtime(obj))",
+    "access"       : "time.gmtime(os.path.getatime(obj))"
+    }
+
+current_datetime_dict = {
+    "datetime"  : "datetime.datetime.now()",
+    "str"       : "time.ctime()",
+    "timestamp" : "pd.Timestamp.now()"
+    }
