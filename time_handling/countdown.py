@@ -50,8 +50,7 @@ time_format_tweaker = time_formatters.time_format_tweaker
 # Define functions #
 #------------------#
 
-def countdown(t, string_arr1, string_arr2, 
-              time_fmt_str=None, print_str=False):
+def countdown(t, time_fmt_str=None, print_str=False):
     
     if isinstance(t, str):
         time_dt = time_format_tweaker(t, time_fmt_str=time_fmt_str)
