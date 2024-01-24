@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -14,7 +17,7 @@ import numpy as np
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -33,18 +36,11 @@ custom_mod2_path = f"{fixed_path}/time_handling"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import string_handler
-import time_formatters
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-substring_replacer = string_handler.substring_replacer
-time_format_tweaker = time_formatters.time_format_tweaker
+from string_handler import substring_replacer
+from time_formatters import time_format_tweaker
 
 #------------------#
 # Define functions #

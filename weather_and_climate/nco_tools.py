@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #----------------#
@@ -11,7 +12,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -35,27 +36,21 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import file_and_directory_handler
-import file_format_tweaker
-import global_parameters
+from file_and_directory_handler import rename_objects
+from file_format_tweaker import aux_path_strAdd
+from global_parameters import basic_four_rules
 import information_output_formatters
-import os_operations
+from os_operations import exec_shell_command
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-rename_objects = file_and_directory_handler.rename_objects
-aux_path_strAdd = file_format_tweaker.aux_path_strAdd
-basic_four_rules = global_parameters.basic_four_rules
 
 format_string = information_output_formatters.format_string
 print_format_string = information_output_formatters.print_format_string
-
-exec_shell_command = os_operations.exec_shell_command
 
 #-------------------------#
 # Define custom functions #
@@ -71,11 +66,7 @@ def modify_variable_units_and_values(file_list,
         file_list = [file_list]
     lfl = len(file_list)    
         
-    for file in enumerate(file_list): 
-        
-        file_name = file[-1]
-        file_num = file[0] + 1
-                
+    for file_num, file_name in enumerate(file_list, start=1): 
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
@@ -122,11 +113,7 @@ def modify_coordinate_values_byThreshold(file_list,
         file_list = [file_list]
     lfl = len(file_list) 
     
-    for file in enumerate(file_list): 
-        
-        file_name = file[-1]
-        file_num = file[0] + 1
-
+    for file_num, file_name in enumerate(file_list, start=1):
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
@@ -178,11 +165,7 @@ def modify_coordinate_allValues(file_list,
         file_list = [file_list]
     lfl = len(file_list) 
     
-    for file in enumerate(file_list): 
-        
-        file_name = file[-1]
-        file_num = file[0] + 1
-
+    for file_num, file_name in enumerate(file_list, start=1): 
         temp_file = aux_path_strAdd(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
@@ -290,8 +273,8 @@ prefmt_wrong_threshold_mode = \
 
 threshold_mode_opts = ["max", "min"]
 
-# Switch cases #
-#--------------#
+# Switch-case dictionaries #
+#--------------------------#
 
 operator_gerund_dict = {
     basic_four_rules[0] : "Adding",

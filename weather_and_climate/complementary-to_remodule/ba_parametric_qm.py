@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # parametric quantile mapping of temperature (normal distribution)
 from auxiliary_functions import *
 

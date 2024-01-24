@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -17,7 +20,7 @@ import pandas as pd
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -28,10 +31,9 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/pandas_data_frames" 
-custom_mod2_path = f"{fixed_path}/parameters_and_constants"
-custom_mod3_path = f"{fixed_path}/sets_and_intervals" 
-custom_mod4_path = f"{fixed_path}/strings"
-custom_mod5_path = f"{fixed_path}/time_handling"
+custom_mod2_path = f"{fixed_path}/sets_and_intervals" 
+custom_mod3_path = f"{fixed_path}/strings"
+custom_mod4_path = f"{fixed_path}/time_handling"
                   
 # Add the module paths to the path variable #
 #-------------------------------------------#
@@ -40,27 +42,14 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
-sys.path.append(custom_mod5_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import data_frame_handler
-import global_parameters
-import information_output_formatters
-import string_handler
-import time_formatters
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-MATHEMATICAL_YEAR_DAYS = global_parameters.MATHEMATICAL_YEAR_DAYS
-find_date_key = data_frame_handler.find_date_key
-format_string = information_output_formatters.format_string
-print_format_string = information_output_formatters.print_format_string
-find_substring_index = string_handler.find_substring_index
-time_format_tweaker = time_formatters.time_format_tweaker
+from data_frame_handler import find_date_key
+from information_output_formatters import format_string, print_format_string
+from string_handler import find_substring_index
+from time_formatters import time_format_tweaker
 
 #%%
 
@@ -129,7 +118,10 @@ def get_obj_operation_datetime(objList,
     return obj_timestamp_arr
 
 
-def datetime_range_operator(df1, df2, operator, time_fmt_str=None, return_str=False):
+def datetime_range_operator(df1, df2,
+                            operator,
+                            time_fmt_str=None,
+                            return_str=False):
     
     # Quality control #
     #-----------------#
@@ -314,19 +306,23 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
 dt_range_operators = ["inner", "outer", "cross", "left", "right"]
 current_time_type_options = ["datetime", "str", "timestamp"]
 
+# Preformatted strings #
+#----------------------#
 
-# Error message strings #
+# Error strings #
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
-TypeErrorStr1 = """Argument '{}' at position {} must be of type {}."""
-TypeErrorStr2 = """Argument '{}' at position {} must be of type {} or {}."""
+TypeErrorStr1 = """Argument '{}' at position {} must be of type '{}'."""
+TypeErrorStr2 = """Argument '{}' at position {} must be of type '{}' or ´{}´."""
 
 AttributeErrorStr =\
-"""Argument '{}' is of type '{}' but it is
-unnamed. Please set a name using {}.name attribute."""
+"""Argument '{}' is of type '{}' but it is unnamed. 
+Please set a name using {}.name attribute."""
 
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
 
 # Switch dictionaries #
+#---------------------#
+
 structTime_attr_dict = {
     "creation"     : "time.gmtime(os.path.getctime(obj))",
     "modification" : "time.gmtime(os.path.getmtime(obj))",

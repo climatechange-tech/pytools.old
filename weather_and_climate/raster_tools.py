@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -9,7 +12,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -30,20 +33,16 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import global_parameters
-import os_operations
+from global_parameters import common_splitchar_list
+from os_operations import exec_shell_command
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-common_splitchar_list = global_parameters.common_splitchar_list
-
-exec_shell_command = os_operations.exec_shell_command
 
 obj_path_specs = string_handler.obj_path_specs
 fileList2String = string_handler.fileList2String
@@ -67,11 +66,7 @@ def netCDF2raster(nc_file_list,
     lncfl = len(nc_file_list)
     obj2change = "ext"
     
-    for ncf_file in enumerate(nc_file_list):
-        
-        ncf_name = ncf_file[-1]
-        ncf_num = ncf_file[0] + 1
-        
+    for ncf_num, ncf_name in enumerate(nc_file_list,start=1):
         print(f"Converting netCDF file to raster...\n"
               f"{ncf_num} out of {lncfl}...")
         

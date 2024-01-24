@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #-------------------------#
@@ -39,5 +40,5 @@ def print_percent_string(string2format, arg_obj):
 # Parameters and constants #
 #--------------------------#
 
-typeErrorStr1 = "Argument must either be of type alphanumeric, ´tuple´ or ´dict´."
-typeErrorStr2 = "Argument must be of type ´str´ only."
+typeErrorStr1 = "Argument must either be of type alphanumeric, 'tuple' or 'dict'."
+typeErrorStr2 = "Argument must be of type 'str' only."

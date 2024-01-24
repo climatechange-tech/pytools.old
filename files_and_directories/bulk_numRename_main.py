@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -11,7 +12,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -36,22 +37,20 @@ sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import array_handler
+from array_handler import select_array_elements
+from datetime_operators import get_current_time, get_obj_operation_datetime
 import file_and_directory_paths
-import file_and_directory_handler 
+from file_and_directory_handler import rename_objects
 import global_parameters
 import information_output_formatters
 import string_handler
-import time_formatters
 
 #--------------------------------------------------#
-# Define imported modules' function call shortcuts #
+# Define imported modules' objname_unevennction call shortcuts #
 #--------------------------------------------------#
-
-select_array_elements = array_handler.select_array_elements
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
@@ -67,19 +66,28 @@ find_substring_index = string_handler.find_substring_index
 obj_path_specs = string_handler.obj_path_specs
 modify_obj_specs = string_handler.modify_obj_specs
 
-rename_objects = file_and_directory_handler.rename_objects
-
-get_current_time = time_formatters.get_current_time
-get_obj_operation_datetime = time_formatters.get_obj_operation_datetime
-
 basic_time_format_strs = global_parameters.basic_time_format_strs
 basic_object_types = global_parameters.basic_object_types
-
-move_files_byExts_fromCodeCallDir = file_and_directory_handler.move_files_byExts_fromCodeCallDir
+non_std_time_format_strs = global_parameters.non_std_time_format_strs
 
 #------------------#
 # Define functions #
 #------------------#
+
+def shorten_conflicting_obj_list():
+    if not ((not isinstance(lcos_upperLimit, int) and (isinstance(lcos_upperLimit, str))\
+             and lcos_upperLimit == 'inf')\
+            or (isinstance(lcos_upperLimit, int) and lcos_upperLimit>=1)):
+        
+        raise ValueError("Limit of the number of conflicting files "
+                         "to be written to an output file "
+                         "must be an integer ranging from 1 to 'inf'.")
+    else:
+        if lcos_upperLimit == 'inf':
+            return False
+        else:
+            return True
+
 
 def loop_renamer(objList,
                  obj_type="file",
@@ -100,16 +108,11 @@ def loop_renamer(objList,
     num_formatted_objs = []
     obj2change = obj2change_dict.get(obj_type)
 
-    for obj in enumerate(objList, start=starting_number):
-        
-        obj_num = obj[0]
-        obj_name = obj[-1]
-
+    for obj_num, obj_name in enumerate(objList, start=starting_number):
         if zero_padding == "default":
             fpn_noext = obj_path_specs(obj_name, obj_spec_key="name_noext")
             new_zp = str(len(fpn_noext))
             num_format = f"{obj_num:0{new_zp}d}"    
-            
         else:
             num_format = f"{obj_num:0{zero_padding}d}"    
             
@@ -117,7 +120,6 @@ def loop_renamer(objList,
             num_formatted_obj = modify_obj_specs(obj_name,
                                                  obj2change, 
                                                  num_format)
-            
         else:
             fpn_parts = obj_path_specs(obj_name,
                                        obj_spec_key="name_noext_parts",
@@ -164,18 +166,23 @@ def reorder_objs(path,
                  zero_padding="default",
                  splitchar=None):
     
+    # Quality control of the input parameters #
     arg_names = reorder_objs.__code__.co_varnames
     defaults = reorder_objs.__defaults__
         
-    zp_arg_pos = find_substring_index(arg_names, "zero")
-    stn_arg_pos = find_substring_index(arg_names, "start")
-    ir_arg_pos = find_substring_index(arg_names, "index")
+    zp_arg_pos = find_substring_index(arg_names, "zero_padding")
+    stn_arg_pos = find_substring_index(arg_names, "starting_number")
+    ir_arg_pos = find_substring_index(arg_names, "index_range")
     
-    if zero_padding != "default" and not isinstance(zero_padding, int):
+    if ((zero_padding != 'default' and not isinstance(zero_padding, int))\
+        or (zero_padding != 'default'
+            and isinstance(zero_padding, int) 
+            and zero_padding < 1)):
         raise TypeError(f"Argument '{arg_names[zp_arg_pos]}' "
                         f"at position {zp_arg_pos} must either be "
-                        "an integer or 'default'.")
-        
+                        "an integer equal or greater than 1.\n"
+                        "Set to `None` if no zero padding is desired.")
+          
     if path is None:
         raise ValueError("A path string or PosixPath must be given.")
         
@@ -244,8 +251,8 @@ def reorder_objs(path,
                                                    dry_run=True,
                                                    splitchar=splitchar)
                                         
-        # Check for equally named conflicting objs #
-        #-------------------------------------------#
+        # Check for equally named, conflicting objects #
+        #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
             conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR2).stem}*",
@@ -262,6 +269,12 @@ def reorder_objs(path,
         lcos = len(conflicting_objs)
         
         if lcos > 0:
+            
+            # Set maximum length of the conflicting objects to write on file, if not 'inf'
+            wantlimit = shorten_conflicting_obj_list()
+            if wantlimit:
+                conflicting_objs = conflicting_objs[:lcos_upperLimit]            
+            
             report_file_name = report_filename_dict.get(obj_type)     
             report_file_path = return_report_file_fixedPath(path,
                                                             report_file_name,
@@ -269,7 +282,7 @@ def reorder_objs(path,
             
             rf = open(report_file_path, "w")                    
          
-            timestamp_str_fu\
+            timestamp_str_objname_uneven\
             = get_obj_operation_datetime(objList_uneven,
                                          "modification", 
                                          time_format_str)
@@ -277,19 +290,22 @@ def reorder_objs(path,
             timestamp_str_nff_dR2\
             = get_current_time(time_fmt_string=ctime_format_str)
             
-            timestamp_str_cf\
+            timestamp_str_confl_obj\
             = get_obj_operation_datetime(conflicting_objs,
                                          "modification", 
                                          time_format_str)
             
-            for fu, nff_dR2, cf in zip(objList_uneven,
-                                       num_formatted_objs_dryRun_2,
-                                       conflicting_objs):
+            for objname_uneven, nff_dR2, confl_obj in zip(objList_uneven,
+                                                          num_formatted_objs_dryRun_2,
+                                                          conflicting_objs):
             
-                arg_tuple_reorder_objs1 = (fu, timestamp_str_fu,
-                                           nff_dR2, timestamp_str_nff_dR2,
-                                           cf, timestamp_str_cf)
-                rf.write(format_string(conf_obj_table, arg_tuple_reorder_objs1))
+                arg_tuple_reorder_objs1 = (objname_uneven, 
+                                           timestamp_str_objname_uneven,
+                                           nff_dR2,
+                                           timestamp_str_nff_dR2,
+                                           confl_obj, 
+                                           timestamp_str_confl_obj)
+                rf.write(format_string(conf_obj_info_str, arg_tuple_reorder_objs1))
                          
             rf.close()
                 
@@ -309,10 +325,12 @@ def reorder_objs(path,
                                                             fixed_ext)
             rf = open(report_file_path, "w")                    
             
-            for fu, nff_dR2 in zip(objList_uneven, num_formatted_objs_dryRun_2):
-                arg_tuple_reorder_objs2 = (fu, timestamp_str_fu,
-                                           nff_dR2, timestamp_str_nff_dR2)
-                rf.write(conf_obj_table, arg_tuple_reorder_objs2)
+            for objname_uneven, nff_dR2 in zip(objList_uneven, num_formatted_objs_dryRun_2):
+                arg_tuple_reorder_objs2 = (objname_uneven,
+                                           timestamp_str_objname_uneven,
+                                           nff_dR2,
+                                           timestamp_str_nff_dR2)
+                rf.write(conf_obj_info_str, arg_tuple_reorder_objs2)
                          
             rf.close()
                 
@@ -351,8 +369,8 @@ def reorder_objs(path,
                                                  dry_run=True,
                                                  splitchar=splitchar)
           
-        # Check for equally named conflicting objs #
-        #-------------------------------------------#
+        # Check for equally named, conflicting objects #
+        #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
             conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR).stem}*",
@@ -369,6 +387,12 @@ def reorder_objs(path,
         lcos = len(conflicting_objs)
         
         if lcos > 0:
+            
+            # Set maximum length of the conflicting objects to write on file, if not 'inf'
+            wantlimit = shorten_conflicting_obj_list()
+            if wantlimit:
+                conflicting_objs = conflicting_objs[:lcos_upperLimit]   
+                
             report_file_name = report_filename_dict.get(obj_type)
             report_file_path = return_report_file_fixedPath(path,
                                                             report_file_name,
@@ -376,27 +400,30 @@ def reorder_objs(path,
             
             rf = open(report_file_path, "w")                    
               
-            timestamp_str_fus\
+            timestamp_str_objname_unevens\
             = get_obj_operation_datetime(objList_uneven_slice,
-                                          "modification", 
-                                          time_format_str)
+                                         "modification", 
+                                         time_format_str)
             
             timestamp_str_nff_dR\
             = get_current_time(time_fmt_string=ctime_format_str)
             
-            timestamp_str_cf\
+            timestamp_str_confl_obj\
             = get_obj_operation_datetime(conflicting_objs,
-                                          "modification", 
-                                          time_format_str)
+                                         "modification", 
+                                         time_format_str)
             
-            for fus, nff_dR, cf in zip(objList_uneven_slice,
-                                       num_formatted_objs_dryRun,
-                                       conflicting_objs):
+            for objname_unevens, nff_dR, confl_obj in zip(objList_uneven_slice,
+                                                          num_formatted_objs_dryRun,
+                                                          conflicting_objs):
             
-                arg_tuple_reorder_objs3 = (fus, timestamp_str_fus,
-                                           nff_dR, timestamp_str_nff_dR,
-                                           cf, timestamp_str_cf)
-                rf.write(format_string(conf_obj_table, arg_tuple_reorder_objs3))
+                arg_tuple_reorder_objs3 = (objname_unevens, 
+                                           timestamp_str_objname_unevens,
+                                           nff_dR,
+                                           timestamp_str_nff_dR,
+                                           confl_obj,
+                                           timestamp_str_confl_obj)
+                rf.write(format_string(conf_obj_info_str, arg_tuple_reorder_objs3))
                          
             rf.close()
                 
@@ -411,10 +438,10 @@ def reorder_objs(path,
                                                            fixed_ext)
             rf = open(report_file_path, "w")                    
             
-            for fus, nff_dr in zip(objList_uneven_slice, 
-                                   num_formatted_objs_dryRun):
-                arg_tuple_reorder_objs4 = (fus, nff_dR)
-                rf.write(format_string(dry_run_table, arg_tuple_reorder_objs4))
+            for objname_unevens, nff_dr in zip(objList_uneven_slice, 
+                                               num_formatted_objs_dryRun):
+                arg_tuple_reorder_objs4 = (objname_unevens, nff_dR)
+                rf.write(format_string(dry_run_info_str, arg_tuple_reorder_objs4))
                          
             rf.close()
                 
@@ -438,29 +465,37 @@ def reorder_objs(path,
 
 # Time formatting strings #
 time_format_str = basic_time_format_strs["H"]
-ctime_format_str = basic_time_format_strs["CFT"]
+ctime_format_str = non_std_time_format_strs["CFT_H"]
 
-# Fixed extension to reuse at different parts of the functions #
+# Fixed extension to reuse at different parts of the objname_unevennctions #
 fixed_ext = "txt"
 
 # Fixed length of the list containing the conflicting file or directory names #
-lcos_upperLimit = 50
+"""Set the minimum limit to 1.
+If no limit wants to be considered, set the parameter to 'inf'
+"""
+lcos_upperLimit = 2
+        
 
-# Object comparison tables #
-conf_obj_table\
-= """{} <--> {} renamed to {} <--> {} conflicts with {} <--> {}\n"""
+# Preformatted strings #
+#----------------------#
 
-dry_run_table = """{} renamed to {}\n"""
+# Object path comparisons and conflicts, if any, due to already existing ones #
+conf_obj_info_str\
+= """'{}' <--> '{}' renamed to '{}' <--> '{}' conflicts with '{}' <--> '{}'\n"""
 
-# Output preformatted strings #
+dry_run_info_str = """'{}' renamed to '{}'\n"""
+
 conflictingObjectsWarning = """\n\nSome renamed {} conflict!
-Information is stored at file '{}.'"""
+Information is stored at file '{}'."""
 
 noConflictingObjectsMessage = """No conflicting {} found
 Please check the dry-run renaming information at file '{}'."""
 
 
-# Switch dictionaries #
+# Switch-case dictionaries #
+#--------------------------#
+
 report_filename_dict = {
     basic_object_types[0] : "conflicting_files_report",
     basic_object_types[1] : "conflicting_directories_report"

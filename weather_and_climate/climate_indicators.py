@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -15,7 +18,7 @@ import scipy.stats as ss
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -36,8 +39,8 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import array_handler
 import array_numerical_operations
@@ -48,7 +51,7 @@ import meteorological_variables
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 periodic_statistics = climate_statistics.periodic_statistics
@@ -478,7 +481,7 @@ def calculate_HDY(hourly_df,
                   drop_date_idx_col=False,
                   drop_new_idx_col=True):
     """
-    Function to calculate the ´Hourly Design Year´,
+    Function to calculate the 'Hourly Design Year',
     based on the ISO 15927-4 2005 (E) standard,
     version of January 2021.
     """
@@ -522,7 +525,7 @@ def calculate_HDY(hourly_df,
      
         # Step a) #
         
-        """The first key MUST BE ´date´ """
+        """The first key MUST BE 'date' """
         varlist_prim_rank_phi = [varlist_primary[0]]
         
         for var in varlist_primary[1:]:
@@ -791,7 +794,7 @@ def HDY_interpolation(HDY_df,
     HDY_months = pd.unique(HDY_interp.date.dt.month)
     lhdy_m = len(HDY_months) # == len(HDY_years), by definition
     
-    # Remove ´ws10´ variable from the list of variables to be interpolated #
+    # Remove 'ws10' variable from the list of variables to be interpolated #
     ws10_idx = find_substring_index(varlist_to_interpolate, "ws10")
     varlist_to_interpolate = remove_elements_from_array(varlist_to_interpolate, 
                                                         ws10_idx)

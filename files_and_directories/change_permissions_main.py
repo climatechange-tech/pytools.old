@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -15,7 +18,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -36,17 +39,17 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import file_and_directory_handler
 import file_and_directory_paths
+from global_parameters import basic_object_types
 import information_output_formatters
-import global_parameters
-import string_handler
+from string_handler import find_substring_index
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
@@ -56,11 +59,8 @@ find_ext_file_paths = file_and_directory_handler.find_ext_file_paths
 print_format_string = information_output_formatters.print_format_string
 format_string = information_output_formatters.format_string
 
-find_substring_index = string_handler.find_substring_index
-basic_object_types = global_parameters.basic_object_types
-
 #-----------------------------#
-# Get this laptop user´s name #
+# Get this laptop user's name #
 #-----------------------------#
 
 whoami = home_PATH.parts[-1]
@@ -102,10 +102,10 @@ def modify_obj_permissions(path,
         
         if le2s > 0:
             arg_tuple_mod_perms2 = ("permissions", path, extensions2skip)
-            print_format_string(perms_progress_except_prefmt_str, arg_tuple_mod_perms2)
+            print_format_string(permModExceptionsProgressInfo, arg_tuple_mod_perms2)
         else:
             arg_tuple_mod_perms3 = ("permissions", "files", path)
-            print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms3)
+            print_format_string(permModProgressInfoStr, arg_tuple_mod_perms3)
             
         file_extension_list = find_allfile_extensions(extensions2skip, 
                                                       path, 
@@ -116,7 +116,7 @@ def modify_obj_permissions(path,
             
     elif obj_type == basic_object_types[1]:
         arg_tuple_mod_perms4 = ("permissions", "directories", path)
-        print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms4)
+        print_format_string(permModProgressInfoStr, arg_tuple_mod_perms4)
         obj_path_list = find_allDirectories(path)
         
 
@@ -162,10 +162,10 @@ def modify_obj_owner(path,
         
         if le2s > 0:
             arg_tuple_mod_perms5 = ("owner", "files", path, extensions2skip)
-            print_format_string(perms_progress_except_prefmt_str, arg_tuple_mod_perms5)
+            print_format_string(permModExceptionsProgressInfo, arg_tuple_mod_perms5)
         else:
             arg_tuple_mod_perms6 = ("owner", "files", path)
-            print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms6)
+            print_format_string(permModProgressInfoStr, arg_tuple_mod_perms6)
             
         file_extension_list = find_allfile_extensions(extensions2skip, 
                                                       path, 
@@ -176,7 +176,7 @@ def modify_obj_owner(path,
         
     elif obj_type == basic_object_types[1]:
         arg_tuple_mod_perms7 = ("permissions", "directories", path)
-        print_format_string(perms_progress_prefmt_str, arg_tuple_mod_perms7)
+        print_format_string(permModProgressInfoStr, arg_tuple_mod_perms7)
         obj_path_list = find_allDirectories(path)
     
     for obj_path in obj_path_list:
@@ -217,13 +217,13 @@ modules = ["os", "shutil"]
 # Preformatted strings #
 #----------------------#
 
-# Error indicator tables #
+# Error indicators #
 typeErrorStr = """Argument '{}' "must be of type 'int'"""
 permissionErrorStr = "Please execute the program as sudo."
 valueErrorStr = """Wrong '{}' option. Options are {}."""
 
 # Progress information #
-perms_progress_except_prefmt_str = """Modifying {} of all {} in {}\
+permModExceptionsProgressInfo = """Modifying {} of all {} in {}\
 except the following extensioned ones...\n{}"""
 
-perms_progress_prefmt_str = """Modifying {} of all {} in {}..."""
+permModProgressInfoStr = """Modifying {} of all {} in {}..."""

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -16,7 +19,7 @@ import xarray as xr
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -45,25 +48,19 @@ sys.path.append(custom_mod5_path)
 sys.path.append(custom_mod6_path)
 sys.path.append(custom_mod7_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import array_handler
-import data_frame_handler
+from data_frame_handler import find_date_key
 import global_parameters
 import information_output_formatters
-import netcdf_handler
-import string_handler
-import time_formatters
+from netcdf_handler import find_time_dimension
+from string_handler import find_substring_index
+from time_formatters import time_format_tweaker
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-select_array_elements = array_handler.select_array_elements
-
-find_date_key = data_frame_handler.find_date_key
-insert_column_in_df = data_frame_handler.insert_column_in_df
 
 basic_time_format_strs = global_parameters.basic_time_format_strs
 month_number_dict = global_parameters.month_number_dict
@@ -73,13 +70,6 @@ time_freqs2 = global_parameters.time_frequencies_short_1
 
 print_format_string = information_output_formatters.print_format_string
 format_string = information_output_formatters.format_string
-
-find_time_dimension = netcdf_handler.find_time_dimension
-get_file_dimensions = netcdf_handler.get_file_dimensions
-
-find_substring_index= string_handler.find_substring_index
-
-time_format_tweaker = time_formatters.time_format_tweaker
 
 #------------------#
 # Define functions #
@@ -655,7 +645,7 @@ def calculate_and_apply_deltas(observed_series,
             "N/P",
             "N/P"
             )
-        print_format_string(delta_application_panel, arg_tuple_delta3)
+        print_format_string(delta_application_info_str, arg_tuple_delta3)
         
         obs_climat = climat_periodic_statistics(observed_series, 
                                                 statistic, 
@@ -670,7 +660,7 @@ def calculate_and_apply_deltas(observed_series,
             "N/P",
             "N/P"
             )
-        print_format_string(delta_application_panel, arg_tuple_delta4)
+        print_format_string(delta_application_info_str, arg_tuple_delta4)
         
         rean_climat = climat_periodic_statistics(reanalysis_series, 
                                                  statistic, 
@@ -771,7 +761,7 @@ def calculate_and_apply_deltas(observed_series,
                 f"Applying deltas over the {preference_over} series...",
                 freq_abbr,season_months,"all","all"
                 )
-            print_format_string(delta_application_panel, arg_tuple_delta5)
+            print_format_string(delta_application_info_str, arg_tuple_delta5)
             
             if isinstance(observed_series, pd.DataFrame) \
             and isinstance(reanalysis_series, pd.DataFrame):  
@@ -808,7 +798,7 @@ def calculate_and_apply_deltas(observed_series,
                     f"Applying deltas over the {preference_over} series...",
                     freq_abbr,m,"all","all"
                     )
-                print_format_string(delta_application_panel, arg_tuple_delta6)
+                print_format_string(delta_application_info_str, arg_tuple_delta6)
                 
                 if isinstance(observed_series, pd.DataFrame) \
                 and isinstance(reanalysis_series, pd.DataFrame):
@@ -851,7 +841,7 @@ def calculate_and_apply_deltas(observed_series,
                             f"Applying deltas over the {preference_over} series...",
                             freq_abbr,m,d,"all"
                             )
-                        print_format_string(delta_application_panel, arg_tuple_delta7)
+                        print_format_string(delta_application_info_str, arg_tuple_delta7)
                         
                         if isinstance(observed_series, pd.DataFrame) \
                         and isinstance(reanalysis_series, pd.DataFrame):
@@ -900,7 +890,7 @@ def calculate_and_apply_deltas(observed_series,
                                 f"Applying deltas over the {preference_over} series...",
                                 freq_abbr,m,d,h
                                 )
-                            print_format_string(delta_application_panel, arg_tuple_delta8)
+                            print_format_string(delta_application_info_str, arg_tuple_delta8)
                             
                             if isinstance(observed_series, pd.DataFrame) \
                             and isinstance(reanalysis_series, pd.DataFrame):
@@ -1046,8 +1036,10 @@ obj_climat_str_dict = {
 # Tuples to pass in into preformatted strings #
 arg_tuple_stats = ("time-frecuency", freq_abbrs1)
 
-# Output preformatted strings #
-delta_application_panel = """{}
+# Preformatted strings #
+#----------------------#
+
+delta_application_info_str = """{}
 Time frequency : {}
 Month = {}
 Day = {}

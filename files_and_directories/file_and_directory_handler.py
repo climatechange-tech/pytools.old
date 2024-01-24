@@ -14,7 +14,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -33,21 +33,19 @@ custom_mod2_path = f"{fixed_path}/operative_systems"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import file_and_directory_paths
+from file_and_directory_paths import posixpath_converter
 import information_output_formatters
-import os_operations
+from os_operations import exec_shell_command
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-posixpath_converter = file_and_directory_paths.posixpath_converter
 print_format_string = information_output_formatters.print_format_string
 format_string = information_output_formatters.format_string
-exec_shell_command = os_operations.exec_shell_command
 
 #------------------#
 # Define functions #
@@ -545,7 +543,7 @@ def remove_files_byExts(extensions,
           containing several directories where to move the matching files.
     find_hidden_files : bool
           Controls whether to seek for hidden files in the given directory
-          by ´destination_directories´ parameter. Defaults False.
+          by 'destination_directories' parameter. Defaults False.
     recursive_in_depth : bool
           Applies only to the case in which both of the first parameters are lists.
           Default value is True.
@@ -683,7 +681,7 @@ def remove_files_byFS(file_strings,
           several directories.
     find_hidden_files : bool
           Controls whether to seek for hidden files in the given directory
-          by ´destination_directories´ parameter. Defaults False.
+          by 'destination_directories' parameter. Defaults False.
     recursive_in_depth : bool
           Applies only to the case in which both of the first parameters are lists.
           Default value is True.
@@ -962,7 +960,7 @@ def copy_entire_directories(directories,
             
             for dirc in directories:
                 for dd in destination_directories:
-                    exec_shell_command(format_string(cp_command, (dirc, dd)))
+                    exec_shell_command(format_string(cp_command_str, (dirc, dd)))
                         
         elif isinstance(directories, list)\
         and isinstance(destination_directories, list)\
@@ -976,28 +974,27 @@ def copy_entire_directories(directories,
                                  "are not of the same length.")
             else:
                 for dirc, dd in zip(directories, destination_directories):
-                    exec_shell_command(format_string(cp_command, (dirc, dd)))
+                    exec_shell_command(format_string(cp_command_str, (dirc, dd)))
                     
         elif isinstance(directories, list)\
         and not isinstance(destination_directories, list):
             for dirc in directories:
-                exec_shell_command(format_string(cp_command, (dirc, 
+                exec_shell_command(format_string(cp_command_str, (dirc, 
                                                               destination_directories)))
                     
         elif not isinstance(directories, list)\
         and isinstance(destination_directories, list):        
             for dd in destination_directories:
-                exec_shell_command(format_string(cp_command, (directories, dd)))
+                exec_shell_command(format_string(cp_command_str, (directories, dd)))
                     
         else:
-            exec_shell_command(format_string(cp_command, (directories,
+            exec_shell_command(format_string(cp_command_str, (directories,
                                                           destination_directories)))
 
 # Operations involving both files and directories #
 #-------------------------------------------------#
 
-def rename_objects(relative_paths,
-                   renaming_relative_paths):
+def rename_objects(relative_paths, renaming_relative_paths):
 
     """
     Function that renames files specified by their absolute paths.
@@ -1063,22 +1060,22 @@ def rename_objects(relative_paths,
 cwd = Path.cwd()
 alldoc_dirpath = Path(fixed_path).parent
 
-# Bash 'cp' command #
-cp_command = """cp -rv {}/* {}""" # TODO: 'bash' agindua saihes daiteke?
+# Tuples to pass in into preformatted strings #
+arg_tuple_exts_dirs = ("Extension", "destination directory")
+arg_tuple_FS_dirs = ("File string", "destination directory")
+arg_tuple_rename_objs = ("Files", "renaming file")
 
-# Switch dictionaries #
+# Preformatted strings #
+#----------------------#
+
+cp_command_str = """cp -rv {}/* {}""" # TODO: 'bash' agindua saihes daiteke?
+notEqualLengthErrorStr = """{} and {} lists are not of the same length."""
+objTypeErrorStr = "Both input arguments must either be strings or lists simultaneously."
+
+# 'rsync' command switch-case dictionary #
 rsync_command_dict = {
     1 : """rsync -{} --delete '{}' '{}' """,
     2 : """rsync -{} '{}' '{}' """,
     3 : """rsync -{} --delete '{}'/ '{}' """,
     4 : """rsync -{} '{}'/ '{}' """
     }
-
-# Tuples to pass in into preformatted strings #
-arg_tuple_exts_dirs = ("Extension", "destination directory")
-arg_tuple_FS_dirs = ("File string", "destination directory")
-arg_tuple_rename_objs = ("Files", "renaming file")
-
-# Output preformatted strings #
-notEqualLengthErrorStr = """{} and {} lists are not of the same length."""
-objTypeErrorStr = "Both input arguments must either be strings or lists simultaneously."

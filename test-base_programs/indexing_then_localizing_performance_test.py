@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Thu Jun  1 09:03:17 2023
 
@@ -52,16 +54,30 @@ df=pd.DataFrame(a, columns=cols)
 repeats=10
 number=1
 
-a_sel_res=np.round(timeit.repeat("a_sel(a,rows,cols1)", repeat=repeats, number=number, globals=globals()),3)
-df_sel_res=np.round(timeit.repeat("df_sel(df,rows,cols1df)", repeat=repeats, number=number, globals=globals()),3)
+a_sel_res=np.round(timeit.repeat("a_sel(a,rows,cols1)", 
+                                 repeat=repeats,
+                                 number=number, 
+                                 globals=globals()), 3)
 
-a_where_res=np.round(timeit.repeat("a_where(a,val1,val2)", repeat=repeats, number=number, globals=globals()),3)
-df_where_res=np.round(timeit.repeat("df_where(df,val1,val2)", repeat=repeats, number=number, globals=globals()),3)
+df_sel_res=np.round(timeit.repeat("df_sel(df,rows,cols1df)",
+                                  repeat=repeats, 
+                                  number=number, 
+                                  globals=globals()), 3)
+
+a_where_res=np.round(timeit.repeat("a_where(a,val1,val2)", 
+                                   repeat=repeats,
+                                   number=number, 
+                                   globals=globals()), 3)
+
+df_where_res=np.round(timeit.repeat("df_where(df,val1,val2)", 
+                                    repeat=repeats,
+                                    number=number,
+                                    globals=globals()), 3)
 
 
 
 
-res_table="""Execution times for {} loops with {} reps:
+res_info_str="""Execution times for {} loops with {} reps:
     
 INDEXING
 --------
@@ -77,8 +93,8 @@ Pandas: {}; best {}
 
 """
 
-print(res_table.format(repeats, number, 
-                       a_sel_res, min(a_sel_res),
-                       df_sel_res, min(df_sel_res),
-                       a_where_res, min(a_where_res),
-                       df_where_res, min(df_where_res)))
+print(res_info_str.format(repeats, number, 
+                          a_sel_res, min(a_sel_res),
+                          df_sel_res, min(df_sel_res),
+                          a_where_res, min(a_where_res),
+                          df_where_res, min(df_where_res)))

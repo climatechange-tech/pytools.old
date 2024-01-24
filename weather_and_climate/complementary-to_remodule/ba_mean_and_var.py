@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # bias adjustment of mean and variance test
 from auxiliary_functions import *
 

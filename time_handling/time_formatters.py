@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -17,7 +20,7 @@ import pandas as pd
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -36,21 +39,11 @@ custom_mod2_path = f"{fixed_path}/strings"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import information_output_formatters
-import string_handler
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
-
-find_substring_index = string_handler.find_substring_index
-substring_replacer = string_handler.substring_replacer
+from information_output_formatters import format_string
+from string_handler import find_substring_index, substring_replacer
 
 #------------------#
 # Define functions #
@@ -533,12 +526,16 @@ def time2seconds(t, time_fmt_str=None):
 
 # Global method options #
 method_options = ["datetime", "datetime_list", "datetime_pydt", "model_datetime",
-                  "pandas", "numpy_dt64", "numpy_dt64_array", "numpy_generic"]
+                  "pandas", 
+                  "numpy_dt64", "numpy_dt64_array", "numpy_generic"]
 
 # Extension list #
 extensions = ["csv", "xlsx", "nc"]
 
-# Error message strings #
+# Preformatted strings #
+#----------------------#
+
+# Error strings #
 noStringFormatErrorStr = \
 """For {} of argument '{}' at position {}, 
 function '{}' is designed to output a time string.
@@ -546,20 +543,22 @@ Please provide a time string format identifier.
 """
 
 ValueErrorStr = """Wrong '{}' option. Options are {}."""
-ValueErrorForTypeCaseStr = """'{}'=='{}' not allowed for argument '{}' of type {}.
+ValueErrorForTypeCaseStr = """'{}'=='{}' not allowed for argument '{}' of type ´{}´.
 Options are {}."""
 
 AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
 
 notSatisfactoryDTObjectErrorStr = \
-"""{} of type {} will not give a satisfactory pandas's timestamp containing object."""
+"""Argument '{}' of type '{}' will not give a satisfactory pandas's timestamp containing object."""
 
-unhandleableErrorStr = """Cannot handle hour range standarization with {} of type {}."""
+unhandleableErrorStr = """Cannot handle hour range standardization with Argument '{}' of type '{}'."""
 
 unconverteablePandasDTObjectErrorStr = \
-"""Cannot convert {} of type {} to pandas's timestamp containing object."""
+"""Cannot convert Argument '{}' of type '{}' to pandas's timestamp containing object."""
 
 # Switch dictionaries #
+#---------------------#
+
 datetime_obj_dict = {
     "datetime" : "datetime.datetime.strptime(t, time_fmt_str)",
     "datetime_list" : "t.tolist()",

@@ -1,9 +1,14 @@
-# create a lineplot of temperature
-# observations and gcm simulations
-# of the Manila grid box
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-from auxiliary_functions import *
+"""
+**Goal**
 
+Create a lineplot of temperature observations and gcm simulations
+of the Manila grid box
+"""
+
+import auxiliary_functions
 
 ilon, ilat = 14, 19
 # reading observations

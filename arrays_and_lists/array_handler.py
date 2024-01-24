@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -67,7 +70,7 @@ def extend_array(obj, obj2extend, np_axis=None):
         obj_extended = np.concatenate((obj, obj2extend), axis=np_axis)
     else:
         raise TypeError("Input argument to be extended must either be of type "
-                        "´list´ or ´np.ndarray´.")
+                        "'list' or 'np.ndarray'.")
     return obj_extended
 
 
@@ -624,7 +627,7 @@ def remove_elements_from_array(array, idx2access, axis=None):
     idx2access : list or numpy.array of integers or booleans
           Object containing indexes used to select elements
           from the previous list or array.
-          If ´array´ is of type list, then only a number is accepted.
+          If 'array' is of type list, then only a number is accepted.
     
     Returns
     -------
@@ -645,7 +648,7 @@ def remove_elements_from_array(array, idx2access, axis=None):
         array_filtered = np.delete(array, idx2access, axis=axis)
         
     else:
-        raise TypeError("Input argument must either be of type ´list´ or numpy array.")
+        raise TypeError("Input argument must either be of type 'list' or numpy array.")
     
     
     return array_filtered

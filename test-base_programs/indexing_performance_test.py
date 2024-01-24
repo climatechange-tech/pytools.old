@@ -1,16 +1,58 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Tue May 30 08:48:30 2023
 
 @author: jgabantxo_ext
 """
 
-#%% IMPORT MODULES
+#%% IMPORT STANDARD AND CUSTOM MODULES
+
+#----------------#
+# Import modules #
+#----------------#
+
+from pathlib import Path
+import sys
+
+import timeit
 
 import numpy as np
 import pandas as pd
 
-import timeit
+#-----------------------#
+# Import custom modules #
+#-----------------------#
+
+# Find the path of the Python toolbox #
+home_PATH = Path.home()
+sys.path.append(str(home_PATH))
+
+import get_pytools_path
+fixed_path = get_pytools_path.return_custom_path()
+
+# Enumerate custom modules and their paths #
+#------------------------------------------#
+
+custom_mod1_path = f"{fixed_path}/strings"
+                                        
+# Add the module paths to the path variable #
+#-------------------------------------------#
+
+sys.path.append(custom_mod1_path)
+
+# Perform whole or partial module importations #
+#----------------------------------------------#
+
+import information_output_formatters
+
+#--------------------------------------------------#
+# Define imported modules' objname_unevennction call shortcuts #
+#--------------------------------------------------#
+
+print_format_string = information_output_formatters.print_format_string
+format_string = information_output_formatters.format_string
 
 #%% DEFINE FUNCTIONS
 
@@ -50,10 +92,10 @@ cols = ['itvs','a', 'b', 'c', 'd']
 rows = np.sort(np.random.randint(0,la,size = la//2))
 icols = [2,4]
 
-# Pre-formatted output string #
+# Preformatted strings #
 header_str = "Execution times for {} loops with {} reps (in seconds)"
 
-res_table = """{}\n{}
+exec_time_res_str = """{}\n{}
 · Numpy generic: {}, best {}
 · Numpy structured array: {}, best {}
 · Pandas: {}, best {}
@@ -71,7 +113,7 @@ sa = df_to_structured_array(df)
 repeats = 5
 trials = 5000
 
-# Define setup to pass it into ´timeit´ module #
+# Define setup to pass it into 'timeit' module #
 array_sel_setup = "a_sel(a,rows,icols)"
 struct_array_sel_setup = "sa_sel(sa,rows,icols)"
 df_sel_setup = "df_sel(df,rows,icols)"
@@ -82,11 +124,14 @@ sa_sel_res = np.round(timeit.repeat(struct_array_sel_setup, repeat = repeats, nu
 df_sel_res = np.round(timeit.repeat(df_sel_setup, repeat = repeats, number = trials, globals = globals()),4)
 
 #%% PRINT RESULTS
-header_formatted = header_str.format(repeats, trials)
+
+arg_tuple_header = (repeats, trials)
+header_formatted = format_string(header_str, arg_tuple_header)
 lhf = len(header_formatted)
 
-print(res_table.format(header_formatted, 
+arg_tuple_exec_time = (header_formatted, 
                        f"{'=':=^lhf}",
                        a_sel_res, min(a_sel_res),
                        sa_sel_res, min(sa_sel_res),
-                       df_sel_res, min(df_sel_res)))                    
+                       df_sel_res, min(df_sel_res))
+print_format_string(exec_time_res_str, arg_tuple_exec_time)                 

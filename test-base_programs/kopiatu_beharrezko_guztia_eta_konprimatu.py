@@ -23,7 +23,7 @@ import time
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -44,8 +44,8 @@ sys.path.append(custom_mod_path1)
 sys.path.append(custom_mod_path2)
 sys.path.append(custom_mod_path3)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import array_handler
 import file_and_directory_handler

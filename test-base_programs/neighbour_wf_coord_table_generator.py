@@ -1,8 +1,11 @@
-"""# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+"""
 Created on Tue Sep 19 09:18:37 2023
 
-@author: jgabantxo_ext"""
+@author: jgabantxo_ext
+"""
 
 import numpy as np
 import pandas as pd

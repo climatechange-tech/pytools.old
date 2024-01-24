@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -9,7 +12,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -32,34 +35,28 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import file_and_directory_handler
-import file_and_directory_paths
-import global_parameters
-import information_output_formatters
+from file_and_directory_handler import remove_files_byExts
+from file_and_directory_paths import find_ext_file_paths, find_fileString_paths
+from global_parameters import common_splitchar_list
+from information_output_formatters import format_string
 import os_operations
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-remove_files_byExts = file_and_directory_handler.remove_files_byExts
-
-find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
-find_fileString_paths = file_and_directory_paths.find_fileString_paths
-
-common_splitchar_list = global_parameters.common_splitchar_list
-
-format_string = information_output_formatters.format_string
 
 catch_shell_prompt_output = os_operations.catch_shell_prompt_output
 exec_shell_command = os_operations.exec_shell_command
 
+aux_ext_adder = string_handler.aux_ext_adder
+aux_path_strAdd = string_handler.aux_path_strAdd
 get_obj_specs = string_handler.get_obj_specs
 obj_path_specs = string_handler.obj_path_specs
+fileList2String = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
 modify_obj_specs = string_handler.modify_obj_specs
 
@@ -68,31 +65,7 @@ modify_obj_specs = string_handler.modify_obj_specs
 # Define functions #
 #------------------#
 
-def aux_path_strAdd(path2tweak, str2add):
-    
-    obj2change = "name_noext"
-    output_path_aux = modify_obj_specs(path2tweak, 
-                                       obj2change,
-                                       str2add=str2add)
-    return output_path_aux
 
-
-def aux_ext_adder(path2tweak, extension):
-    
-    obj2change = "ext"
-    obj_spec_key = obj2change
-    
-    path_ext = get_obj_specs(path2tweak, obj_spec_key)
-    
-    if len(path_ext) == 0:
-        output_path = modify_obj_specs(path2tweak,
-                                       obj2change,
-                                       new_obj=extensions)
-        
-    else:
-        output_path = path2tweak
-    
-    return output_path
 
 
 def tweak_pages(file, cat_str, output_path="default"):
@@ -111,10 +84,10 @@ def tweak_pages(file, cat_str, output_path="default"):
         else:
             output_path = output_path_aux_1
        
-    zsh_pdftk_command = f"{essential_program_list[1]} '{file}' cat {cat_str} "\
+    zsh_pdftk_command = f"{essential_command_list[1]} '{file}' cat {cat_str} "\
                         f"output '{output_path}'"
                         
-    exec_shell_command(zsh_pdftk_command)    
+    exec_shell_command(zsh_pdftk_command)
 
 
 def pdf_file_tweaker(path, cat_out_obj):
@@ -124,7 +97,7 @@ def pdf_file_tweaker(path, cat_out_obj):
     to conserve in a PDF file, the same way as it is done
     when printing a document.
     
-    For that it uses pdftk tool, together with 'cat' and the
+    For that it uses 'pdftk' tool, together with 'cat' and the
     os.system shell emulator attribute.
     
     For the sake of gathering simplicity and practicity,
@@ -227,11 +200,12 @@ def pdf_file_tweaker(path, cat_out_obj):
     """
     
     arg_names = pdf_file_tweaker.__code__.co_varnames
+    splitchar = common_splitchar_list[2]
     
     if isinstance(path, str) and isinstance(cat_out_obj, str):
         
         if splitchar not in cat_out_obj:
-            raise SyntaxError(syntax_error_string)
+            raise SyntaxError(syntaxErrorStr)
             
         cat_str = cat_out_obj.split(splitchar)[0]
         output_path_aux = cat_out_obj.split(splitchar)[1]
@@ -260,8 +234,22 @@ def pdf_file_tweaker(path, cat_out_obj):
         
     else:
         arg_tuple_pdftweaker = (arg_names[0], arg_names[1])
-        raise TypeError(format_string(type_error_string_complete, arg_tuple_pdftweaker))
-        
+        raise TypeError(format_string(typeErrorStr_complete_1, arg_tuple_pdftweaker))
+
+
+def merge_pdf_files(in_path_list, out_path=None):
+    
+    all_in_paths_string = fileList2String(in_path_list)
+    
+    if out_path is None:
+        out_path_noext = "merged_doc"
+        out_path = aux_ext_adder(out_path_noext, extensions[0])
+    
+    arg_tuple_pdfunite = (all_in_paths_string, out_path)
+    pdfunite_command = format_string(pdfunite_command_prefmt, arg_tuple_pdfunite)
+    exec_shell_command(pdfunite_command)
+    
+    
         
 def pdf_file_compressor(in_path, out_path=None):
     
@@ -310,59 +298,58 @@ def pdf_file_compressor(in_path, out_path=None):
     
     arg_names = pdf_file_compressor.__code__.co_varnames
           
-    if not (isinstance(in_path, str) and isinstance(out_path, str)\
-        or (isinstance(in_path, list)) and isinstance(out_path, list)):
+    if not ((isinstance(in_path, str) and (isinstance(out_path, str) or out_path is None))\
+        or (isinstance(in_path, list) and isinstance(out_path, list))):
         
         arg_tuple_pdfcompress = (arg_names[0], arg_names[1])
-        raise TypeError(format_string(type_error_string_complete, arg_tuple_pdfcompress))
+        raise TypeError(format_string(typeErrorStr_complete_2, arg_tuple_pdfcompress))
         
     else:
         if isinstance(in_path, str):
             in_path = [in_path]
             
-        if isinstance(out_path, str):
+        if isinstance(out_path, str) or out_path is None:
             out_path = [out_path]
     
     for ip, op_aux in zip(in_path, out_path):
     
         if op_aux is None:
-            str2add = "compressed"
-            op_aux = aux_path_strAdd(ip, str2add)
-            
+            op_aux = "compressed_doc"            
         op = aux_ext_adder(op_aux, extensions[0])
     
         ps2pdf_command\
-        = f"{essential_program_list[0]} -dPDFSETTINGS=/ebook {ip} {op}"
+        = f"{essential_command_list[0]} -dPDFSETTINGS=/ebook {ip} {op}"
     
         exec_shell_command(ps2pdf_command)
     
   
-def checkEssentialProgInstallStatus():
-    
-    none_keyword_list = "instal"
+def checkEssentialProgsInstallation():
     
     """
-    This function checks whether at least one of the programs is installed,
-    only to be used by functions 'eml2pdf' and 'msg2pdf'.
-    If so, it returns True, otherwise returns False.
+    This function checks whether every essential program which
+    this module makes use of is installed.
+    Not all of them have an APT candidate, but 'dpkg',
+    so in order to check if a program is installed,
+    that command will be used, piped with grep,
+    'which in turn will be 'grepped with 'lc' line counter.
     """
     
-    for kw, ess_prog in zip(none_keyword_list, essential_program_list):
-        apt_cache_comm = f"apt-cache policy {ess_prog}"
+    notInstalledProgs = []
+    
+    for ess_prog in essential_program_list:
+        apt_cache_command = f"dpkg -l | grep -i {ess_prog} | wc -l"
         
-        progInstalledStatusString = catch_shell_prompt_output(apt_cache_comm)
-        progInstalledStatusString = progInstalledStatusString.lower()
-        kw_idx = find_substring_index(progInstalledStatusString, 
-                                      kw,
-                                      advanced_search=True,
-                                      find_whole_words=True)
+        numProgCoincidence = catch_shell_prompt_output(apt_cache_command)
+        isProgInstalled = int(numProgCoincidence.strip()) >= 1
         
-        if kw_idx == -1:
-            arg_tuple_check = tuple(2*[ess_prog])
-            raise ModuleNotFoundError(format_string(mnfe_string, arg_tuple_check))
+        if not isProgInstalled:
+            notInstalledProgs.append(ess_prog)
             
-    else:
-        print(f"{ess_prog} program installed, continuing.")
+    lnip = len(notInstalledProgs)
+    if lnip > 0:    
+        raise ModuleNotFoundError(format_string(essentialProgNotInstalledError,
+                                                notInstalledProgs))   
+
 
 
 def eml2pdf(path_to_walk_into, delete_eml_files=False):
@@ -446,7 +433,7 @@ def msg2pdf(path_to_walk_into,
     
     # Convert microsoft outlook message (.msg) to email (.eml) #
     for msgf in msg_files:
-        msg2eml_command = f"{essential_program_list[3]} '{msgf}'"
+        msg2eml_command = f"{essential_command_list[3]} '{msgf}'"
         exec_shell_command(msg2eml_command)
         
     # Convert email to PDF #
@@ -470,43 +457,64 @@ alldoc_dirpath = Path(fixed_path).parent
 # File extensions #
 extensions = ["pdf", "eml", "msg", "jar"]
 
-# Essential programs #
-essential_program_list = ["ps2pdf", "pdftk", "wkhtmltopdf", "msgconvert"]
+# Essential programs and the commands for each one to use by this module #
+essential_program_list = [
+    "ghostscript",
+    "pdftk",
+    "wkhtmltopdf",
+    "libemail-address-xs-perl", 
+    "poppler-utils"
+    ]
 
-# String splitting character #
-splitchar = common_splitchar_list[2]
+essential_command_list = [
+    "ps2pdf",
+    "pdftk",
+    "wkhtmltopdf",
+    "mgsconvert", 
+    "pdfunite"
+    ]
 
-# Output preformatted strings #
-#-----------------------------#
 
-syntax_error_string = """
+# Preformatted strings #
+#----------------------#
+
+# Error strings #
+syntaxErrorStr = """
 Please write a semicolon (';') to separate
 the page cat string from the output path, 
-i.e. "{cat_str}; {output_path}"'
+i.e. '{cat_str}; {output_path}'
 """
 
-type_error_string_basic = """
-'{}' and '{}' must match one of these cases:\n                
-type(in_path) == str and type(out_path) == str\n
-type(in_path) == list and type(out_path) == list\n
+typeErrorStr_basic = """
+'{}' and '{}' must match one of these cases:                
+· type(in_path) == str and type(out_path) == str
+· type(in_path) == list and type(out_path) == list
 """
 
-type_error_string_complete = """
-'{}' and '{}' must match one of these cases:\n                
-type(path) == str and type(cat_out_obj) == str\n
-type(path) == str and type(cat_out_obj) == dict\n
-type(path) == list and type(cat_out_obj) == list\n
+typeErrorStr_complete_1 = """
+'{}' and '{}' must match one of these cases:             
+· type(path) == str and type(cat_out_obj) == str
+· type(path) == str and type(cat_out_obj) == dict
+· type(path) == list and type(cat_out_obj) == list
 """
 
-mnfe_string = """
-'{}' is not installed, which is 
-required to perform the msg-to-pdf conversion.\n
-Install it by typing: sudo apt install '{}'
+typeErrorStr_complete_2 = """
+'{}' and '{}' must match one of these cases:             
+· type(in_path) == str and (type(out_path) == str or type(out_path) == NoneType)
+· type(in_path) == list and type(out_path) == list
 """
+
+essentialProgNotInstalledError = """
+In order to use this module, the remaining programs to be installed are:\n{}"""
+
+# Command strings #
+#-----------------#
+
+pdfunite_command_prefmt = """pdfunite {} {}"""
 
 #------------------#
 # Local operations #
 #------------------#
 
 # Check whether essential programs are installed #
-checkEssentialProgInstallStatus()
+checkEssentialProgsInstallation()

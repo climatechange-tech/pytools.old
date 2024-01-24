@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #-------------------------#
 # Define custom functions #
 #-------------------------#
@@ -72,7 +75,7 @@ def hex2dec(n_hex):
 
     
 # Operations with arbitrary bases #
-#---------------------------------#
+#----------------------------------------------#
     
 # From arbitrary base to decimal #
 def arbBase2Dec(x, base=10):

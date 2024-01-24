@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -15,7 +18,7 @@ import pandas as pd
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -40,8 +43,8 @@ sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import array_handler
 import data_frame_handler
@@ -50,7 +53,7 @@ import string_handler
 import time_formatters
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 basic_time_format_strs = global_parameters.basic_time_format_strs
@@ -182,10 +185,7 @@ def standardize_calendar(obj,
             """It is supposed that every component is of the same type"""
             if isinstance(obj[0], pd.DataFrame):
                 
-                for obj_enumerate, fp in zip(enumerate(obj), file_path):
-                    
-                    obj_num = obj_enumerate[0]
-                    obj = obj_enumerate[-1]
+                for (obj_num, obj), fp in zip(enumerate(obj), file_path):
                     
                     # Get the date key and time frequency #
                     time_col = find_date_key(obj)
@@ -310,7 +310,7 @@ def standardize_calendar(obj,
         import xarray as xr
         import netcdf_handler
         
-        # Define imported module(s)´ function call shortcuts by convenience #
+        # Define imported module(s)' function call shortcuts by convenience #
         #-------------------------------------------------------------------#
             
         find_time_dimension = netcdf_handler.find_time_dimension
@@ -327,8 +327,8 @@ def week_range(date):
     where a given calendar day lies on.
     In Europe weeks start on Monday and end on Sunday.
     
-    Isocalendar calculates the year, week of the year, and day of the week (´dow´).
-    ´dow´ is Mon = 1, ... , Sat = 6, Sun = 7
+    Isocalendar calculates the year, week of the year, and day of the week ('dow').
+    'dow' is Mon = 1, ... , Sat = 6, Sun = 7
     
     Parameters
     ----------
@@ -350,7 +350,7 @@ def week_range(date):
             # Since we want to start with Monday, let's test for that condition.
             start_date = date
         else:
-            # Otherwise, subtract the `dow` number days 
+            # Otherwise, subtract the 'dow' number days 
             # that have passed from Monday to get the first day.
             start_date = date - (datetime.timedelta(dow) - datetime.timedelta(1))
 
@@ -426,4 +426,3 @@ def leapYearDetector(start_year, end_year, return_days=False):
             isLeapYear_arr = [calendar.isleap(year)
                               for year in range(start_year, end_year+1)]
             return isLeapYear_arr
-    

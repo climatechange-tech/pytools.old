@@ -1,12 +1,12 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
 
 import importlib
 from pathlib import Path
-
-import numpy as np
-import pandas as pd
 
 import scipy.signal as ssig
 import scipy.stats as ss
@@ -46,7 +46,7 @@ array_numerical_operations = importlib.util.module_from_spec(spec2)
 spec2.loader.exec_module(array_numerical_operations)
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 # obj_path_specs = string_handler.obj_path_specs

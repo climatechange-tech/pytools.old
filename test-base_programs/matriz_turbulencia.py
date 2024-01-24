@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Tue May 23 12:12:33 2023
 
@@ -24,7 +26,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -47,8 +49,8 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import array_handler
 import data_frame_handler
@@ -57,7 +59,7 @@ import program_snippet_exec_timers
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 arrayOfList_to_array = array_handler.arrayOfList_to_array
@@ -561,31 +563,31 @@ IT_col = "IT"
 # Main and key variable list #
 key_var_list = [WS_col_abbr, WS_mean_sigma_col, "N"]
 
-# Output information tables #
-#---------------------------#
+# Preformatted strings #
+#----------------------#
 
-caseSelectionTable = \
+caseSelectionInfoStr = \
 """Following cases selected:
    {}
    
    Completing data...
 """
 
-sigmaFIllRemainCasesTable = \
+sigmaFIllRemainCasesInfoStr = \
 """Remaining cases to be treated to fill sigma values:
    Hour = {}
    Month = {}
    Direction = {}
 """
 
-sigmaAssignRemainCasesTable = \
+sigmaAssignRemainCasesInfoStr = \
 """Remaining cases to be treated to assign filled sigmas:
    Hour = {}
    Month = {}
    Direction = {}
 """
 
-fixed_df_Table = """
+fixed_df_InfoStr = """
 COMPLETED WS-BINNED DATA FRAME
 ------------------------------
 {}
@@ -940,10 +942,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
         caseSelectionList = ["Wind speed (default)", "Direction", "Month", "Hour"]
         tab_name = "WS + DIREC + MONTH + HOUR"
         
-        for direc in enumerate(direc_byBins_unique):
-            direcBin = direc[-1]
-            i_direcBin = direc[0]
-       
+        for i_direcBin, direcBin in enumerate(direc_byBins_unique):
             for m in month_range:
                 for h in hour_range:
                     
@@ -959,7 +958,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                     
                     sigmaFilledList.append(sigmaFilledArrVar)
                     
-                    print(sigmaFIllRemainCasesTable.format(lhours-h,
+                    print(sigmaFIllRemainCasesInfoStr.format(lhours-h,
                                                            lmonths-(m-1),
                                                            l_direcBin-i_direcBin))                
     
@@ -988,7 +987,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                 
                 sigmaFilledList.append(sigmaFilledArrVar)
                 
-                print(sigmaFIllRemainCasesTable.format(lhours-h,
+                print(sigmaFIllRemainCasesInfoStr.format(lhours-h,
                                                        lmonths-(m-1),
                                                        "(not selected)"))
     
@@ -1020,7 +1019,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                                
                 sigmaFilledList.append(sigmaFilledArrVar)
                 
-                print(sigmaFIllRemainCasesTable.format(lhours-h,
+                print(sigmaFIllRemainCasesInfoStr.format(lhours-h,
                                                        "(not selected)",
                                                        l_direcBin-i_direcBin))
      
@@ -1053,7 +1052,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                 
                 sigmaFilledList.append(sigmaFilledArrVar)
                 
-                print(sigmaFIllRemainCasesTable.format("(not selected)",
+                print(sigmaFIllRemainCasesInfoStr.format("(not selected)",
                                                        lmonths-(m-1),
                                                        l_direcBin-i_direcBin))
     
@@ -1083,7 +1082,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
             
             sigmaFilledList.append(sigmaFilledArrVar)
             
-            print(sigmaFIllRemainCasesTable.format("(not selected)",
+            print(sigmaFIllRemainCasesInfoStr.format("(not selected)",
                                                    "(not selected)",
                                                    l_direcBin-i_direcBin))
             
@@ -1111,7 +1110,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
     
             sigmaFilledList.append(sigmaFilledArrVar)
             
-            print(sigmaFIllRemainCasesTable.format("(not selected)",
+            print(sigmaFIllRemainCasesInfoStr.format("(not selected)",
                                                    lmonths-(m-1),
                                                    "(not selected)"))
             
@@ -1140,7 +1139,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
          
             sigmaFilledList.append(sigmaFilledArrVar)
             
-            print(sigmaFIllRemainCasesTable.format(lhours-h,
+            print(sigmaFIllRemainCasesInfoStr.format(lhours-h,
                                                    "(not selected)",
                                                    "(not selected)"))
             
@@ -1200,7 +1199,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                           WS_byBins_unique,
                                                           key_var_idx_list2)
            
-                    print(sigmaAssignRemainCasesTable.format(lhours-h,
+                    print(sigmaAssignRemainCasesInfoStr.format(lhours-h,
                                                              lmonths-(m-1),
                                                              l_direcBin-i_direcBin))
                                  
@@ -1226,7 +1225,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                       WS_byBins_unique,
                                                       key_var_idx_list2)
     
-                print(sigmaAssignRemainCasesTable.format(lhours-h,
+                print(sigmaAssignRemainCasesInfoStr.format(lhours-h,
                                                          lmonths-(m-1),
                                                          "(not selected)"))
     
@@ -1254,7 +1253,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                       WS_byBins_unique,
                                                       key_var_idx_list2)
                 
-                print(sigmaAssignRemainCasesTable.format(lhours-h,
+                print(sigmaAssignRemainCasesInfoStr.format(lhours-h,
                                                          "(not selected)",
                                                          l_direcBin-i_direcBin))
     #%%
@@ -1282,7 +1281,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                       WS_byBins_unique,
                                                       key_var_idx_list2)
               
-                print(sigmaAssignRemainCasesTable.format("(not selected)",
+                print(sigmaAssignRemainCasesInfoStr.format("(not selected)",
                                                          lmonths-(m-1),
                                                          l_direcBin-i_direcBin,))
                 
@@ -1309,7 +1308,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                   WS_byBins_unique,
                                                   key_var_idx_list2)
     
-            print(sigmaAssignRemainCasesTable.format("(not selected)",
+            print(sigmaAssignRemainCasesInfoStr.format("(not selected)",
                                                      "(not selected)",
                                                      l_direcBin-i_direcBin))
             
@@ -1334,7 +1333,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                   WS_byBins_unique,
                                                   key_var_idx_list2)
     
-            print(sigmaAssignRemainCasesTable.format("(not selected)",
+            print(sigmaAssignRemainCasesInfoStr.format("(not selected)",
                                                      lmonths-(m-1),
                                                      "(not selected)"))
             
@@ -1359,7 +1358,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
                                                   WS_byBins_unique,
                                                   key_var_idx_list2)
           
-            print(sigmaAssignRemainCasesTable.format(lhours-h,
+            print(sigmaAssignRemainCasesInfoStr.format(lhours-h,
                                                      "(not selected)",
                                                      "(not selected)"))
             
@@ -1406,7 +1405,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
     # =============================================================================
     
     if print_sigmaFilled_df:
-        print(fixed_df_Table.format(sigmaFilledDf))
+        print(fixed_df_InfoStr.format(sigmaFilledDf))
     
     if saveSigmaFilledAsFile:
         
@@ -1436,7 +1435,7 @@ if not mergeAllSigmaFilledFiles or not mergeAllITFiles:
     # =============================================================================
     
     if print_IT_df:
-        print(fixed_df_Table.format(df_10min_filled))
+        print(fixed_df_InfoStr.format(df_10min_filled))
     
     if saveITDataAsFile:
     

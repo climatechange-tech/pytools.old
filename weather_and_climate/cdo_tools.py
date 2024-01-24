@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 #----------------#5
@@ -11,7 +12,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -35,36 +36,30 @@ sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import file_and_directory_handler
+from file_and_directory_handler import rename_objects
 import global_parameters
-import information_output_formatters
+from information_output_formatters import format_string
 import netcdf_handler
-import os_operations
+from os_operations import exec_shell_command
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-rename_objects = file_and_directory_handler.rename_objects
 
 basic_four_rules = global_parameters.basic_four_rules
 common_splitchar_list = global_parameters.common_splitchar_list
 freq_abbrs = global_parameters.time_frequencies_shorter_1
 time_freqs = global_parameters.time_frequencies_short_1
 
-format_string = information_output_formatters.format_string
-
 get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
 get_times = netcdf_handler.get_times
 
-exec_shell_command = os_operations.exec_shell_command
-
-addExtraName2File = string_handler.addExtraName2File
+aux_path_strAdd = string_handler.aux_path_strAdd
 find_substring_index = string_handler.find_substring_index
 fileList2String = string_handler.fileList2String
 obj_path_specs = string_handler.get_file_spec
@@ -238,7 +233,7 @@ def custom_cdo_mergetime(file_list,
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{custom_output_file_name}"
     else:
-        temp_file = addExtraName2File(file_list[0])
+        temp_file = aux_path_strAdd(file_list[0])
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{temp_file}"
                      
@@ -313,7 +308,7 @@ def cdo_shifttime(file_list,
                        
     for file in file_list:
         
-        temp_file = addExtraName2File(file)
+        temp_file = aux_path_strAdd(file)
         
         shifttime_command = f"cdo shifttime,{shift_value} '{file}' '{temp_file}'"
         exec_shell_command(shifttime_command)
@@ -332,7 +327,7 @@ def cdo_inttime(file_list,
     
     for file in file_list:
         
-        temp_file = addExtraName2File(file)
+        temp_file = aux_path_strAdd(file)
         star_date_format = f"{year0}-{month0}-{day0} "\
                            f"{hour0:2d}:{minute0:2d}:{second0:2d}"
         
@@ -349,10 +344,7 @@ def cdo_rename(file_list,
     
     lfl = len(file_list)
     
-    for file in enumerate(file_list):
-        
-        file_num = file[0] + 1
-        file_name = file[-1]
+    for file_num, file_name in enumerate(file_list, start=1):
 
         # Find the variable in the provided original variable list #   
         var_file = get_file_variables(file_name)
@@ -366,7 +358,7 @@ def cdo_rename(file_list,
         print(f"Renaming original variable '{var_file}' to '{var_std}' "
               f"on file {file_num} out of {lfl}...")
     
-        file_name_chname = addExtraName2File(file_name, 
+        file_name_chname = aux_path_strAdd(file_name, 
                                                      splitchar1)
         chname_command = f"cdo chname,{var_file},{var_std} "\
                          f"'{file_name}' '{file_name_chname}'"
@@ -523,17 +515,17 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
             
     # Get the file name for string manipulation #
     file_path_name\
-    = addExtraName2File(nc_file_name, return_file_name_noext=True)
+    = aux_path_strAdd(nc_file_name, return_file_name_noext=True)
     
     """Special case for seasonal time frequency"""
     if season_str is not None:
         statname_seas = f"{statname.split()[0]}_{statname[-3:]}"
         string2add = f"{splitchar1}{statname_seas}"
-        file_path_name_longer = addExtraName2File(file_path_name, string2add)
+        file_path_name_longer = aux_path_strAdd(file_path_name, string2add)
         
     else:
         string2add = f"{splitchar1}{statname}"
-        file_path_name_longer = addExtraName2File(file_path_name, string2add)
+        file_path_name_longer = aux_path_strAdd(file_path_name, string2add)
         
     # Define the output file name based on the configuration chosen #
     obj2change = "name_noext"
@@ -552,7 +544,7 @@ def calculate_periodic_deltas(projected_ncfile,
                               proj_model=None):
     
     period_abbr_idx = find_substring_index(time_freqs_delta, delta_period) 
-    deltaCalc_fn = addExtraName2File(historical_ncfile, 
+    deltaCalc_fn = aux_path_strAdd(historical_ncfile, 
                                       return_file_name_noext=True)
 
     if proj_model is None:
@@ -571,7 +563,7 @@ def calculate_periodic_deltas(projected_ncfile,
     proj_mean_command = f"-y{period_abbr}mean {projected_ncfile}"
 
     string2add = f"{period_abbr}Deltas_{proj_model}.nc"
-    deltaCalc_fn_longer = addExtraName2File(deltaCalc_fn, string2add)
+    deltaCalc_fn_longer = aux_path_strAdd(deltaCalc_fn, string2add)
     
     if operator not in basic_four_rules:
         raise ValueError(format_string(choiceErrorStr, arg_tuple_delta2))
@@ -594,7 +586,7 @@ def apply_periodic_deltas(projected_ncfile,
     
     
     period_abbr_idx = find_substring_index(time_freqs_delta, delta_period)
-    deltaApply_fn = addExtraName2File(historical_ncfile, 
+    deltaApply_fn = aux_path_strAdd(historical_ncfile, 
                                       return_file_name_noext=True)
     
     if proj_model is None:
@@ -611,7 +603,7 @@ def apply_periodic_deltas(projected_ncfile,
         period_abbr = freq_abbrs_delta[period_abbr_idx]
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
-    deltaApply_fn_longer = addExtraName2File(deltaApply_fn, string2add)
+    deltaApply_fn_longer = aux_path_strAdd(deltaApply_fn, string2add)
     
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     
@@ -633,19 +625,32 @@ def apply_periodic_deltas(projected_ncfile,
 # Parameters and constants #
 #--------------------------#
 
+# Strings #
+#---------#
+
 # String-splitting characters #
 splitchar1 = common_splitchar_list[0]
 splitchar2 = common_splitchar_list[1]
 
-# Statistics #
-statistics = ["max", "min", "sum", 
-              "mean", "avg", 
-              "var", "var1",
-              "std", "std1"]
+# Grid header file function key list #
+keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
 
 # Calendar and date-time parameters #
 time_freqs_delta = [time_freqs[0]] + time_freqs[2:4]
 freq_abbrs_delta = [freq_abbrs[0]] + freq_abbrs[2:4]
+
+# Tuples to pass in into preformatted strings #
+arg_tuple_delta1 = ("time-frequency", time_freqs_delta)
+arg_tuple_delta2 = ("basic operator", basic_four_rules)
+
+# Statistics and operators #
+#--------------------------#
+
+# Basic statistics #
+statistics = ["max", "min", "sum", 
+              "mean", "avg", 
+              "var", "var1",
+              "std", "std1"]
   
 # CDO remapping options #
 cdo_remap_option_dict = {
@@ -666,14 +671,8 @@ cdo_remap_option_dict = {
 
 cdo_remap_options = list(cdo_remap_option_dict.keys())
 
-# Grid header file function key list #
-keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
-
-# Preformatted output strings #
-prefmt_str_cdo_operator = """cdo {} {} {} {}"""
-prefmt_str_cdo_delta = """cdo y{}{} {} {} {}"""
                           
-# Switch cases #
+# Basic operator switch-case dictionary #
 cdo_operator_str_dict = {
     basic_four_rules[0] : "add",
     basic_four_rules[1] : "sub",
@@ -681,12 +680,14 @@ cdo_operator_str_dict = {
     basic_four_rules[3] : "div"
     }
 
-deltaCalc_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_operator)
-deltaApply_command_dict = dict.fromkeys(basic_four_rules, prefmt_str_cdo_delta)
+# Preformatted strings #
+#----------------------#
 
-# Tuples to pass in into preformatted strings #
-arg_tuple_delta1 = ("time-frequency", time_freqs_delta)
-arg_tuple_delta2 = ("basic operator", basic_four_rules)
-
-# Output preformatted strings #
 choiceErrorStr = "Wrong {}. Options are {}."
+
+cdo_operator_syntax = """cdo {} {} {} {}"""
+cdo_delta_syntax = """cdo y{}{} {} {} {}"""
+
+# Dictionaries constructed from some preformatted strings (fromkeys) #
+deltaCalc_command_dict = dict.fromkeys(basic_four_rules, cdo_operator_syntax)
+deltaApply_command_dict = dict.fromkeys(basic_four_rules, cdo_delta_syntax)

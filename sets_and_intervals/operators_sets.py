@@ -1,16 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
 
 from pathlib import Path
-
 import sys
 
 #-----------------------#
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -27,17 +29,10 @@ custom_mod1_path = f"{fixed_path}/strings"
 
 sys.path.append(custom_mod1_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import string_handler
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-find_substring_index = string_handler.find_substring_index
-substring_replacer = string_handler.substring_replacer
+from string_handler import find_substring_index
 
 #-------------------------#
 # Define custom functions #

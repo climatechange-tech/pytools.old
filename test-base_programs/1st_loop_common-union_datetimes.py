@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Wed Apr 12 11:46:48 2023
 
@@ -18,7 +20,7 @@ import pandas as pd
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -35,8 +37,8 @@ custom_mod1_path = f"{fixed_dirpath}/time_handling"
 
 sys.path.append(custom_mod1_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import datetime_operators
 import time_formatters
@@ -165,7 +167,7 @@ correlation_name = f"{stat_name_parent}_{stat_name_child}_H_"\
 # Comparation result reporting table #
 #------------------------------------#
 
-comparation_table = """
+comparation_info_str = """
 {}
 {}
 
@@ -191,7 +193,7 @@ Wind speed correlation name
 {}
 """
 
-print(comparation_table.format(stat_comp_header,
+print(comparation_info_str.format(stat_comp_header,
                                number_sign_str,
                                common_times_start[0],
                                custom_common_times_start1,

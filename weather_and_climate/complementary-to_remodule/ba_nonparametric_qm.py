@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # non-parametric quantile mapping test
 
 from auxiliary_functions import *

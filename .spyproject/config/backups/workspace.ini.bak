@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['../../04-Ikasketak/03-Ikastaroak/Deusto_Formacion/Curso_superior_Python/ariketak/oinarrizkoak/Tema_4/ejercicios.py']
+recent_files = ['files_and_directories/file_format_tweaker.py']
 
 [main]
 version = 0.2.0

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 **Note**
 
@@ -18,7 +20,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -35,13 +37,13 @@ custom_mod_path = f"{fixed_path}/miscellaneous"
 
 sys.path.append(custom_mod_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import merge_audio_and_video_main
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 merge_audio_and_video_files = merge_audio_and_video_main.merge_audio_and_video_files
@@ -60,10 +62,13 @@ input_audio_file_list = [
 output_file_name_list = [
     ]
 
+ZERO_PADDING = 1
+
 #------------------#
 # Perform the task #
 #------------------#
 
 merge_audio_and_video_files(input_video_file_list,
                             input_audio_file_list,
-                            output_file_name_list=None)
+                            output_file_name_list=None,
+                            ZERO_PADDING=ZERO_PADDING)

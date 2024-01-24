@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -87,7 +90,7 @@ def decompose_24h_cumulative_data(array, zeros_dtype='d'):
     ----------
     array : numpy.ndarray
           Multi-dimensional array which contains data,
-          being the first index corresponding to ´time´ dimension.
+          being the first index corresponding to 'time' dimension.
     zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)
           Sets the precision of the array composed of zeroes.
     

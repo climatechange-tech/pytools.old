@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 Created on Thu Jun  9 12:14:15 2022
 
@@ -12,9 +14,11 @@ The parameters are organized similar as are
 the directories inside "pytools" directory.
 """
 
-#--------------#
-# Time concept #
-#--------------#
+#%% PHYSICAL CONCEPTS
+
+#------#
+# Time #
+#------#
 
 basic_time_format_strs = dict(
     H           = "%Y-%m-%d %H:%M:%S",
@@ -76,32 +80,39 @@ time_frequencies_complete = ["year", "season", "month", "day", "hour", "minute",
 time_frequencies_short_1 = ["yearly", "seasonal", "monthly", "daily", "hourly"]
 time_frequencies_shorter_1 = ['year', 'seas', 'mon', 'day', 'hour']
 
+#%% MATHEMATICAL CONCEPTS
+ 
+#-----------------# 
+# Basic operators #
+#-----------------# 
+
+basic_four_rules = ["+", "-", "*", "/"]
+
+#%% PROGRAMMING CONCEPTS
+
+#-------------------# 
+# Operative Systems #
+#-------------------# 
+
+basic_object_types = ["file", "directory"]
+
+#---------------------------------# 
+# Widely used regular expressions #
+#---------------------------------# 
+
+regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'
+
+#---------# 
+# Strings #
+#---------#
+
+common_splitchar_list = ['_', '-', ';', ',']
+
+
+#%% SOCIO-ECONOMICAL CONCEPTS
+
 #----------------# 
 # Climate change #
 #----------------# 
 
 emission_rcp_scenarios = ["historical", "rcp26", "rcp45", "rcp85"]
-
-#----# 
-# OS #
-#----# 
-
-basic_object_types = ["file", "directory"]
-
-#---------------------# 
-# Regular expressions #
-#---------------------# 
-
-regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'
-
-#------------------------# 
-# Mathematical operators #
-#------------------------# 
-
-basic_four_rules = ["+", "-", "*", "/"]
-
-#---------------------# 
-# String manipulation #
-#---------------------# 
-
-common_splitchar_list = ['_', '-', ';', ',']

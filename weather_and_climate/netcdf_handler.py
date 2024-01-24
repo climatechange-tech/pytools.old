@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -12,7 +15,7 @@ import xarray as xr
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -39,34 +42,26 @@ sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
 sys.path.append(custom_mod6_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import data_frame_handler
+from data_frame_handler import save2csv
 import file_and_directory_paths
-import file_and_directory_handler
+from file_and_directory_handler import move_files_byFS_fromCodeCallDir
 import information_output_formatters
-import global_parameters
-import os_operations
+from global_parameters import common_splitchar_list
+from os_operations import exec_shell_command
 import string_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-save2csv = data_frame_handler.save2csv
-
-move_files_byFS_fromCodeCallDir = file_and_directory_handler.move_files_byFS_fromCodeCallDir
 
 find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
 
-common_splitchar_list = global_parameters.common_splitchar_list
-
 print_format_string = information_output_formatters.print_format_string
 format_string = information_output_formatters.format_string
-
-exec_shell_command = os_operations.exec_shell_command
 
 fileList2String = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
@@ -127,25 +122,21 @@ def netcdf_file_scanner(path_to_walk_into,
         # Loop through all path list #
         #----------------------------#
         
-        for ncf in enumerate(ncgrib_file_list, start=1):
-            
-            file_num = ncf[0]
-            file_name = ncf[-1]
-            
+        for file_num, file_name in enumerate(ncgrib_file_list, start=1):
             if verbose and extra_verbose:
                 raise ValueError(f"Arguments '{arg_names[verb_arg_pos]}' "
                                  f"and '{arg_names[xverb_arg_pos]}' "
-                                 "cannot be ´True´ at the same time.")
+                                 "cannot be 'True' at the same time.")
                 
             else:
                 if verbose:
                     arg_tuple_file_scan1 = (file_num, lncfl, ptwi)
-                    print_format_string(scan_progress_table,
+                    print_format_string(scan_progress_info_str,
                                         arg_tuple_file_scan1,
                                         end="\r")
                 elif extra_verbose:
                     arg_tuple_file_scan2 = (file_name, file_num, lncfl, ptwi)
-                    print_format_string(scan_progress_table_evb,
+                    print_format_string(scan_progress_str_evb,
                                         arg_tuple_file_scan2,
                                         end="\r")
         
@@ -166,7 +157,7 @@ def netcdf_file_scanner(path_to_walk_into,
             arg_tuple_file_scan3 = (ptwi,
                                     faulty_ncf_counter[0], 
                                     faulty_ncf_counter[-1])
-            ofile.write(format_string(report_table, arg_tuple_file_scan3))
+            ofile.write(format_string(report_info_str, arg_tuple_file_scan3))
             
             for faulty_ncf in faulty_ncf_list:
                 ofile.write(f" {faulty_ncf}\n")
@@ -601,25 +592,17 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
     # Open each file, extract coordinate dimension data and save to txt file #
     #------------------------------------------------------------------------#
     
-    ofile_name = "latlon_bounds.txt"
-    
     netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
-    for ncf_dir in enumerate(netcdf_files_dirs):
-        ncf_dir_name = str(ncf_dir[-1])
-        ncf_dir_num = ncf_dir[0] + 1
-        
+    for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
         nc_files = get_netcdf_fileList(ncf_dir_name)
         lncfs = len(nc_files)
         
-        ofile = open(ofile_name, "w")
+        ofile = open(latlon_bound_ofile_name, "w")
     
         if lncfs > 0:
-            for ncf in enumerate(nc_files):
-                ncf_name = ncf[-1]
-                ncf_num = ncf[0] + 1
-                
+            for ncf_num, ncf_name in enumerate(nc_files, start=1):
                 print("Extracting coordinate values "
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
@@ -659,7 +642,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                                 deltas[0],
                                 deltas[1]
                                 )
-                            ofile.write(format_string(latlon_table, 
+                            ofile.write(format_string(latlon_info_str, 
                                                       arg_tuple_latlons1))
                         except:
                             llats = 1
@@ -675,7 +658,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                                                   llons,
                                                   lat_delta,
                                                   lon_delta)
-                            ofile.write(format_string(latlon_table,
+                            ofile.write(format_string(latlon_info_str,
                                                       arg_tuple_latlons2))
                                                 
                 else: 
@@ -683,13 +666,13 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                             
                             
             ofile.close()
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_byFS_fromCodeCallDir(latlon_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")
             ofile.close()
             
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_byFS_fromCodeCallDir(latlon_bound_ofile_name, ncf_dir_name)
         
 
 def extract_and_store_period_bounds():
@@ -697,26 +680,18 @@ def extract_and_store_period_bounds():
     #---------------------------------------------------#
     # Open each file and extract time array format data #
     #---------------------------------------------------#
-
-    ofile_name = "period_bounds.txt"
  
     netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
-    for ncf_dir in enumerate(netcdf_files_dirs):
-        ncf_dir_name = str(ncf_dir[-1])
-        ncf_dir_num = ncf_dir[0] + 1
-        
+    for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
         nc_files = get_netcdf_fileList(ncf_dir_name)
         lncfs = len(nc_files)
         
-        ofile = open(ofile_name, "w")
+        ofile = open(period_bound_ofile_name, "w")
     
         if lncfs > 0:
-            for ncf in enumerate(nc_files):
-                ncf_name = ncf[-1]
-                ncf_num = ncf[0] + 1
-                    
+            for ncf_num, ncf_name in enumerate(nc_files, start=1):    
                 print("Extracting time bounds "
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
@@ -740,17 +715,17 @@ def extract_and_store_period_bounds():
                             times[-1].values,
                             records
                             )
-                        ofile.write(format_string(period_table, arg_tuple_bounds1))
+                        ofile.write(format_string(period_info_str, arg_tuple_bounds1))
                 else: 
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                 
             ofile.close()
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_byFS_fromCodeCallDir(period_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")    
             ofile.close()
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_byFS_fromCodeCallDir(period_bound_ofile_name, ncf_dir_name)
 
 
 def extract_and_store_time_formats():
@@ -759,26 +734,19 @@ def extract_and_store_time_formats():
     # Open each file and extract time array format data #
     #---------------------------------------------------#
     
-    
     ofile_name = "time_formats.txt"
 
     netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
     lncfd = len(netcdf_files_dirs)
     
-    for ncf_dir in enumerate(netcdf_files_dirs):
-        ncf_dir_name = str(ncf_dir[-1])
-        ncf_dir_num = ncf_dir[0] + 1
-        
+    for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
         nc_files = get_netcdf_fileList(ncf_dir_name)
         lncfs = len(nc_files)
         
         ofile = open(ofile_name, "w")
 
         if lncfs > 0:                
-            for ncf in enumerate(nc_files):
-                ncf_name = ncf[-1]
-                ncf_num = ncf[0] + 1
-                
+            for ncf_num, ncf_name in enumerate(nc_files, start=1):
                 print("Extracting time formats "
                       f"from file {ncf_num} out of {lncfs} "
                       f"at directory {ncf_dir_num} out of {lncfd}...")
@@ -801,7 +769,7 @@ def extract_and_store_time_formats():
                             times.values,
                             records
                             )
-                        ofile.write(format_string(time_format_table, arg_tuple_bounds2))
+                        ofile.write(format_string(time_format_info_str, arg_tuple_bounds2))
                         
                 else:
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
@@ -1316,7 +1284,7 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
             nc_file_new = modify_obj_specs(grib_file_list, "ext", extensions[0])
             
         else:
-            grib_allfile_str = fileList2String(grib_file_list)
+            grib_allfile_info_str = fileList2String(grib_file_list)
             nc_file_new_noext = input("Please introduce a name "
                                       "for the netCDF file, "
                                       "WITHOUT THE EXTENSION: ")
@@ -1340,9 +1308,9 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
                                                      new_obj=extensions[0])
             
         if option_str is None:
-            grib2netcdf_comm = f"grib_to_netcdf -o {nc_file_new} {grib_allfile_str}"                
+            grib2netcdf_comm = f"grib_to_netcdf -o {nc_file_new} {grib_allfile_info_str}"                
         else:
-            grib2netcdf_comm = f"grib_to_netcdf {option_str} -o {nc_file_new} {grib_allfile_str}"
+            grib2netcdf_comm = f"grib_to_netcdf {option_str} -o {nc_file_new} {grib_allfile_info_str}"
             
         exec_shell_command(grib2netcdf_comm)
         
@@ -1365,72 +1333,15 @@ codeCallDir = Path.cwd()
 # File extensions #
 extensions = ["nc", "csv"]
 
+# Main file names #
+latlon_bound_ofile_name = "latlon_bounds.txt"
+period_bound_ofile_name = "period_bounds.txt"
+
 # String splitting character #
 splitchar = common_splitchar_list[0]
 
 # RegEx control for GRIB-to-netCDF single file name #
 regex_grib2nc = "^[a-zA-Z0-9\._-]$"
-
-# Main parameter scanning output tables #
-latlon_table = \
-'''=========================================================
-·File: {}
-
-·Latitudes:
- {}
-
-·Longitudes:
- {}
-
--Latitude-longitude array dimensions = {} x {}
--Latitude-longitude array delta = {} x {}
-    
-'''
-
-period_table = \
-'''=========================================================
-·File: {}
-·Time range: {} -- {}
-·Array length = {}
-
-'''
-    
-time_format_table = \
-'''====================================================
-·File: {}
-    
-·Time array:
- {}
-
--Array length = {}
-
-'''
-    
-# File scanning progress output tables #
-report_fn_noext = "faulty_netcdf_file_report"
-
-scan_progress_table =\
-"""File number: {} out of {}
-Directory: {}
-"""
-
-scan_progress_table_evb =\
-"""
-File: {}
-File number: {} out of {}
-Directory: {}
-"""
-
-report_table =\
-"""Faulty NETCDF format file report
---------------------------------
-
-·Directory: {}
-·Total scanned files scanned: {}
-·Faulty file number: {}
-
-·Faulty files:
-"""
 
 # Regridding method options #
 method_list = [
@@ -1441,3 +1352,69 @@ method_list = [
     "nearest_d2s",
     "patch"
     ]
+
+# Preformatted strings #
+#----------------------#
+
+# Main parameter scanning info strings #
+latlon_info_str = \
+"""=========================================================
+·File: {}
+
+·Latitudes:
+ {}
+
+·Longitudes:
+ {}
+
+-Latitude-longitude array dimensions = {} x {}
+-Latitude-longitude array delta = ({}, {})
+    
+"""
+
+period_info_str = \
+"""=========================================================
+·File: {}
+·Time range: {} -- {}
+-Range length = {}
+
+"""
+    
+time_format_info_str = \
+"""=========================================================
+·File: {}
+    
+·Time array:
+ {}
+
+-Array length = {}
+
+"""
+    
+# File scanning progress information strings #
+report_fn_noext = "faulty_netcdf_file_report"
+
+scan_progress_info_str =\
+"""
+File number: {} out of {}
+Directory: {}
+"""
+
+scan_progress_str_evb =\
+"""
+File: {}
+File number: {} out of {}
+Directory: {}
+"""
+
+# Faulty file report's header string #
+report_info_str =\
+"""Faulty NETCDF format file report
+--------------------------------
+
+·Directory: {}
+·Total scanned files scanned: {}
+·Faulty file number: {}
+
+·Faulty files:
+"""

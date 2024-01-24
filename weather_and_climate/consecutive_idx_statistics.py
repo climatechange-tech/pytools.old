@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -11,7 +14,7 @@ import numpy as np
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -28,13 +31,13 @@ custom_mod1_path = f"{fixed_path}/arrays_and_lists"
 
 sys.path.append(custom_mod1_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import array_numerical_operations
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 count_consecutive = array_numerical_operations.count_consecutive
@@ -66,7 +69,7 @@ def get_1hour_time_step_data(array, zero_threshold, zeros_dtype='d'):
     ----------
     array : numpy.ndarray
           Multi-dimensional array which contains data,
-          being the first index corresponding to ´time´ dimension.
+          being the first index corresponding to 'time' dimension.
     zero_threshold: int or float:
           Defines the value BELOW which data values are set to zero.
     zeros_dtype : str or numpy type (e.g. numpy.int, numpy.float64)

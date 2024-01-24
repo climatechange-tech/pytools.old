@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -14,7 +17,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -33,22 +36,12 @@ custom_mod2_path = f"{fixed_path}/time_handling"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import information_output_formatters
-import string_handler
-import time_formatters
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
-
-find_substring_index = string_handler.find_substring_index
-time_format_tweaker = time_formatters.time_format_tweaker
+from information_output_formatters import format_string, print_format_string
+from string_handler import find_substring_index
+from time_formatters import time_format_tweaker
 
 #%%
 
@@ -108,7 +101,7 @@ def snippet_exec_timer(snippet_str,
         
         # Complete and display the corresponding output information table #
         arg_tuple_exec_timer1 = (time_unit_str, trials, exec_time_norep)
-        print_format_string(output_info_table_norep, arg_tuple_exec_timer1)
+        print_format_string(norep_exec_time_info_str, arg_tuple_exec_timer1)
       
     # Execution time in the specified number of trials for several repeats #
     else:
@@ -132,7 +125,7 @@ def snippet_exec_timer(snippet_str,
           
         # Complete and display the corresponding output information table #
         arg_tuple_exec_timer2 = (time_unit_str, repeats, trials, exec_time_rep)
-        print_format_string(output_info_table_rep, arg_tuple_exec_timer2)
+        print_format_string(rep_exec_time_info_str, arg_tuple_exec_timer2)
        
 #%%
 
@@ -144,11 +137,11 @@ def snippet_exec_timer(snippet_str,
 sec_time_unit_str = 's'
 default_time_unit_str = 'default'
 
-output_info_table_norep = \
+# Preformatted strings #
+norep_exec_time_info_str = \
 """Snippet execution time ({}), for {} trials with no repeats: {}"""
 
-output_info_table_rep = \
+rep_exec_time_info_str = \
 """Snippet execution time ({}), for {} trials with and {} repeats:\n{}"""
 
-# Output preformatted texts #
-typeErrorStr = "Argument {} must be of type ´int´."
+typeErrorStr = """Argument '{}' must be of type 'int'."""

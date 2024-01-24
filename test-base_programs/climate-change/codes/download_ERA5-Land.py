@@ -13,7 +13,7 @@ Created on Fri Nov  3 09:50:30 2023
 from pathlib import Path
 import sys
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -38,8 +38,8 @@ sys.path.append(custom_mod3_path)
 sys.path.append(custom_mod4_path)
 sys.path.append(custom_mod5_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import cds_tools
 import file_and_directory_handler

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #-------------------------#
 # Define custom functions #
 #-------------------------#
@@ -6,7 +9,7 @@ def cat(fitxategia):
     
     """
     Prints the content of a file specified in an absolute or relative path
-    the same way as it does the ´cat´ UNIX command.
+    the same way as it does the 'cat' UNIX command.
     
     Parameters
     ----------

@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -114,7 +117,7 @@ def meteorological_wind_direction(u, v):
 def dewpoint_temperature(T, rh):
     
     # Adapted from https://content.meteoblue.com/es/especificaciones/variables-meteorologicas/humedad
-    # Uses Magnus´ formula
+    # Uses Magnus' formula
     
     if not isinstance(T, list):
         T = np.array(T)
@@ -159,7 +162,7 @@ def dewpoint_temperature(T, rh):
 def relative_humidity(T, Td):
     
     # Adapted from https://content.meteoblue.com/es/especificaciones/variables-meteorologicas/humedad
-    # Uses Magnus´ formula
+    # Uses Magnus' formula
     
     if not isinstance(T, list):
         T = np.array(T)
@@ -216,6 +219,7 @@ def return_constants():
 # Parameters and constants #
 #--------------------------#
 
+# Magnitude unit switch-case dictionary #
 unit_converter_dict = {
     "deg2rad" : "np.deg2rad(angle)",
     "rad2deg" : "np.rad2deg(angle)",

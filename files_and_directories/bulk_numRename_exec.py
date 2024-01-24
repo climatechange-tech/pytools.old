@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 **Note**
 
@@ -18,7 +21,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -35,13 +38,13 @@ custom_mod_path = f"{fixed_path}/files_and_directories"
 
 sys.path.append(custom_mod_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import bulk_numRename_main
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 reorder_objs = bulk_numRename_main.reorder_objs
@@ -59,7 +62,7 @@ extensions2skip = ""
 starting_number = "default"
 index_range = "all"
 
-splitchar=None
+splitchar = None
 
 #------------------#
 # Perform the task #

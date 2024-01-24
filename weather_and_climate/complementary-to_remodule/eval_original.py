@@ -1,4 +1,7 @@
-from auxiliary_functions import *
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import auxiliary_functions
 
 obs, sim = read_example_data()
 plot_historgram(obs, sim, "tas_hist_original.png")

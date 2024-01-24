@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 #----------------#
 # Import modules #
 #----------------#
@@ -15,7 +18,7 @@ import pandas as pd
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -36,25 +39,13 @@ sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
-import file_and_directory_handler
-import file_and_directory_paths
-import global_parameters
-import string_handler
-
-#----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
-#----------------------------------------------------#
-
-basic_time_format_strs = global_parameters.basic_time_format_strs
-
-find_fileString_paths = file_and_directory_paths.find_fileString_paths
-remove_files_byFS = file_and_directory_handler.remove_files_byFS
-
-get_obj_specs = string_handler.get_obj_specs
-find_substring_index = string_handler.find_substring_index
+from file_and_directory_handler import remove_files_byFS
+from file_and_directory_paths import find_fileString_paths
+from global_parameters import basic_time_format_strs
+from string_handler import get_obj_specs, find_substring_index
 
 #------------------#
 # Define functions #
@@ -203,7 +194,7 @@ def read_table(file_name,
           UTF-8 encoding is not able to read.
           In such cases "latin1" is reccommended to use.
    
-    header : int, list of int, None, default ´infer´
+    header : int, list of int, None, default 'infer'
           Row number(s) to use as the column names, and the start of the data.
           Default behaviour is to infer the column names: if no names are passed
           the behaviour is identical to header=0 and column names are inferred
@@ -280,7 +271,7 @@ def excel2df(file_name):
         
         """
         Delete the 'sheet' named column
-        as a result of the application of ´reset_index´
+        as a result of the application of 'reset_index'
         """
         all_data_df = all_data_df.drop(columns=["sheet"])
         
@@ -612,9 +603,9 @@ def csv2df(file_name,
           Defaults to None.
     encoding : str
           Encoding to use for UTF when reading or writing.
-          When this is ´None´, ´errors="replace"´ is passed to
-          ´open()´; technically no encoding is used.
-          Otherwise, ´errors="strict"´ is passed to ´open()´.
+          When this is 'None', 'errors="replace"' is passed to
+          'open()'; technically no encoding is used.
+          Otherwise, 'errors="strict"' is passed to 'open()'.
     header : int, list of int, str or NoneType
           Row number(s) to use as the column names, and the start of the
           data. Default behaviour is to infer the column names: if no names
@@ -852,7 +843,7 @@ def sort_df_indexes(df,
           Sort ascending vs. descending. Specify list for multiple sort
           orders. Default is True boolean.
     na_position : {'first', 'last'}.
-          Puts NaNs at the beginning if ´first´; ´last´ puts NaNs at the end.
+          Puts NaNs at the beginning if 'first'; 'last' puts NaNs at the end.
           Defaults to "last".
     sort_remaining : bool
           If True and sorting by level and index is multilevel, sort by other
@@ -860,9 +851,9 @@ def sort_df_indexes(df,
           Default value is True.
     key : callable, optional
           Apply the key function to the values
-          before sorting. This is similar to the ´key´ argument in the
-          builtin :meth:´sorted´ function, with the notable difference that
-          this ´key´ function should be *vectorized*.
+          before sorting. This is similar to the 'key' argument in the
+          builtin :meth:'sorted' function, with the notable difference that
+          this 'key' function should be *vectorized*.
     """
             
     df.sort_index(axis=axis, 
@@ -902,13 +893,13 @@ def sort_df_values(df,
           Sort ascending vs. descending. Specify list for multiple sort
           orders. Default is True boolean.
     na_position : {'first', 'last'}
-          Puts NaNs at the beginning if ´first´; ´last´ puts NaNs at the end.
+          Puts NaNs at the beginning if 'first'; 'last' puts NaNs at the end.
           Defaults to "last".
     key : callable, optional
           Apply the key function to the values
-          before sorting. This is similar to the ´key´ argument in the
-          builtin :meth:´sorted´ function, with the notable difference that
-          this ´key´ function should be *vectorized*.
+          before sorting. This is similar to the 'key' argument in the
+          builtin :meth:'sorted' function, with the notable difference that
+          this 'key' function should be *vectorized*.
     """
     
     df = df.sort_values(by=by,
@@ -997,9 +988,5 @@ def countDataByConcept(df, df_cols):
 # Parameters and constants #
 #--------------------------#
 
-"""
-Declare them global in the functions to be used
-to avoid declaring as input arguments.
-"""
-
+# File extension list #
 extensions = ["csv", "xlsx"]

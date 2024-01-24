@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 """
 This program is an application of the main module netcdf_handler.py
 Simply copy this script to the desired directory.
@@ -14,7 +17,7 @@ import sys
 # Import custom modules #
 #-----------------------#
 
-# Import module that finds python tools' path #
+# Find the path of the Python toolbox #
 home_PATH = Path.home()
 sys.path.append(str(home_PATH))
 
@@ -34,14 +37,14 @@ custom_mod2_path = f"{fixed_path}/weather_and_climate"
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 
-# Perform the module importations #
-#---------------------------------#
+# Perform whole or partial module importations #
+#----------------------------------------------#
 
 import program_snippet_exec_timers
 import netcdf_handler
 
 #----------------------------------------------------#
-# Define imported module(s)´ function call shortcuts #
+# Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
 program_exec_timer = program_snippet_exec_timers.program_exec_timer
@@ -66,7 +69,7 @@ DELTA_ROUNDOFF = 3
 VALUE_ROUNDOFF = 5
 
 #-----------------------------------------------------------------------#
-# Extract every netCDF file´s basic information present in this project #
+# Extract every netCDF file's basic information present in this project #
 #-----------------------------------------------------------------------#
 
 extract_and_store_latlon_bounds(DELTA_ROUNDOFF, VALUE_ROUNDOFF)
