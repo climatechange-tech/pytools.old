@@ -37,8 +37,8 @@ custom_mod_path1 = f"{fixed_dirpath}/arrays_and_lists"
 custom_mod_path2 = f"{fixed_dirpath}/files_and_directories"
 custom_mod_path3 = f"{fixed_dirpath}/strings"
                                         
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod_path1)
 sys.path.append(custom_mod_path2)
@@ -140,7 +140,7 @@ delFileObj = find_substring_index(fileListCWD, kw_del_list)
 
 if isinstance(delFileObj, dict):
     delFileIdx = [key 
-                  for key in delFileObj.keys()
+                  for key in delFileObj
                   if len(delFileObj[key]) > 0]
     
 elif isinstance(delFileObj, list):

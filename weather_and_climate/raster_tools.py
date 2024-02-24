@@ -26,8 +26,8 @@ custom_mod1_path = f"{fixed_path}/parameters_and_constants"
 custom_mod2_path = f"{fixed_path}/strings"
 custom_mod3_path = f"{fixed_path}/operative_systems"     
                                         
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)

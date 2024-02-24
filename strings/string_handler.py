@@ -31,7 +31,7 @@ def find_substring_index(string,
           because it connects with Python's built-in 're' module.
     """
 
-    if isinstance(string, str):        
+    if (isinstance(string, str) and isinstance(substring, str)):
         if advanced_search:
             substrLowestIdx = string_VS_string_search(string, substring, 
                                                       find_whole_words,
@@ -44,12 +44,16 @@ def find_substring_index(string,
                                            end=None)
             
 
-    elif isinstance(string, list)\
+    elif ((isinstance(string, str) and isinstance(substring, list))\
+    or isinstance(string, list)\
     or isinstance(string, tuple)\
-    or isinstance(string, np.ndarray):
+    or isinstance(string, np.ndarray)):
         
         if isinstance(string, tuple):
             string = list(string)
+            
+        elif isinstance(string, str):
+            string = [string]       
         
         if not advanced_search:
             if isinstance(substring, str):
@@ -62,8 +66,8 @@ def find_substring_index(string,
            
             elif isinstance(substring, list)\
             or isinstance(substring, tuple)\
-            or isinstance(substring, np.ndarray):
-                
+            or isinstance(substring, np.ndarray):             
+                    
                 if isinstance(substring, tuple):
                     substring = list(substring)
                 
@@ -207,6 +211,7 @@ def stringList_VS_stringList_search_wholeWords(strList,
     if method not in list_wholewords_methods:
         raise ValueError(f"Wrong '{arg_names[method_arg_pos]}' option. "
                          f"Options are {list_wholewords_methods}.")
+        
     
     # Operation part #
     #----------------#
@@ -353,7 +358,6 @@ def aux_ext_adder(path2tweak, extension):
         output_path = path2tweak
     return output_path
 
-#%%
 
 
 def join_obj_path_specs(obj_specs_dict):
@@ -389,24 +393,98 @@ def fileList2String(obj_list):
         return allobj_string
 
 
-def substring_replacer(string, string2find, string2replace, count=-1):
+def substring_replacer(string, string2find, string2replace, count_std=-1,
+                       advanced_search=False,
+                       count_adv=0,
+                       flags=0):
     
-    if isinstance(string, str):
-        string_replaced = string.replace(string2find, string2replace, count)
+    arg_names = substring_replacer.__code__.co_varnames
+    adv_search_arg_pos = find_substring_index(arg_names, 
+                                              "advanced_search",
+                                              find_whole_words=True)
+            
+    if not advanced_search:
+        if isinstance(string, str):
+            string_replaced = string.replace(string2find, string2replace, count_std)
+            
+        elif isinstance(string, list) or isinstance(string, np.ndarray):
+            if isinstance(string, list):
+                string = np.array(string)
+            string_replaced = np.char.replace(string, string2find, string2replace)
+            
+        elif isinstance(string, pd.DataFrame):
+            string_replaced = pd.DataFrame.replace(string, string2find, string2replace)
+            
+        elif isinstance(string, pd.Series):
+            string_replaced = pd.Series.replace(string, string2find, string2replace)
+            
+        return string_replaced
+            
+    else:
+        if not isinstance(string, str):
+            raise ValueError("Input object must only be of type 'string' "
+                             f"if '{arg_names[adv_search_arg_pos]}' is True.")
+        else:
+            string_replaced = re.sub(string2find, string2replace, 
+                                     string,
+                                     count_adv,
+                                     flags)
         
-    elif isinstance(string, list) or isinstance(string, np.ndarray):
-        if isinstance(string, list):
-            string = np.array(string)
-        string_replaced = np.char.replace(string, string2find, string2replace)
+            return string_replaced
         
-    elif isinstance(string, pd.DataFrame):
-        string_replaced = pd.DataFrame.replace(string, string2find, string2replace)
         
-    elif isinstance(string, pd.Series):
-        string_replaced = pd.Series.replace(string, string2find, string2replace)
+        
+def case_modifier(string, case=None):
     
-    return string_replaced
+    """
+    Function to modify the given string case.
+    
+    Parameters
+    ----------
+    case : {'lower', 'upper', 'capitalize' 'title'}, optional.
+          Case to which modify the string's current one.
+            
+    Returns
+    -------
+    String case modified accordingly
+    """
+    
+    if (case is None or case not in case_modifier_option_keys):
+        raise ValueError("You must select a case modifying option from "
+                         "the following list:\n"
+                         f"{case_modifier_option_keys}")
+        
+    else:
+        str_case_modified = eval(case_modifier_option_dict.get(case))
+        return str_case_modified
 
+    
+def strip(string, strip_option='strip', chars=None):
+    
+    """
+    Removes the white spaces -or the given substring- 
+    surrounding the string, except the inner ones.
+    
+    Parameters
+    ----------
+    strip_option: {'strip', 'lstrip', 'lstrip' 'title'} or None
+          Location of the white spaces or substring to strip.
+          Default option is the widely used 'strip'.
+            
+    Returns
+    -------
+    String with the specified characters surrounding it removed.
+    """
+    
+    if (strip_option is None or strip_option not in strip_option_keys):
+        raise ValueError("You must select a case strip option from "
+                         "the following list:\n"
+                         f"{strip_option_keys}")
+        
+    else:
+        string_stripped = eval(strip_option_dict.get(strip_option))
+        return string_stripped
+    
 
 #--------------------------#
 # Parameters and constants #
@@ -418,3 +496,25 @@ objSpecsKeys_essential = objSpecsKeys[2:]
 
 # Substring search availanble method list #
 list_wholewords_methods = ['default', 'numpy']
+
+# Switch-type dictionaries #
+#--------------------------#
+
+# String case handling #
+case_modifier_option_dict = {
+    'lower'      : 'string.lower()',
+    'upper'      : 'string.upper()',
+    'capitalize' : 'string.capitalize()',
+    'title'      : 'string.title()'
+    }
+
+case_modifier_option_keys = list(case_modifier_option_dict.keys())
+
+# String stripping #
+strip_option_dict = {
+    'strip'  : 'string.strip(chars)',
+    'lstrip' : 'string.lstrip(chars)',
+    'rstrip' : 'string.rstrip(chars)',
+    }
+
+strip_option_keys = list(strip_option_dict.keys())

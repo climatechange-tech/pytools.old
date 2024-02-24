@@ -14,6 +14,9 @@ import numpy as np
 # Define functions #
 #------------------#
 
+# Mathematical operations #
+#-------------------------#
+
 def count_consecutive(array, calculate_max_consec=False):
     
     """
@@ -70,7 +73,95 @@ def count_consecutive(array, calculate_max_consec=False):
         else:
             return None
 
+
+def calcAllUniquePairs(array_like, method="python-default"):
+    
+    """
+    Function to calculate all possible pairs, irrespective of the order,
+    in a list or 1D array.
+    
+    Example
+    -------
+    arr = [1,7,4]
+    
+    Having 3 items in the list, there are fact(3) = 6 combinations
+    Manually, one can deduce the following ones:
+    
+    1-7, 1-4, 4-1, 7-1, 7-4, 4-7
+    
+    but since the order is unimportant, actual number of combos is
+    fact(3)/2 = 3.
+    In this case, pairs number 3, 4 and 6 can be ruled out, 
+    remaining these combos:
         
+    1-7, 1-4 and 4-7
+    
+    Programatically, this function is designed to store each possible
+    pair in a tuple, conforming a list thereof, so for this case
+    the output would be:
+        
+    [(1,7), (1,4), (4,7)]
+    
+    Calculations can either be performed using standard Python procedures,
+    or with the built-in 'itertools' library.
+    
+    Parameters
+    ----------
+    array_like : array-like of numbers, i.e. list or np.ndarray thereof.    
+          Input data. In both cases it will be converted to a NumPy array,
+          and if the latter's dimension is N > 1, it will also be flattened.
+         
+          Programatically, all types of data are allowed to co-exist
+          in the array, being these simple or complex, which in that case
+          converting to a NumPy array would result in an 'object' data type array.
+          However, with no other context, the pairing would be nonsensical.
+
+          In order to give some meaning to the pairing, object-type arrays
+          are not allowed, else TypeError is raised.
+          Numbers can be of type integer, float, complex
+          or a combination among them.
+            
+    method : {'python-default', 'itertools'}
+          Method to be used. Using 'itertools' built-in library
+          the execution time is slightly improved.
+            
+    Returns
+    -------
+    allPairComboArr : list or array of tuples
+          The resulting list or array (depending the method used) of tuples.    
+    """
+    
+    # Input parameter correctness checkings #
+    #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+    
+    # Input array #
+    array = np.array(array_like)
+    data_type = array.dtype
+
+    if data_type == 'O':       
+        raise TypeError("All elements of the array must either be of type"
+                        "'int', 'float', 'complex', 'str' or a combination among them.")
+        
+    else:
+        dims = len(array.shape)
+        if dims > 1:
+            array = array.flatten()
+    
+    # Method #
+    if method not in return_pairs_options:
+        raise ValueError(f"Wrong method. Options are {return_pairs_options}")
+    
+    
+    # Number pair computations #
+    #-#-#-#-#-#-#-#-#-#-#-#-#-#-
+    
+    allPairComboArr = eval(return_pairs_opt_dict.get(method))
+    return allPairComboArr
+    
+
+# Time arrays #
+#-------------#
+ 
 def decompose_24h_cumulative_data(array, zeros_dtype='d'):
     
     """
@@ -117,3 +208,21 @@ def decompose_24h_cumulative_data(array, zeros_dtype='d'):
     hour_TS_array = np.append(hour_TS_array,
                               np.mean(hour_TS_array[-2:], axis=0)[np.newaxis,:],
                               axis=0)
+
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+# Pair-combo calculation function #
+#---------------------------------#
+
+# Method options #
+return_pairs_method_list = ["python-default", "itertools-comb"]
+
+# Switch-type operation dictionary #
+return_pairs_opt_dict = {
+    "python-default" : "[(i,j) for i_aux,i in enumerate(array_like) for j in array[i_aux+1:]]",
+    "itertools-comb" : "list(it.combinations(array_like, 2))"
+}
+
+return_pairs_options = list(return_pairs_opt_dict.keys())

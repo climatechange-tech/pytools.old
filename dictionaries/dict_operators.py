@@ -24,21 +24,15 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/parameters_and_constants"
 
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import global_parameters
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-basic_four_rules = global_parameters.basic_four_rules
+from global_parameters import basic_four_rules
 
 #-------------------------#
 # Define custom functions #
@@ -72,11 +66,15 @@ def div_dict_values(dict1, dict2):
     return div_dict
     
 
-def dict_value_basic_operator(dict1, dict2, basic_math_operator):
+def dict_value_basic_operator(dict1, dict2, 
+                              basic_math_operator,
+                              return_sorted_keys=False):
 
     """
     Performs the basic mathematical operations between two dictionaries,
     calling the specific function for the chosen mathematical operator.
+    It is not necessary for both dictionaries' to be sorted
+    (always referring to the keys) because the same key is referred to them.    
     
     Parameters
     ----------
@@ -85,12 +83,17 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
     dict2 : dict
           Second dictionary containing some values.
     basic_math_operator : {'+', '-', '*', '/'}
+    return_sorted_keys : bool
+          Determines whether to return the resulting dictionary with sorted keys.
+          Defaults to False.
     
     Returns
     -------
     result_dict : dict
           Dictionary with common key's values operated according to the
           chosen mathematical operator.
+          Depending on the value of 'return_sorted_keys', the dictionary's
+          keys will be sorted.
     
     Note
     ----
@@ -116,15 +119,18 @@ def dict_value_basic_operator(dict1, dict2, basic_math_operator):
         }
     
     result_dict = accepted_operation_dict.get(basic_math_operator)
-    result_dict_sorted = sort_dictionary_byKeys(result_dict)
-    return result_dict_sorted
+    
+    if return_sorted_keys: 
+        result_dict = sort_dictionary_byKeys(result_dict)
+        
+    return result_dict
 
 
 # Merge and sort operations #
 #---------------------------#
 
 def sort_dictionary_byKeys(dic):
-    keys_sorted_list = sorted(dic.keys())
+    keys_sorted_list = sorted(dic)
     dic_sorted_byKeys = {key : dic[key]
                          for key in keys_sorted_list}
     return dic_sorted_byKeys

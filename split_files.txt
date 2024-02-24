@@ -1,0 +1,9 @@
+files_and_directories/file_format_tweaker.py
+files_and_directories/bulk_numRename_manual.py
+weather_and_climate/climate_indicators.py
+weather_and_climate/climate_statistics.py
+weather_and_climate/netcdf_handler.py
+weather_and_climate/cdo_tools.py
+test-base_programs/neighbour_wf_coord_table_generator.py
+strings/string_handler.py
+pandas_data_frames/data_frame_handler.py

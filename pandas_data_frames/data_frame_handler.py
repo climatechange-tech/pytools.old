@@ -44,7 +44,7 @@ sys.path.append(custom_mod3_path)
 
 from file_and_directory_handler import remove_files_byFS
 from file_and_directory_paths import find_fileString_paths
-from global_parameters import basic_time_format_strs
+from global_parameters import basic_time_format_strs, common_splitchar_list
 from string_handler import get_obj_specs, find_substring_index
 
 #------------------#
@@ -148,8 +148,7 @@ def read_table(file_name,
     Function that uses pandas module to read a text file
     and converts to a data frame.
     
-    Its functioning is simpler than the function above,
-    because it assumes that the text file is well organised,
+    It assumes that the text file is well organised,
     with no irregular spaces, and that spaces mean 
     there should be different columns.
     
@@ -355,7 +354,7 @@ def save2excel(file_name,
         
         if fileAlreadyExists:
             overWriteStdIn\
-            = input(f"Warning: file '{file_name}' "
+            = input(f"Warning: file '{file_name_noRelPath}' "
                     f"at directory '{fn_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
@@ -516,7 +515,7 @@ def save2csv(file_name,
             
             if fileAlreadyExists:
                 overWriteStdIn\
-                = input(f"Warning: file '{file_name}' "
+                = input(f"Warning: file '{file_name_noRelPath}' "
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
@@ -546,7 +545,7 @@ def save2csv(file_name,
         else:
             if fileAlreadyExists:
                 overWriteStdIn\
-                = input(f"Warning: file '{file_name}' "
+                = input(f"Warning: file '{file_name_noRelPath}' "
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
@@ -990,3 +989,6 @@ def countDataByConcept(df, df_cols):
 
 # File extension list #
 extensions = ["csv", "xlsx"]
+
+# String splitting character #
+splitchar = common_splitchar_list[4]

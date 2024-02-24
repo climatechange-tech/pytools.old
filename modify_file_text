@@ -41,8 +41,8 @@
 default_filename="files_to_perform_changes.txt"
 
 # Set the old syntax and the one to substitute with #
-old_syntax="´"
-new_syntax="'"
+old_syntax="#-------------------------------------------#"
+new_syntax="#-------------------------------------------------------#"
 
 # Write every result to the default file #
 grep -irlF --include="*.py" $old_syntax > $default_filename 

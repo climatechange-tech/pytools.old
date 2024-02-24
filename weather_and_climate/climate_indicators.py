@@ -29,15 +29,17 @@ fixed_path = get_pytools_path.return_custom_path()
 #------------------------------------------#
 
 custom_mod1_path = f"{fixed_path}/arrays_and_lists"
-custom_mod2_path = f"{fixed_path}/strings"  
-custom_mod3_path = f"{fixed_path}/weather_and_climate"
+custom_mod2_path = f"{fixed_path}/parameters_and_constants"  
+custom_mod3_path = f"{fixed_path}/strings"  
+custom_mod4_path = f"{fixed_path}/weather_and_climate"
 
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
 sys.path.append(custom_mod3_path)
+sys.path.append(custom_mod4_path)
 
 # Perform whole or partial module importations #
 #----------------------------------------------#
@@ -47,6 +49,7 @@ import array_numerical_operations
 import climate_statistics
 import climatic_signal_modulators
 import consecutive_idx_statistics
+from global_parameters import common_splitchar_list
 import meteorological_variables
 import string_handler
 
@@ -809,11 +812,11 @@ def HDY_interpolation(HDY_df,
         = pd.unique(HDY_interp[(HDY_interp.date.dt.year == HDY_years[i+1])
                         &(HDY_interp.date.dt.month == HDY_months[i+1])].date.dt.day)
         
-        pmltr = np.array(previous_month_last_time_range.split("-"), "i")
+        pmltr = np.array(previous_month_last_time_range.split(splitchar), "i")
         pmltr1 = pmltr[0]
         pmltr2 = pmltr[-1]
         
-        nmftr = np.array(next_month_first_time_range.split("-"), "i")
+        nmftr = np.array(next_month_first_time_range.split(splitchar), "i")
         nmftr1 = nmftr[0]
         nmftr2 = nmftr[-1]
     
@@ -886,3 +889,9 @@ def HDY_interpolation(HDY_df,
                                                                HDY_interp.v10.values)
 
     return HDY_interp, wind_dir_meteo_interp
+    
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+splitchar = common_splitchar_list[1]

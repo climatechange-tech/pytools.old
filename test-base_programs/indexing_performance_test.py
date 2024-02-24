@@ -37,8 +37,8 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod1_path = f"{fixed_path}/strings"
                                         
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 

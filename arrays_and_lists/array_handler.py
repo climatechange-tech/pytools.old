@@ -9,8 +9,107 @@ import numpy as np
 import pandas as pd
 
 #------------------#
-# Define functions # 
+# Deende functions # 
 #------------------#
+
+def detect_subArray_in_array(obj, test_obj, 
+                             preferent_conv_method="numpy",
+                             reverse_arg_order=False,
+                             return_all=False):
+    
+    """
+    Calculates 'element in test_elements', broadcasting over 'obj' only.
+    Returns a boolean array of the same shape as 'obj' that is True
+    where an element of 'obj' is in 'test_obj' and False otherwise.
+    (adapted from help on 'np.isin' attribute).
+    
+    Parameters
+    ----------
+    obj : np.ndarray or pd.Series 
+            Input object.
+    test_obj : np.ndarray or pd.Series
+            Object which values to test against all inside parameter 'obj'.
+            It does not need to be of the same type as it,
+            but also the other type than thereof.
+            
+            All available options are
+            -------------------------
+            type(obj) === 'np.ndarray'; type(test_obj) === 'np.ndarray'
+            type(obj) === 'np.ndarray'; type(test_obj) === 'pd.Series'
+            type(obj) === 'pd.Series'; type(test_obj) === 'np.ndarray'
+            type(obj) === 'pd.Series'; type(test_obj) === 'pd.Series'
+                
+    preferent_conv_method : {'numpy', 'pandas'}
+            If the input 'obj' argument is neither an array or pandas Series,
+            it will be converted accordingly.
+            Default method is 'numpy', which means that if this case is satisfied,
+            it will be converted to a numpy array.
+            
+    reverse_arg_order : bool
+            Some times is more logical to strictly limit to the size of
+            the test element array.
+            Then if True, the function actually reverses the comparison
+            criterium, testing value of 'obj' agains those in 'test_obj'.
+                
+    return_all : bool
+            Controls whether to return the satisfaction of the test
+            for all elements of 'test_obj'.
+            Default value is False.
+            
+    Returns
+    -------
+    isTestObjIn_arr : np.ndarray or pd.Series
+            Returns a multi-dimension object if 'return_all' is set to True.
+    areAllTestElementsIn_bool : bool
+            Returns a multi-dimension object if 'return_all' is set to False.
+    """
+    
+    # Adapt the input argument if not of type 'numpy.ndarray' or 'pandas.Series' #
+    if (isinstance(obj, list) or isinstance(obj, range)):
+        if preferent_conv_method == "numpy":
+            obj = np.array(obj)
+        elif preferent_conv_method == "pandas":
+            obj = pd.Series(obj)
+        else:
+            raise ValueError("Wrong conversion method. "
+                             f"Options are {conversion_methods}.")
+    
+    
+    # Calculate the element-wise presence #
+    if isinstance(obj, np.ndarray):   
+        
+        if not reverse_arg_order:
+            isTestObjIn_arr = np.isin(obj, test_obj)
+        else:
+            isTestObjIn_arr = np.isin(test_obj, obj)
+        
+        if return_all:
+            areAllTestElementsIn_bool = np.all(isTestObjIn_arr)
+            return areAllTestElementsIn_bool
+        
+        else:
+
+            return isTestObjIn_arr
+            
+        
+    elif isinstance(obj, pd.Series):
+        
+        if not reverse_arg_order:
+            isTestObjIn_arr = obj.isin(test_obj)
+        else:
+            isTestObjIn_arr = test_obj.isin(obj)
+        
+        if return_all:
+            areAllTestElementsIn_bool = isTestObjIn_arr.all()
+            return areAllTestElementsIn_bool
+        else:
+            return isTestObjIn_arr
+        
+    else:
+        raise TypeError("Input argument type must either be of type "
+                        "'numpy.ndarray' or 'pandas.Series'.")
+            
+        
 
 def df_to_structured_array(df):
     records = df.to_records(index=False)
@@ -34,8 +133,8 @@ def insert_values(x, index, values, axis=None):
     values : list, numpy.array or pandas.Series
           If values are part of a data frame, they equally can be introduced
           into a list, to then call its data in the appropriate manner.
-    axis : int or NoneType
-          Axis along which to insert 'values'.  If 'axis' is None then 'x'
+    axis : int, optional
+          Axis alength which to insert 'values'.  If 'axis' is None then 'x'
           is flattened first.
     
     Returns
@@ -120,6 +219,12 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
           Number of the column which values are going to be sorted against to.
     sort_order : {"ascending", "descending"}
           Default order is "ascending".
+    order : str or list of str, optional
+          When parameter 'array' is that with fields deended, this argument specifies
+          which fields to compare first, second, etc.  A single field can
+          be specified as a string, and not all fields need be specified,
+          but unspecified fields will still be used, in the order in which
+          they come up in the dtype, to break ties.
     
     Returns
     -------
@@ -140,7 +245,7 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     be fixed, instead of being sorted out.
     
     That is to say, the lowest value of the mentioned column is 3
-    and the rest of the values of that row that it is defined are 9, 7 and 1.
+    and the rest of the values of that row that it is deended are 9, 7 and 1.
     If we sort the column, the first number will be 3, but 9,7 and 1
     are required to follow number 3 and stay in the same row.
     The rest of the values of that first column are ordered
@@ -237,16 +342,16 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     be fixed, instead of being sorted out.
     
     That is to say, the lowest value of the mentioned row is 2
-    and the rest of the values of the column that it is defined are 7 and 4.
+    and the rest of the values of the column that it is deended are 7 and 4.
     If we sort the row, the first number will be 2, but 7 and 4
     are required to follow number 2 and stay in the same row.
     
     The rest of the values of that first row are ordered
     following the same mechanism.
     
-    However, due to the naturally arised difficulty by the matrix definition,
+    However, due to the naturally arised difficulty by the matrix deendition,
     it is not straightforward to perform this operation programatically.
-    Nevertheless, the matrix definition does allow 
+    Nevertheless, the matrix deendition does allow 
     to work with consecutive transposes!
     
     >>> array1=array.T
@@ -359,7 +464,7 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
 def approach_value_in_array(array, given_value):
     
     """
-    Finds the index of the nearest numerical value 
+    endds the index of the nearest numerical value 
     compared to the original one in the given array.
     
     Parameters
@@ -434,9 +539,9 @@ def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
     new_type : str
           Type the data has to be converted to.
           Options are the same as for parameter 'old_type'.
-    colname : str
+    colname : str or None
           Only necessary if pd.DataFrame cases is passed.
-          Column name along which to perform the conversion.
+          Column name alength which to perform the conversion.
           Set to None if a numpy.ndarray is passed.
     
     Returns
@@ -506,8 +611,8 @@ def sort_values_externally(array, key=None, reverse=False,
                            wantarray=False):
     
     """
-    Function that sorts array values,
-    using this time np.sort() or list.sort() method, depending on the case.
+    Function that sorts array values, this time using np.sort() or list.sort() 
+    methods, depending on the input object type.
     It is intended to use especially in such cases where
     the simple use of sort() method would lead
     no other option than assigning a variable,
@@ -519,6 +624,23 @@ def sort_values_externally(array, key=None, reverse=False,
     array : list or numpy.ndarray
           Array containing string, integer, float, etc. values,
           but all of the same semantic type.
+    key : function, optional
+          If a key function is given, apply it once to each list item and sort them,
+          ascending or descending, according to their function values.
+          This parameter is relevant only for lists.
+    reverse: bool
+          If False, then the items are sorted in an ascending order,
+          else in an descending order.
+    axis : int, optional
+          Axis alength which to sort. If None, the array is flattened before
+          sorting. The default is -1, which sorts alength the last axis.
+          This parameter is relevant only for type numpy.ndarray.
+    order : str or list of str, optional
+          When parameter 'array' is that with fields deended, this argument specifies
+          which fields to compare first, second, etc.  A single field can
+          be specified as a string, and not all fields need be specified,
+          but unspecified fields will still be used, in the order in which
+          they come up in the dtype, to break ties.
     wantarray : bool
           Determines whether to return the sorted values
           in an array, otherwise the functions returns
@@ -542,6 +664,101 @@ def sort_values_externally(array, key=None, reverse=False,
 
     sorted_values = array.copy()
     return sorted_values
+
+
+def sort_1D_arr_python_std(obj, reverse=False):
+
+    """
+    Function that sorts a list, only using simple maths and standard Python 
+    instances, without importing any external library.
+    This implies swapping list item positions, for that using a classic external
+    function in order to accomplish the task.
+    
+    Parameters
+    ----------
+    obj : list or numpy.ndarray of int, float, complex or str
+          List or numpy array containing the above mentioned type of simple data.
+          Every data must be of the same type, which is always guaranteed
+          if the object is a numpy.ndarray.
+    reverse: bool
+          If False, then the items are sorted in an ascending order,
+          else in an descending order.
+    
+    Returns
+    -------
+    obj : list or numpy.ndarray
+        Array with its items sorted according to 'reverse' parameter's value.
+    """
+
+    for i in range(len(obj)):
+        current = i
+        for k in range(i+1, len(obj)):
+            if not reverse:
+                if obj[k] < obj[current]:
+                    current = k
+            else:
+                if obj[k] > obj[current]:
+                    current = k
+                    
+        pos_swapper(obj, current, i)
+    return obj
+
+
+def pos_swapper(A, x, y):
+    temp = A[x]
+    A[x] = A[y]
+    A[y] = temp
+
+
+#%%
+
+def find_item_python_std(obj, obj2find):
+    
+    """
+    Function that finds a given element in an array.
+    For that, it always starts searching from its middle position,
+    discarding its left or right side, depending on whether the object in the 
+    middle position is greater or lower than the element to find.
+    
+    This function uses only simple maths and standard Python 
+    instances, without importing any external library.
+    In order the latter to be effective, the input object must already be sorted,
+    and since the mathematics are simple, that task is also going to be
+    accomplished using the simple 'sort_1D_arr_python_std' function.
+    
+    Parameters
+    ----------
+    obj : list or numpy.ndarray of int, float, complex or str
+          List or numpy array containing the above mentioned type of simple data.
+          Every data must be of the same type, which is always guaranteed
+          if the object is a numpy.ndarray.
+    obj2find: int, float, complex or str
+          Simple data to find in the input object.
+          
+    Returns
+    -------
+    bool
+          Returns True if the element is found, else returns False.
+    """
+    
+    length = len(obj)
+    sorted_obj = sort_1D_arr_python_std(obj)
+    
+    i = 0
+    start = 0
+    end = length - 1
+    
+    while i < length:
+        half = (start + end) // 2
+        if sorted_obj[half] == obj2find:
+            return True
+        elif sorted_obj[half] < obj2find:
+            start = half + 1
+        else:
+            end = half - 1
+        i += 1
+    return False
+    
 
 
 def count_unique_type_objects(list_of_objects):
@@ -652,3 +869,10 @@ def remove_elements_from_array(array, idx2access, axis=None):
     
     
     return array_filtered
+
+
+#--------------------------#
+# Parameters and constants #
+#--------------------------#
+
+conversion_methods = ["numpy", "pandas"]

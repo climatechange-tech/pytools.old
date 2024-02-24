@@ -106,7 +106,7 @@ regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'
 # Strings #
 #---------#
 
-common_splitchar_list = ['_', '-', ';', ',']
+common_splitchar_list = ['_', '-', ';', ',', '\n', '\t']
 
 
 #%% SOCIO-ECONOMICAL CONCEPTS

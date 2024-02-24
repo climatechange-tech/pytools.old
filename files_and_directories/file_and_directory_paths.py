@@ -26,21 +26,15 @@ fixed_path = get_pytools_path.return_custom_path()
 
 custom_mod_path = f"{fixed_path}/strings"
                                         
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod_path)
 
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import string_handler
-
-#--------------------------------------------------#
-# Define imported modules' function call shortcuts #
-#--------------------------------------------------#
-
-get_obj_specs = string_handler.get_obj_specs
+from string_handler import get_obj_specs
 
 #------------------#
 # Define functions #

@@ -1,0 +1,14 @@
+files_and_directories/file_format_tweaker.py:        cat_str = cat_out_obj.split(splitchar)[0]
+files_and_directories/file_format_tweaker.py:        output_path_aux = cat_out_obj.split(splitchar)[1]
+files_and_directories/bulk_numRename_manual.py:    ext=os.path.splitext(f)[-1]
+weather_and_climate/climate_indicators.py:        pmltr = np.array(previous_month_last_time_range.split("-"), "i")
+weather_and_climate/climate_indicators.py:        nmftr = np.array(next_month_first_time_range.split("-"), "i")
+weather_and_climate/climate_statistics.py:                    climat_dates = "".join([month_number_dict[m] for m in season_months]).split()
+weather_and_climate/netcdf_handler.py:    unique_model_list = np.unique([f.split(splitchar)[split_pos]
+weather_and_climate/cdo_tools.py:    start_year = f"{period.split(splitchar2)[0]}"
+weather_and_climate/cdo_tools.py:    end_year = f"{period.split(splitchar2)[-1]}"
+weather_and_climate/cdo_tools.py:        statname_seas = f"{statname.split()[0]}_{statname[-3:]}"
+test-base_programs/neighbour_wf_coord_table_generator.py:l0=dfstr.split("\n")
+test-base_programs/neighbour_wf_coord_table_generator.py:l=[[l0[i].split("\t")[0],l0[i].split("\t")[1]] for i in range(len(l0))]
+strings/string_handler.py:        obj_path_name_noext_parts = obj_path_name_noext.split(splitchar)
+pandas_data_frames/data_frame_handler.py:    df_fixed = df.rename(columns=lambda x: x.split("\n")[-1])

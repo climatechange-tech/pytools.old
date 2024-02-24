@@ -28,8 +28,8 @@ custom_mod3_path = f"{fixed_path}/parameters_and_constants"
 custom_mod4_path = f"{fixed_path}/strings"
 custom_mod5_path = f"{fixed_path}/time_handling"
                                         
-# Add the module paths to the path variable #
-#-------------------------------------------#
+# Add the paths to the 'path' attribute of module 'sys' #
+#-------------------------------------------------------#
 
 sys.path.append(custom_mod1_path)
 sys.path.append(custom_mod2_path)
@@ -49,7 +49,7 @@ import information_output_formatters
 import string_handler
 
 #--------------------------------------------------#
-# Define imported modules' objname_unevennction call shortcuts #
+# Define imported modules' function call shortcuts #
 #--------------------------------------------------#
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
