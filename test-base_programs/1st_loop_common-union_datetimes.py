@@ -113,22 +113,22 @@ common_times = datetime_range_operator(date_ranges_parent,
                                        operator="inner")
 try:
     common_times_start = common_times.iloc[0]
- 
 except:
     raise ValueError(f"Parent station '{stat_name_parent}' "
                      f"and child station '{stat_name_child}' "
                      "have no times in common.")
     
-custom_common_times_start1 = time_format_tweaker(common_times_start,
-                                                 time_fmt_str=customizing_tfs2)
-custom_common_times_start2 = time_format_tweaker(common_times_start,
-                                                 time_fmt_str=customizing_tfs3)
-
-common_times_end = common_times.iloc[-1]
-custom_common_times_end1 = time_format_tweaker(common_times_end,
-                                              time_fmt_str=customizing_tfs2)
-custom_common_times_end2 = time_format_tweaker(common_times_end,
-                                              time_fmt_str=customizing_tfs3)
+else:
+    custom_common_times_start1 = time_format_tweaker(common_times_start,
+                                                     time_fmt_str=customizing_tfs2)
+    custom_common_times_start2 = time_format_tweaker(common_times_start,
+                                                     time_fmt_str=customizing_tfs3)
+    
+    common_times_end = common_times.iloc[-1]
+    custom_common_times_end1 = time_format_tweaker(common_times_end,
+                                                  time_fmt_str=customizing_tfs2)
+    custom_common_times_end2 = time_format_tweaker(common_times_end,
+                                                  time_fmt_str=customizing_tfs3)
 
 # Extension times #
 extension_times = datetime_range_operator(date_ranges_parent, 

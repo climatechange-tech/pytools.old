@@ -53,7 +53,7 @@ sys.path.append(custom_mod7_path)
 
 from data_frame_handler import find_date_key
 import global_parameters
-import information_output_formatters
+from information_output_formatters import format_string, print_format_string
 from netcdf_handler import find_time_dimension
 from string_handler import find_substring_index
 from time_formatters import time_format_tweaker
@@ -67,9 +67,6 @@ month_number_dict = global_parameters.month_number_dict
 season_timeFreq_dict = global_parameters.season_timeFreq_dict
 time_freqs1 = global_parameters.time_frequencies_complete
 time_freqs2 = global_parameters.time_frequencies_short_1
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
 
 #------------------#
 # Define functions #

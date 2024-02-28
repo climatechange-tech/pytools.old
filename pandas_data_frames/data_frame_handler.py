@@ -131,9 +131,10 @@ def find_date_key(df):
     
     try:
         date_key = df_cols[date_key_idx]
-        return date_key
     except:
         raise ValueError("Grouper name 'date' or similar not found")
+    else:
+        return date_key
 
 
 def read_table(file_name,

@@ -42,15 +42,8 @@ sys.path.append(custom_mod4_path)
 from file_and_directory_handler import rename_objects
 from file_format_tweaker import aux_path_strAdd
 from global_parameters import basic_four_rules
-import information_output_formatters
+from information_output_formatters import format_string, print_format_string
 from os_operations import exec_shell_command
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-format_string = information_output_formatters.format_string
-print_format_string = information_output_formatters.print_format_string
 
 #-------------------------#
 # Define custom functions #

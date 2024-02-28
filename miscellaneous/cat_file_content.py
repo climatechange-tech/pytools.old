@@ -5,7 +5,7 @@
 # Define custom functions #
 #-------------------------#
 
-def cat(fitxategia):
+def cat(path):
     
     """
     Prints the content of a file specified in an absolute or relative path
@@ -14,7 +14,7 @@ def cat(fitxategia):
     Parameters
     ----------
     path : str or PosixPath
-          Absolute or relative path
+          Absolute or relative path.
           
     Returns
     -------
@@ -26,20 +26,19 @@ def cat(fitxategia):
     try:
         file = open(path)
         
+    except FileNotFoundError:
+        print("No such file or directory. "
+              "Try fixing misspellings or check path's components.")
+        
+    else:
         for line in file:
             line_no_extra_whitespaces = line.strip()
             print(line_no_extra_whitespaces)
         file.close()
         
-    except FileNotFoundError():
-        print("No such file or directory. "
-              "Try fixing misspellings or check path's components.")
-        
-        
-#-------------------#
+        #-------------------#
 # Call the function #
 #-------------------#
         
 path = input('Enter the path to the file to be read: ')
 cat(path)
-

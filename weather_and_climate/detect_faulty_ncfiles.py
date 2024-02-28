@@ -34,15 +34,8 @@ sys.path.append(custom_mod2_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import program_snippet_exec_timers
-import netcdf_handler
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-program_exec_timer = program_snippet_exec_timers.program_exec_timer
-netcdf_file_scanner = netcdf_handler.netcdf_file_scanner
+from program_snippet_exec_timers import program_exec_timer
+from netcdf_handler import netcdf_file_scanner
 
 #-------------------------#
 # Define input parameters #

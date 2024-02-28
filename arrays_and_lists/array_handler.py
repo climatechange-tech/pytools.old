@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 #------------------#
-# Deende functions # 
+# Define functions # 
 #------------------#
 
 def detect_subArray_in_array(obj, test_obj, 
@@ -220,7 +220,7 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     sort_order : {"ascending", "descending"}
           Default order is "ascending".
     order : str or list of str, optional
-          When parameter 'array' is that with fields deended, this argument specifies
+          When parameter 'array' is that with fields defined, this argument specifies
           which fields to compare first, second, etc.  A single field can
           be specified as a string, and not all fields need be specified,
           but unspecified fields will still be used, in the order in which
@@ -245,7 +245,7 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     be fixed, instead of being sorted out.
     
     That is to say, the lowest value of the mentioned column is 3
-    and the rest of the values of that row that it is deended are 9, 7 and 1.
+    and the rest of the values of that row that it is defined are 9, 7 and 1.
     If we sort the column, the first number will be 3, but 9,7 and 1
     are required to follow number 3 and stay in the same row.
     The rest of the values of that first column are ordered
@@ -342,7 +342,7 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     be fixed, instead of being sorted out.
     
     That is to say, the lowest value of the mentioned row is 2
-    and the rest of the values of the column that it is deended are 7 and 4.
+    and the rest of the values of the column that it is defined are 7 and 4.
     If we sort the row, the first number will be 2, but 7 and 4
     are required to follow number 2 and stay in the same row.
     
@@ -383,15 +383,14 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     array_dtype = array.dtype
     
     try:
-        array_tr = array.T
+        array_tr = array.T    
         sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
         sorted_array_cbr = sorted_array_cbr_tr.T
-        return sorted_array_cbr
-    
     except:
         raise TypeError("Cannot perform operation with numpy arrays "
                         f"of data type {array_dtype}.")
-    
+    else:
+        return sorted_array_cbr    
 
 
 def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
@@ -453,12 +452,12 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
         sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
                                                      nrow,
                                                      sort_order)
-        sorted_array_complete = sorted_array_cbr.copy()
-        return sorted_array_complete
-    
+        sorted_array_complete = sorted_array_cbr.copy()    
     except:
         raise TypeError("Cannot perform operation with numpy arrays "
                         f"of data type {array_dtype}.")
+    else:
+        return sorted_array_complete
 
 
 def approach_value_in_array(array, given_value):
@@ -576,11 +575,11 @@ def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
                 
                 try:
                     data_floated.loc[:,colname]\
-                    = data_floated.loc[:,colname].astype(new_type)
-                    return data_floated
-                    
+                    = data_floated.loc[:,colname].astype(new_type)                    
                 except:
                     raise TypeError(f"Cannot convert object to type '{new_type}'.")
+                else:
+                    return data_floated
                     
             else:
                 print("Returning object with its values' type unchanged.")
@@ -599,9 +598,11 @@ def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
             if data_type == old_type or old_type in data_type.str:
                 try:
                     data_floated = obj_data.copy().astype(new_type)
-                    return data_floated
                 except:
                     raise TypeError(f"Cannot convert object to type '{new_type}'.")
+                else:
+                    return data_floated
+                
             else:
                 print("Returning object with its values' type unchanged.")
                 return obj_data
@@ -636,7 +637,7 @@ def sort_values_externally(array, key=None, reverse=False,
           sorting. The default is -1, which sorts alength the last axis.
           This parameter is relevant only for type numpy.ndarray.
     order : str or list of str, optional
-          When parameter 'array' is that with fields deended, this argument specifies
+          When parameter 'array' is that with fields defined, this argument specifies
           which fields to compare first, second, etc.  A single field can
           be specified as a string, and not all fields need be specified,
           but unspecified fields will still be used, in the order in which

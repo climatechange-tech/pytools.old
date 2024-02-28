@@ -60,8 +60,6 @@ def countdown(t, time_fmt_str=None, print_str=False):
                                               s2find_1, 
                                               s2replace_1)
                     
-        try:
-            
             zero_pad_ans = input("Would you like to include zero padding? [y/n] ")
             while (zero_pad_ans != "y" and zero_pad_ans != "n"):
                 zero_pad_ans = input("Please write 'y' for 'yes' or 'n' for 'no' ")
@@ -75,15 +73,19 @@ def countdown(t, time_fmt_str=None, print_str=False):
                                                           s2find_2,
                                                           s2replace_2)
                     
+            
                 while (t):        
-                    time_str = time_dt.strftime(time_fmt_str)
-                    print(time_str, end="\r")
-                    
-                    time.sleep(1)
-                    time_dt -= datetime.timedelta(seconds=1)              
-                
-        except OverflowError:
-            print("Time up!")
+                    try:
+                        time_str = time_dt.strftime(time_fmt_str)  
+                    except OverflowError:
+                        print("Time up!")
+                    else:
+                        print(time_str, end="\r")
+                        time.sleep(1)
+                        time_dt -= datetime.timedelta(seconds=1)  
+                        
+                else:
+                    print("Time up!")
             
         
     elif isinstance(t, int):
@@ -132,7 +134,7 @@ try:
             countdown(t, string_arr1, string_arr2, print_str=print_str)    
         except KeyboardInterrupt:
             print("\nCountdown stopped.")
-        
+            
     
 except:
     time_fmt_str = input("String format detected. "

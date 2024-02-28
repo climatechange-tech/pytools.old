@@ -40,14 +40,12 @@ sys.path.append(custom_mod2_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import program_snippet_exec_timers
+from program_snippet_exec_timers import program_exec_timer
 import netcdf_handler
 
 #----------------------------------------------------#
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-program_exec_timer = program_snippet_exec_timers.program_exec_timer
 
 extract_and_store_latlon_bounds = netcdf_handler.extract_and_store_latlon_bounds 
 extract_and_store_period_bounds = netcdf_handler.extract_and_store_period_bounds

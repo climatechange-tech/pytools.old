@@ -41,13 +41,7 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import file_format_tweaker
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-pdf_file_tweaker = file_format_tweaker.select_pages_from_pdf_file
+from file_format_tweaker import pdf_file_tweaker
 
 #-------------------------#
 # Define input parameters #

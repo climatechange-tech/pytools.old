@@ -332,25 +332,26 @@ def time_format_tweaker(t,
             except Exception:        
                 arg_tuple_tweaker11 = (arg_names[t_arg_pos], type(t))
                 raise TypeError(format_string(unhandleableErrorStr, arg_tuple_tweaker11))
+            else:
+                return t_res
                 
         else:   
-            try:
-                particularAllowedMethods = ["numpy_dt64_array", "pandas"]
-                if method not in particularAllowedMethods:
-                    arg_tuple_tweaker12 =  (arg_names[method_arg_pos],
-                                            method,
-                                            arg_names[t_arg_pos],
-                                            type(eval(arg_names[t_arg_pos])),
-                                            particularAllowedMethods)
-                    
-                    raise ValueError(format_string(ValueErrorForTypeCaseStr,
-                                                   arg_tuple_tweaker12))
+            particularAllowedMethods = ["numpy_dt64_array", "pandas"]
+            if method not in particularAllowedMethods:
+                arg_tuple_tweaker12 =  (arg_names[method_arg_pos],
+                                        method,
+                                        arg_names[t_arg_pos],
+                                        type(eval(arg_names[t_arg_pos])),
+                                        particularAllowedMethods)
                 
-                else:
-                    t_res = frequentTimeFormatConverter(t, method, time_fmt_str)                 
-                    return t_res
+                raise ValueError(format_string(ValueErrorForTypeCaseStr,
+                                               arg_tuple_tweaker12))
             
-            except:
+                t_res = frequentTimeFormatConverter(t, method, time_fmt_str)
+                return t_res
+            
+            
+            else:
                 if isinstance(t, pd.DataFrame) or isinstance(t, pd.Series):
                     t_res = t.dt.strftime(time_fmt_str) 
                     if len(t_res) == 1:
@@ -367,18 +368,21 @@ def time_format_tweaker(t,
                 else:
                     try:
                         t_res  = t.strftime(time_fmt_str)
-                        return t_res
                     except:
                         arg_tuple_tweaker13 = (arg_names[t_arg_pos, type(t_res)])
                         raise Exception(format_string(unconverteablePandasDTObjectErrorStr,
                                                       arg_tuple_tweaker13))
+                    else:
+                        return t_res
                             
             
     if return_str:
         if isinstance(t_res, pd.DataFrame) or isinstance(t_res, pd.Series):
             t_res = t_res.dt.strftime(time_fmt_str) 
+            return t_res
         elif isinstance(t_res, np.ndarray):
             t_res = t_res.astype('U')
+            return t_res
         else:
             try:
                 t_res  = t_res.strftime(time_fmt_str)
@@ -386,8 +390,8 @@ def time_format_tweaker(t,
                 arg_tuple_tweaker14 = (arg_names[t_arg_pos, type(t_res)])
                 raise Exception(format_string(unconverteablePandasDTObjectErrorStr,
                                               arg_tuple_tweaker14))
-                    
-        return t_res
+            else:
+                return t_res
                     
                 
 def frequentTimeFormatConverter(t,
@@ -408,19 +412,18 @@ def frequentTimeFormatConverter(t,
     else:
         if method == "pandas":
             try:
-                dtobj = eval(datetime_obj_dict.get(method))
-                return dtobj
-                
+                dtobj = eval(datetime_obj_dict.get(method))                
             except:        
                 import cftime as cft
                 dtobj\
                 = pd.to_datetime([cft.datetime.strftime(time_el, format=time_fmt_str)
                                   for time_el in t],
                                  format=time_fmt_str)
-                
+                      
         else:
             dtobj = eval(datetime_obj_dict.get(method))
-            return dtobj
+            
+        return dtobj
     
     
 def over24HourFixer(time_obj):

@@ -34,15 +34,7 @@ sys.path.append(custom_mod1_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import array_numerical_operations
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-count_consecutive = array_numerical_operations.count_consecutive
-decompose_24h_cumulative_data\
-= array_numerical_operations.decompose_24h_cumulative_data
+from array_numerical_operations import count_consecutive, decompose_24h_cumulative_data
 
 #------------------#
 # Define functions #

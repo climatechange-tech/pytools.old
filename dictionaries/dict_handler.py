@@ -36,7 +36,7 @@ sys.path.append(custom_mod1_path)
 #----------------------------------------------#
 
 from file_and_directory_paths import find_fileString_paths
-from string_handler import  aux_ext_adder, get_obj_specs
+from string_handler import aux_ext_adder, get_obj_specs
 
 #-------------------------#
 # Define custom functions #
@@ -82,7 +82,11 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
             out_file_path = aux_ext_adder(out_file_path, extension)
 
     try:
-        out_file = open(out_file_path, 'w')
+        out_file = open(out_file_path, 'w')        
+    except:
+        raise IOError("Could not write to file '{out_file_path}',"
+                      "invalid path.")
+    else:
         out_file.write(dict_str)
         
         # Get the file name's parent and the name without the relative path #        
@@ -106,12 +110,7 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
                     out_file.close()
                 else:
                     pass
-        
-        
-        
-    except:
-        raise IOError("Could not write to file '{out_file_path}',"
-                      "invalid path.")
+                
     
     
     
@@ -136,16 +135,17 @@ def JSON2dict(in_file_path):
         in_file = open(in_file_path)
     except FileNotFoundError:
         raise FileNotFoundError(f"File '{in_file_path}' not found.")
-    
-    # Read the content of the file #
-    content_str = in_file.read()
+    else:
+        # Read the content of the file
+        content_str = in_file.read()
     
     # Convert it to a dictionary #
     try:
         content_dict = json.loads(content_str)
-        return content_dict
     except:
         raise TypeError(f"Could not decode content from file '{in_file_path}'.")
+    else:
+        return content_dict
     
     
 #--------------------------#

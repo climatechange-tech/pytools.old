@@ -37,15 +37,8 @@ sys.path.append(custom_mod2_path)
 #----------------------------------------------#
 
 from file_and_directory_paths import posixpath_converter
-import information_output_formatters
+from information_output_formatters import format_string
 from os_operations import exec_shell_command
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
 
 #------------------#
 # Define functions #

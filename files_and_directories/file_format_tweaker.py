@@ -65,9 +65,6 @@ modify_obj_specs = string_handler.modify_obj_specs
 # Define functions #
 #------------------#
 
-
-
-
 def tweak_pages(file, cat_str, output_path="default"):
     
     default_arg = tweak_pages.__defaults__[0]

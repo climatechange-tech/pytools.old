@@ -81,7 +81,14 @@ def check_correct_domain(domain):
 def return_rcp_std(rcp):
     
     try:
-        rcp_num = eval(rcp)
+        rcp_num = eval(rcp)            
+    except:            
+        if rcp not in available_rcps:
+            raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
+        else:
+            return rcp
+        
+    else:
         if not (isinstance(rcp_num, float) or isinstance(rcp_num,str)):
             raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
         else:
@@ -92,12 +99,6 @@ def return_rcp_std(rcp):
                 raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
             else:
                 return rcp_std
-            
-    except:            
-        if rcp not in available_rcps:
-            raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
-        else:
-            return rcp
         
         
 def check_correct_gcm(gcm):

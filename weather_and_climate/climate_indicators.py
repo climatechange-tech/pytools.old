@@ -45,40 +45,26 @@ sys.path.append(custom_mod4_path)
 #----------------------------------------------#
 
 import array_handler
-import array_numerical_operations
-import climate_statistics
-import climatic_signal_modulators
+from array_numerical_operations import count_consecutive
+from climate_statistics import periodic_statistics, windowSum
+from climatic_signal_modulators import evaluate_polynomial, polynomial_fitting_coefficients
 import consecutive_idx_statistics
 from global_parameters import common_splitchar_list
-import meteorological_variables
-import string_handler
+from meteorological_variables import meteorological_wind_direction
+from string_handler import find_substring_index
 
 #----------------------------------------------------#
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-periodic_statistics = climate_statistics.periodic_statistics
-windowSum = climate_statistics.windowSum
-
 select_array_elements = array_handler.select_array_elements
 sort_array_rows_by_column = array_handler.sort_array_rows_by_column
 remove_elements_from_array = array_handler.remove_elements_from_array
-
-count_consecutive = array_numerical_operations.count_consecutive
-
-find_substring_index = string_handler.find_substring_index
 
 count_consecutive_days_maxdata\
 = consecutive_idx_statistics.count_consecutive_days_maxdata
 count_consecutive_days_mindata\
 = consecutive_idx_statistics.count_consecutive_days_mindata
-
-polynomial_fitting_coefficients\
-= climatic_signal_modulators.polynomial_fitting_coefficients
-evaluate_polynomial = climatic_signal_modulators.evaluate_polynomial
-
-meteorological_wind_direction\
-= meteorological_variables.meteorological_wind_direction
 
 #--------------------------#
 # Define  custom functions #

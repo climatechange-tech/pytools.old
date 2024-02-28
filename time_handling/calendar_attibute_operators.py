@@ -46,30 +46,21 @@ sys.path.append(custom_mod5_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import array_handler
+from array_handler import count_unique_type_objects
 import data_frame_handler
-import global_parameters
-import string_handler
-import time_formatters
+from global_parameters import basic_time_format_strs
+from string_handler import find_substring_index, modify_obj_specs
+from time_formatters import time_format_tweaker
 
 #----------------------------------------------------#
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-basic_time_format_strs = global_parameters.basic_time_format_strs
-
-count_unique_type_objects = array_handler.count_unique_type_objects
 
 find_date_key = data_frame_handler.find_date_key
 infer_time_frequency = data_frame_handler.infer_time_frequency
 insert_row_in_df = data_frame_handler.insert_row_in_df
 save2csv = data_frame_handler.save2csv
 save2excel = data_frame_handler.save2excel
-
-find_substring_index = string_handler.find_substring_index
-modify_obj_specs = string_handler.modify_obj_specs
-
-time_format_tweaker = time_formatters.time_format_tweaker
 
 #------------------#
 # Define functions #

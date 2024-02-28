@@ -37,15 +37,8 @@ sys.path.append(custom_mod2_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import array_handler
-import calendar_attibute_operators
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-approach_value_in_array = array_handler.approach_value_in_array
-week_range = calendar_attibute_operators.week_range
+from array_handler import approach_value_in_array
+from calendar_attibute_operators import week_range
 
 #-------------------------#
 # Define custom functions #

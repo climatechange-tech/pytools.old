@@ -46,9 +46,9 @@ sys.path.append(custom_mod6_path)
 #----------------------------------------------#
 
 from data_frame_handler import save2csv
-import file_and_directory_paths
+from file_and_directory_paths import find_ext_file_directories, find_ext_file_paths
 from file_and_directory_handler import move_files_byFS_fromCodeCallDir
-import information_output_formatters
+from information_output_formatters import format_string, print_format_string
 from global_parameters import common_splitchar_list
 from os_operations import exec_shell_command
 import string_handler
@@ -56,12 +56,6 @@ import string_handler
 #----------------------------------------------------#
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
-
-find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
-find_ext_file_directories = file_and_directory_paths.find_ext_file_directories
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
 
 fileList2String = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
@@ -95,10 +89,12 @@ def netcdf_file_scanner(path_to_walk_into,
     arg_names = netcdf_file_scanner.__code__.co_varnames
     verb_arg_pos = find_substring_index(arg_names, 
                                         "verbose",
+                                        advanced_search=True,
                                         find_whole_words=True)
     
     xverb_arg_pos = find_substring_index(arg_names, 
                                          "extra_verbose",
+                                         advanced_search=True,
                                          find_whole_words=True)
     
     # Define the input data directories and files #

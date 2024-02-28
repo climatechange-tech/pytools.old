@@ -32,14 +32,7 @@ sys.path.append(custom_mod1_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import base_converters
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-base2bin = base_converters.base2bin
-bin2dec = base_converters.bin2dec
+from base_converters import base2bin, bin2dec
 
 #-------------------------#
 # Define custom functions #

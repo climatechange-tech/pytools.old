@@ -37,14 +37,7 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import time_formatters
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-time2seconds = time_formatters.time2seconds
-time_format_tweaker = time_formatters.time_format_tweaker
+from time_formatters import time2seconds, time_format_tweaker
 
 #------------------#
 # Define functions #

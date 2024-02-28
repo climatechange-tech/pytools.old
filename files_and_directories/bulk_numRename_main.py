@@ -42,10 +42,10 @@ sys.path.append(custom_mod5_path)
 
 from array_handler import select_array_elements
 from datetime_operators import get_current_time, get_obj_operation_datetime
-import file_and_directory_paths
 from file_and_directory_handler import rename_objects
+import file_and_directory_paths
 import global_parameters
-import information_output_formatters
+from information_output_formatters import format_string, print_format_string
 import string_handler
 
 #--------------------------------------------------#
@@ -58,9 +58,6 @@ find_fileString_paths = file_and_directory_paths.find_fileString_paths
 
 find_allDirectories = file_and_directory_paths.find_allDirectories
 find_fileString_directories = file_and_directory_paths.find_fileString_directories
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
 
 find_substring_index = string_handler.find_substring_index
 obj_path_specs = string_handler.obj_path_specs
@@ -99,6 +96,7 @@ def loop_renamer(objList,
     arg_names = loop_renamer.__code__.co_varnames
     ot_arg_pos = find_substring_index(arg_names, 
                                       "obj_type",
+                                      advanced_search=True,
                                       find_whole_words=True)
     
     if obj_type not in basic_object_types:

@@ -42,10 +42,9 @@ sys.path.append(custom_mod3_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import file_and_directory_handler
 import file_and_directory_paths
 from global_parameters import basic_object_types
-import information_output_formatters
+from information_output_formatters import format_string, print_format_string
 from string_handler import find_substring_index
 
 #----------------------------------------------------#
@@ -53,11 +52,8 @@ from string_handler import find_substring_index
 #----------------------------------------------------#
 
 find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
-find_allDirectories = file_and_directory_handler.find_allDirectories
-find_ext_file_paths = file_and_directory_handler.find_ext_file_paths
-
-print_format_string = information_output_formatters.print_format_string
-format_string = information_output_formatters.format_string
+find_allDirectories = file_and_directory_paths.find_allDirectories
+find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
 
 #-----------------------------#
 # Get this laptop user's name #
@@ -84,9 +80,11 @@ def modify_obj_permissions(path,
     arg_names = modify_obj_permissions.__code__.co_varnames
     ot_arg_pos = find_substring_index(arg_names, 
                                       "obj_type",
+                                      advanced_search=True,
                                       find_whole_words=True)
     attr_arg_pos = find_substring_index(arg_names, 
                                         "attr_id",
+                                        advanced_search=True,
                                         find_whole_words=True)
     
     if isinstance(attr_id, str):
@@ -143,9 +141,11 @@ def modify_obj_owner(path,
     arg_names = modify_obj_permissions.__code__.co_varnames
     mod_arg_pos = find_substring_index(arg_names, 
                                        "module",
+                                       advanced_search=True,
                                        find_whole_words=True)
     ot_arg_pos = find_substring_index(arg_names, 
                                       "obj_type", 
+                                      advanced_search=True,
                                       find_whole_words=True)
     
     le2s = len(extensions2skip)

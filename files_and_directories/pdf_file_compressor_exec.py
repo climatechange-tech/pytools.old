@@ -41,13 +41,7 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import file_format_tweaker
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-pdf_file_compressor = file_format_tweaker.pdf_file_compressor
+from file_format_tweaker import pdf_file_compressor
 
 #-------------------------#
 # Define input parameters #

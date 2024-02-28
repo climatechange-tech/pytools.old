@@ -40,13 +40,7 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import merge_audio_and_video_main
-
-#----------------------------------------------------#
-# Define imported module(s)' function call shortcuts #
-#----------------------------------------------------#
-
-merge_audio_and_video_files = merge_audio_and_video_main.merge_audio_and_video_files
+from merge_audio_and_video_main import merge_audio_and_video_files
 
 #-------------------------#
 # Define input parameters #

@@ -143,9 +143,10 @@ def string_VS_string_search(string,
         firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = firstOnlyMatch.start(0)
-            return substrLowestIdx
         except:
             return -1
+        else:
+            return substrLowestIdx
         
     # One option selected #
     #---------------------#
@@ -154,25 +155,28 @@ def string_VS_string_search(string,
         firstOnlyMatch = re.search(substring, string)
         try:
             substrLowestIdx = firstOnlyMatch.start(0)
-            return substrLowestIdx
         except:
             return -1
+        else:
+            return substrLowestIdx
         
     elif not case_sensitive and all_matches and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = [m.start(0) for m in allMatchesIterator]
-            return substrLowestIdx
         except:
             return -1
+        else:
+            return substrLowestIdx
         
     elif not case_sensitive and not all_matches and find_whole_words:
         exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
         try:
             substrLowestIdx = exactMatch.start(0)
-            return substrLowestIdx
         except:
             return -1
+        else:
+            return substrLowestIdx
 
     # Two options selected #
     #----------------------# 
@@ -189,9 +193,10 @@ def string_VS_string_search(string,
         exactMatch = re.fullmatch(substring, string)
         try:
             substrLowestIdx = exactMatch.start(0)
-            return substrLowestIdx
         except:
             return -1
+        else:
+            return substrLowestIdx
     
 
 def stringList_VS_stringList_search_wholeWords(strList, 
@@ -206,6 +211,7 @@ def stringList_VS_stringList_search_wholeWords(strList,
     arg_names = stringList_VS_stringList_search_wholeWords.__code__.co_varnames
     method_arg_pos = find_substring_index(arg_names, 
                                           "method",
+                                          advanced_search=True,
                                           find_whole_words=True)
     
     if method not in list_wholewords_methods:
@@ -221,6 +227,8 @@ def stringList_VS_stringList_search_wholeWords(strList,
             substrLowestIdx = strList.index(substrList)
         except:
             return -1    
+        else:
+            return substrLowestIdx
 
     
     elif method == "numpy":
@@ -268,6 +276,7 @@ def get_obj_specs(obj_path,
     arg_names = get_obj_specs.__code__.co_varnames
     osk_arg_pos = find_substring_index(arg_names, 
                                        "obj_spec_key",
+                                       advanced_search=True,
                                        find_whole_words=True)
     
     if obj_spec_key not in objSpecsKeys:
@@ -401,6 +410,7 @@ def substring_replacer(string, string2find, string2replace, count_std=-1,
     arg_names = substring_replacer.__code__.co_varnames
     adv_search_arg_pos = find_substring_index(arg_names, 
                                               "advanced_search",
+                                              advanced_search=True,
                                               find_whole_words=True)
             
     if not advanced_search:
