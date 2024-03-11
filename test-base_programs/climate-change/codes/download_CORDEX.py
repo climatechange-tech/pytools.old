@@ -58,9 +58,9 @@ select_from_array_element = array_handler.select_from_array_element
 download_data = cds_tools.download_data
 
 make_parent_directories = file_and_directory_handler.make_parent_directories
-move_files_byExts_fromCodeCallDir = file_and_directory_handler.move_files_byExts_fromCodeCallDir
+move_files_by_ext_from_exec_code = file_and_directory_handler.move_files_byExts_fromCodeCallDir
 
-find_fileString_paths = file_and_directory_paths.find_fileString_paths
+find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
 
 netcdf_file_scanner = netcdf_handler.netcdf_file_scanner
 
@@ -481,7 +481,7 @@ for start_year, end_year in zip(sel_rcp_start_ys, sel_rcp_end_ys):
     Test whether the file is already downloaded
     (current or downloaded data directory)
     """
-    ofn_list = find_fileString_paths(f"*{output_file_name}*",
+    ofn_list = find_files_by_globstring(f"*{output_file_name}*",
                                      path_to_walk_into=project_dir)
     
     lofnl = len(ofn_list)
@@ -500,7 +500,7 @@ for start_year, end_year in zip(sel_rcp_start_ys, sel_rcp_end_ys):
                 
 
 # Move the downloaded data from the directory where the code is being called #
-move_files_byExts_fromCodeCallDir(extension, ds_input_data_dir)
+move_files_by_ext_from_exec_code(extension, ds_input_data_dir)
 
 #---------------------------------------#
 # Calculate full program execution time #

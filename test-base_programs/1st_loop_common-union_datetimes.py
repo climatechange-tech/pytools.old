@@ -51,9 +51,9 @@ datetime_range_operator = datetime_operators.datetime_range_operator
 natural_year = datetime_operators.natural_year
 time_format_tweaker = time_formatters.time_format_tweaker
 
-#------------------#
-# Input parameters #
-#------------------#
+#------------#
+# Parameters #
+#------------#
 
 # Time format strings and frequency 
 customizing_tfs1 = "%d/%m/%Y %H:%M"

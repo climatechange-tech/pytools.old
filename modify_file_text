@@ -41,11 +41,11 @@
 default_filename="files_to_perform_changes.txt"
 
 # Set the old syntax and the one to substitute with #
-old_syntax="deende"
-new_syntax="define"
+old_syntax="find_fileString_paths"
+new_syntax="find_files_by_globstring"
 
 # Write every result to the default file #
-grep -rl --include="*.py" $old_syntax > $default_filename 
+grep -irl --include="*.py" $old_syntax > $default_filename 
 
 #--------#
 # Case 1 #

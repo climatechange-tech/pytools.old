@@ -42,11 +42,14 @@ sys.path.append(custom_mod_path)
 
 from merge_audio_and_video_main import merge_audio_and_video_files
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 input_video_file_list = [
+    ]
+
+input_audio_file_list = [
     ]
 
 # output_file_name_list = None

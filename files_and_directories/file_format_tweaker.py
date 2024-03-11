@@ -38,8 +38,8 @@ sys.path.append(custom_mod4_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-from file_and_directory_handler import remove_files_byExts
-from file_and_directory_paths import find_ext_file_paths, find_fileString_paths
+from file_and_directory_handler import remove_files_by_ext
+from file_and_directory_paths import find_files_by_ext, find_files_by_globstring
 from global_parameters import common_splitchar_list
 from information_output_formatters import format_string
 import os_operations
@@ -372,12 +372,12 @@ def eml2pdf(path_to_walk_into, delete_eml_files=False):
     """
     
     extension = extensions[1]
-    eml_files = find_ext_file_paths(extension,
+    eml_files = find_files_by_ext(extension,
                                     path_to_walk_into,
                                     top_path_only=True)
    
     str2find = f"*emailconverter*.{extensions[-1]}"    
-    converter_tool_path = find_fileString_paths(str2find, alldoc_dirpath)
+    converter_tool_path = find_files_by_globstring(str2find, alldoc_dirpath)
 
     # Convert each email to PDF #        
     for emlf in eml_files:
@@ -386,7 +386,7 @@ def eml2pdf(path_to_walk_into, delete_eml_files=False):
         
     if delete_eml_files:
         # Delete every email file #
-        remove_files_byExts(extension, path_to_walk_into)
+        remove_files_by_ext(extension, path_to_walk_into)
 
             
 def msg2pdf(path_to_walk_into,
@@ -424,7 +424,7 @@ def msg2pdf(path_to_walk_into,
     """
     
     extension = extensions[2]
-    msg_files = find_ext_file_paths(extension,
+    msg_files = find_files_by_ext(extension,
                                     path_to_walk_into,
                                     top_path_only=True)
     
@@ -438,7 +438,7 @@ def msg2pdf(path_to_walk_into,
         
     if delete_msg_files:
         # Delete every email file #
-        remove_files_byExts(extension, path_to_walk_into)
+        remove_files_by_ext(extension, path_to_walk_into)
         
 
 #--------------------------#

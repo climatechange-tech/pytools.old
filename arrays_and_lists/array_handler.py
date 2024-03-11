@@ -237,8 +237,8 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     >>> array=np.random.randint(1,10,size=(3,4))
     >>> array
     array([[6, 4, 2, 3],
-            [3, 9, 7, 1],
-            [4, 6, 4, 5]])
+           [3, 9, 7, 1],
+           [4, 6, 4, 5]])
     
     Suppose that we want to sort the values of the first column (ncol=0),
     but when it is done so, we want the rest of the values of each row to
@@ -253,27 +253,27 @@ def sort_array_rows_by_column(array, ncol, sort_order="ascending", order=None):
     
     sort_array_rows_by_column(array, ncol=0)
     array([[3, 9, 7, 1],
-            [4, 6, 4, 5],
-            [6, 4, 2, 3]])
+           [4, 6, 4, 5],
+           [6, 4, 2, 3]])
     
     Another example, more intuitive,
     where several files are needed to be sorted out
     with respect to the modification time, i.e. the second column:
     
     array([['VID-20221230_110.jpg', '2022-12-30 15:10:34'],
-            ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
-            ['VID-20221230_162.jpg', '2022-12-30 15:10:28'],
-            ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
-            ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
-            ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
+           ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
+           ['VID-20221230_162.jpg', '2022-12-30 15:10:28'],
+           ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
+           ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
+           ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
     
     sort_array_rows_by_column(array, ncol=1)
     array([['VID-20221230_162.jpg', '2022-12-30 15:10:28'],
-            ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
-            ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
-            ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
-            ['VID-20221230_110.jpg', '2022-12-30 15:10:34'],
-            ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
+           ['VID-20221230_146.jpg', '2022-12-30 15:10:29'],
+           ['VID-20221230_190.jpg', '2022-12-30 15:10:30'],
+           ['VID-20221230_305.jpg', '2022-12-30 15:10:32'],
+           ['VID-20221230_110.jpg', '2022-12-30 15:10:34'],
+           ['VID-20221230_320.jpg', '2022-12-30 15:10:35']], dtype='<U27')
     
     This example could be extended by adding the creation
     and last time access columns, but the mechanism remains exactly the same.
@@ -334,8 +334,8 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     >>> array=np.random.randint(1,10,size=(3,4))
     >>> array
     array([[6, 4, 2, 3],
-            [3, 9, 7, 1],
-            [4, 6, 4, 5]])
+           [3, 9, 7, 1],
+           [4, 6, 4, 5]])
     
     Suppose that we want to sort the values of the first row (row=0),
     but when it is done so, we want the rest of the values of each column to
@@ -357,9 +357,9 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     >>> array1=array.T
     >>> array1
     array([[6, 3, 4],
-            [4, 9, 6],
-            [2, 7, 4],
-            [3, 1, 5]])
+           [4, 9, 6],
+           [2, 7, 4],
+           [3, 1, 5]])
     
     And now we apply the same method as sorting ROWS AGAINST a specified
     COLUMN, where now array === array.T, and ncol=nrow=0
@@ -368,29 +368,28 @@ def sort_array_columns_by_row(array, nrow, sort_order="ascending"):
     >>> array1_tr=sort_array_rows_by_column(array.T, ncol=0)
     >>> array1_tr
     array([[2, 7, 4],
-            [3, 1, 5],
-            [4, 9, 6],
-            [6, 3, 4]])
+           [3, 1, 5],
+           [4, 9, 6],
+           [6, 3, 4]])
     
     And now we calculate its transpose.
     >>> array2 = array1_tr.T
     >>> array2
     array([[2, 3, 4, 6],
-            [7, 1, 9, 3],
-            [4, 5, 6, 4]])
+           [7, 1, 9, 3],
+           [4, 5, 6, 4]])
     """
     
     array_dtype = array.dtype
     
-    try:
+    if hasattr(array, 'T'):
         array_tr = array.T    
         sorted_array_cbr_tr = sort_array_rows_by_column(array_tr, nrow, sort_order)
         sorted_array_cbr = sorted_array_cbr_tr.T
-    except:
-        raise TypeError("Cannot perform operation with numpy arrays "
-                        f"of data type {array_dtype}.")
+        return sorted_array_cbr 
     else:
-        return sorted_array_cbr    
+        raise TypeError("Cannot perform operation with objects"
+                        f"of data type {array_dtype}.")           
 
 
 def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
@@ -436,28 +435,34 @@ def sort_array_complete(array, ncol, nrow, sort_order="ascending"):
     >>> array=np.random.randint(1,10,size=(3,4))
     >>> array
     array([[6, 4, 2, 3],
-            [3, 9, 7, 1],
-            [4, 6, 4, 5]])
+           [3, 9, 7, 1],
+           [4, 6, 4, 5]])
     
     sort_array_complete(array, ncol=0, nrow=0)
     array([[1, 3, 7, 9],
-            [5, 4, 4, 6],
-            [3, 6, 2, 4]])
+           [5, 4, 4, 6],
+           [3, 6, 2, 4]])
     """
     
     array_dtype = array.dtype
     
     try:
         sorted_array_rbc = sort_array_rows_by_column(array, ncol, sort_order)
-        sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
-                                                     nrow,
-                                                     sort_order)
-        sorted_array_complete = sorted_array_cbr.copy()    
+        
     except:
-        raise TypeError("Cannot perform operation with numpy arrays "
+        raise TypeError("Cannot perform operation with objects"
                         f"of data type {array_dtype}.")
     else:
-        return sorted_array_complete
+        try:
+            sorted_array_cbr = sort_array_columns_by_row(sorted_array_rbc, 
+                                                         nrow,
+                                                         sort_order)
+        except:
+            raise TypeError("Cannot perform operation with objects"
+                            f"of data type {array_dtype}.")
+        else:
+            sorted_array_complete = sorted_array_cbr.copy()    
+            return sorted_array_complete
 
 
 def approach_value_in_array(array, given_value):
@@ -867,8 +872,7 @@ def remove_elements_from_array(array, idx2access, axis=None):
         
     else:
         raise TypeError("Input argument must either be of type 'list' or numpy array.")
-    
-    
+       
     return array_filtered
 
 

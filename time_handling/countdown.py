@@ -72,22 +72,19 @@ def countdown(t, time_fmt_str=None, print_str=False):
                         time_fmt_str = substring_replacer(time_fmt_str, 
                                                           s2find_2,
                                                           s2replace_2)
-                    
-            
-                while (t):        
+                        
+                
+                while (t):
                     try:
                         time_str = time_dt.strftime(time_fmt_str)  
+                        time_dt -= datetime.timedelta(seconds=1)  
                     except OverflowError:
-                        print("Time up!")
+                        raise OverflowError(  )
                     else:
                         print(time_str, end="\r")
                         time.sleep(1)
-                        time_dt -= datetime.timedelta(seconds=1)  
                         
-                else:
-                    print("Time up!")
-            
-        
+              
     elif isinstance(t, int):
         t_secs = time_format_tweaker(t)
         
@@ -123,7 +120,17 @@ t = input("Introduce any time: ")
 
 try:
     eval(t)
-    
+except:
+    time_fmt_str = input("String format detected. "
+                         "Introduce the formatting string without quotes: ")
+    try:
+        countdown(t, time_fmt_str=time_fmt_str)
+    except OverflowError:
+        print("Time up!")
+    except KeyboardInterrupt:
+        print("\nCountdown stopped.")
+        
+else:
     print_str = input("Convertible time format detected. "
                       "Would you like to print the time in string format? [y/n] ")
     
@@ -131,15 +138,7 @@ try:
         print_str = input("Please write 'y' for 'yes' or 'n' for 'no' ")
     else: 
         try:            
-            countdown(t, string_arr1, string_arr2, print_str=print_str)    
+            countdown(t, print_str=print_str)    
         except KeyboardInterrupt:
             print("\nCountdown stopped.")
             
-    
-except:
-    time_fmt_str = input("String format detected. "
-                         "Introduce the formatting string without quotes: ")
-    try:
-        countdown(t, string_arr1, string_arr2, time_fmt_str=time_fmt_str)
-    except KeyboardInterrupt:
-        print("\nCountdown stopped.")

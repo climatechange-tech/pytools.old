@@ -73,7 +73,7 @@ def df_sel(df, rows, cols):
     df1 = df.iloc[rows,cols]
     return df1
 
-#%% INPUT PARAMETERS
+#%% PARAMETERS
 
 # Basic parameters #
 nrows = int(1e5)

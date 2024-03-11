@@ -51,9 +51,9 @@ import change_permissions_main
 modify_obj_permissions = change_permissions_main.modify_obj_permissions
 modify_obj_owner = change_permissions_main.modify_obj_owner
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 path = "/home/jonander/Documents"
 

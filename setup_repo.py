@@ -16,9 +16,9 @@ import os
 from pathlib import Path
 import shutil
 
-#------------------#
-# Input parameters #
-#------------------#
+#------------#
+# Parameters #
+#------------#
 
 # Home path #
 home_path = Path.home()

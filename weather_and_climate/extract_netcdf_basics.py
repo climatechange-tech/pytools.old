@@ -58,9 +58,9 @@ extract_and_store_time_formats = netcdf_handler.extract_and_store_time_formats
 program_exec_timer("start")
 
 
-#------------------#
-# Input parameters #
-#------------------#
+#------------#
+# Parameters #
+#------------#
 
 # Delta and value roundoffs for coordinate values #
 DELTA_ROUNDOFF = 3

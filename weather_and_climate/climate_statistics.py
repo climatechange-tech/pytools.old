@@ -130,7 +130,7 @@ def periodic_statistics(obj, statistic, freq,
           Object containing the frecuency-statistic data.
     """
     
-    # Quality control of input parameters #     
+    # Quality control of parameters #     
     if statistic not in statistics:
         arg_tuple_stats1 = ("statistic", statistics)
         raise ValueError(format_string(choiceErrorStr, arg_tuple_stats1))
@@ -250,7 +250,7 @@ def climat_periodic_statistics(obj,
     it is interpreted as data holds for a specific geographical point.
     """
     
-    # Quality control of input parameters #     
+    # Quality control of parameters #     
     tf_idx = find_substring_index(time_freqs2, time_freq)     
     if tf_idx == -1:
         arg_tuple_climat_stats = ("time-frequency", time_freqs2)
@@ -579,7 +579,7 @@ def calculate_and_apply_deltas(observed_series,
     it is interpreted that data holds for a specific geographical point.
     """
     
-    # Quality control of input parameters #     
+    # Quality control of parameters #     
     if delta_type not in delta_types:
         arg_tuple_delta1 = ("delta type", delta_types)
         raise ValueError(format_string(choiceErrorStr, arg_tuple_delta1))

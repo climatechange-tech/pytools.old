@@ -52,7 +52,7 @@ def posixpath_converter(path, glob_bool=True):
 # Operations involving files as a result #
 #----------------------------------------#
 
-def find_ext_file_paths(extensions, path_to_walk_into, top_path_only=False):
+def find_files_by_ext(extensions, path_to_walk_into, top_path_only=False):
     
     """
     Function that searches for absolute paths given an extension or
@@ -110,7 +110,7 @@ def find_ext_file_paths(extensions, path_to_walk_into, top_path_only=False):
     return unique_filelist
     
 
-def find_fileString_paths(file_string, path_to_walk_into, top_path_only=False):
+def find_files_by_globstring(file_string, path_to_walk_into, top_path_only=False):
     
     """
     Function that searches for absolute paths given a part of
@@ -187,9 +187,9 @@ def find_fileString_paths(file_string, path_to_walk_into, top_path_only=False):
     return unique_filelist
     
 
-def find_allfile_extensions(extensions2skip,
-                            path_to_walk_into,
-                            top_path_only=False):
+def find_all_file_extensions(extensions2skip,
+                             path_to_walk_into,
+                             top_path_only=False):
     
     if isinstance(extensions2skip, str):
         extensions2skip = [extensions2skip]
@@ -220,9 +220,9 @@ def find_allfile_extensions(extensions2skip,
 # Operations involving directories as a result #
 #----------------------------------------------#
 
-def find_allDirectories(source_directory,
-                        top_path_only=False,
-                        include_root=True):
+def find_all_directories(source_directory,
+                         top_path_only=False,
+                         include_root=True):
     
     if top_path_only:
         sd_path = posixpath_converter(source_directory, glob_bool=False)   
@@ -261,9 +261,9 @@ def find_allDirectories(source_directory,
             return list_ud
         
 
-def find_ext_file_directories(extensions,
-                              path_to_walk_into,
-                              top_path_only=False):
+def find_file_containing_dirs_by_ext(extensions,
+                            		 path_to_walk_into,
+		                             top_path_only=False):
     
     """
     Function that searches for directories containing the
@@ -310,9 +310,9 @@ def find_ext_file_directories(extensions,
     return unique_dirlist
 
 
-def find_fileString_directories(file_string,
-                                path_to_walk_into,
-                                top_path_only=False):
+def find_file_containing_dirs_by_globstring(file_string,
+                                            path_to_walk_into,
+                                            top_path_only=False):
     
     """
     Function that searches for directories containing the

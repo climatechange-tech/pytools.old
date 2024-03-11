@@ -40,9 +40,9 @@ import file_format_tweaker
 
 eml2pdf = file_format_tweaker.eml2pdf
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 path = "/home/jonander/Documents"
 delete_eml_files = False

@@ -46,8 +46,8 @@ sys.path.append(custom_mod6_path)
 #----------------------------------------------#
 
 from data_frame_handler import save2csv
-from file_and_directory_paths import find_ext_file_directories, find_ext_file_paths
-from file_and_directory_handler import move_files_byFS_fromCodeCallDir
+from file_and_directory_paths import find_file_containing_dirs_by_ext, find_files_by_ext
+from file_and_directory_handler import move_files_by_globstring_from_exec_code
 from information_output_formatters import format_string, print_format_string
 from global_parameters import common_splitchar_list
 from os_operations import exec_shell_command
@@ -73,11 +73,11 @@ def ncfile_integrity_status(ncfile_name):
     
     try:
         ds=xr.open_dataset(ncfile_name)
-        ds.close()
-        return 0
-    
     except:
         return -1
+    else:
+        ds.close()
+        return 0
         
 def netcdf_file_scanner(path_to_walk_into, 
                         top_path_only=False,
@@ -104,7 +104,7 @@ def netcdf_file_scanner(path_to_walk_into,
         path_to_walk_into = [path_to_walk_into]
         
     for ptwi in path_to_walk_into:
-        ncgrib_file_list = find_ext_file_paths(extensions[0],
+        ncgrib_file_list = find_files_by_ext(extensions[0],
                                           ptwi,
                                           top_path_only=top_path_only)
         lncfl = len(ncgrib_file_list)
@@ -568,7 +568,7 @@ def infer_full_period_of_time(nc_file):
 
 def get_netcdf_fileList(path_to_walk_into):
     
-    netcdf_files = find_ext_file_paths(extensions[0], 
+    netcdf_files = find_files_by_ext(extensions[0], 
                                        path_to_walk_into, 
                                        top_path_only=True)
     
@@ -577,7 +577,7 @@ def get_netcdf_fileList(path_to_walk_into):
 
 def get_netcdf_file_dirList(path_to_walk_into):
     
-    netcdf_files_dirs = find_ext_file_directories(extensions[0], path_to_walk_into)
+    netcdf_files_dirs = find_file_containing_dirs_by_ext(extensions[0], path_to_walk_into)
     
     return netcdf_files_dirs
 
@@ -625,21 +625,6 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                         
                         try:
                             llats = len(lats)
-                            llons = len(lons)
-                            
-                            deltas = get_latlon_deltas(lats, lons, delta_roundoff)
-                            
-                            arg_tuple_latlons1 = (
-                                ncf_name,
-                                lats, 
-                                lons,
-                                llats,
-                                llons,
-                                deltas[0],
-                                deltas[1]
-                                )
-                            ofile.write(format_string(latlon_info_str, 
-                                                      arg_tuple_latlons1))
                         except:
                             llats = 1
                             llons = 1
@@ -656,19 +641,36 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                                                   lon_delta)
                             ofile.write(format_string(latlon_info_str,
                                                       arg_tuple_latlons2))
+                            
+                        else:
+                            llons = len(lons)
+                            
+                            deltas = get_latlon_deltas(lats, lons, delta_roundoff)
+                            
+                            arg_tuple_latlons1 = (
+                                ncf_name,
+                                lats, 
+                                lons,
+                                llats,
+                                llons,
+                                deltas[0],
+                                deltas[1]
+                                )
+                            ofile.write(format_string(latlon_info_str, 
+                                                      arg_tuple_latlons1))
                                                 
                 else: 
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                             
                             
             ofile.close()
-            move_files_byFS_fromCodeCallDir(latlon_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")
             ofile.close()
             
-            move_files_byFS_fromCodeCallDir(latlon_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
         
 
 def extract_and_store_period_bounds():
@@ -716,12 +718,12 @@ def extract_and_store_period_bounds():
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                 
             ofile.close()
-            move_files_byFS_fromCodeCallDir(period_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(period_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")    
             ofile.close()
-            move_files_byFS_fromCodeCallDir(period_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(period_bound_ofile_name, ncf_dir_name)
 
 
 def extract_and_store_time_formats():
@@ -771,12 +773,12 @@ def extract_and_store_time_formats():
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                     
             ofile.close()
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(ofile_name, ncf_dir_name)
             
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")
             ofile.close()
-            move_files_byFS_fromCodeCallDir(ofile_name, ncf_dir_name)
+            move_files_by_globstring_from_exec_code(ofile_name, ncf_dir_name)
 
 
 #--------------------#

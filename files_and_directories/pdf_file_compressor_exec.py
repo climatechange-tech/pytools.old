@@ -43,9 +43,9 @@ sys.path.append(custom_mod_path)
 
 from file_format_tweaker import pdf_file_compressor
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 # Global path (if needed) #
 doc_dirpath = Path(fixed_path).parent

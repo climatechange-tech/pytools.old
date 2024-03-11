@@ -43,9 +43,9 @@ sys.path.append(custom_mod_path)
 
 from file_format_tweaker import pdf_file_tweaker
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 """
 As described in the original module,

@@ -35,7 +35,7 @@ sys.path.append(custom_mod1_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-from file_and_directory_paths import find_fileString_paths
+from file_and_directory_paths import find_files_by_globstring
 from string_handler import aux_ext_adder, get_obj_specs
 
 #-------------------------#
@@ -94,7 +94,7 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
         out_file_noRelPath = get_obj_specs(out_file_path, obj_spec_key="name")
         
         # Find already existing file #
-        fileAlreadyExists = (len(find_fileString_paths(f"*{out_file_path}*", ".")) > 0)
+        fileAlreadyExists = (len(find_files_by_globstring(f"*{out_file_path}*", ".")) > 0)
         
         if fileAlreadyExists:
             overWriteStdIn\

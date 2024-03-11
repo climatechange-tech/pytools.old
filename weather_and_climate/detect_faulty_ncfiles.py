@@ -37,9 +37,9 @@ sys.path.append(custom_mod2_path)
 from program_snippet_exec_timers import program_exec_timer
 from netcdf_handler import netcdf_file_scanner
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 # Path containing string or list of strings #
 path_obj = "/media/jonander/My_Basic/Dokumentuak"

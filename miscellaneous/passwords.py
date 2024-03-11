@@ -15,8 +15,8 @@ def generate_automated_password(lower_char_idx,
                                 upper_char_idx,
                                 password_length):
 
-    # Input parameters #
-    #------------------#
+    # Parameters #
+    #------------#
     
     # Output info elements #
     key_expl = "Automatically generated password"

@@ -435,9 +435,9 @@ def assignSigmaToOriginalData(original_array,
 
 program_exec_timer("start")
 
-#------------------#
-# Input parameters #
-#------------------#
+#------------#
+# Parameters #
+#------------#
 
 # User-defined #
 #--------------#

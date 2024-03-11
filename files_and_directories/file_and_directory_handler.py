@@ -47,11 +47,11 @@ from os_operations import exec_shell_command
 # Operations involving files #
 #----------------------------#
 
-def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
+def move_files_by_ext_from_exec_code(extensions, destination_directories):
     
     """
     Function that moves files selected by extensions,
-    from the directory that this code is called
+    from the directory that this code is being called
     to the desired directory or directories.
     
     Parameters
@@ -127,11 +127,11 @@ def move_files_byExts_fromCodeCallDir(extensions, destination_directories):
             shutil.move(file, f"{destination_directories}/{file_name_nopath}")
 
 
-def move_files_byFS_fromCodeCallDir(file_strings, destination_directories):
+def move_files_by_globstring_from_exec_code(file_strings, destination_directories):
 
     """
     Function that moves files selected by part of the file name,
-    from the directory that this code is called
+    from the directory that this code is being called
     to the desired directory or directories.
     It uses name globbing (or main globbing, Path(path).glob attribute).
     
@@ -296,13 +296,13 @@ def copy_files(source_files, destination_directories):
         shutil.copy(source_files, f"{destination_directories}/{file_name_nopath}")
     
         
-def copy_files_byExts_fromCodeCallDir(extensions,
-                                      destination_directories,
-                                      recursive_in_depth=True):
+def copy_files_by_ext_from_exec_code(extensions,
+                                     destination_directories,
+                                     recursive_in_depth=True):
     
     """
     Function that moves files selected by extensions,
-    from the directory that this code is called
+    from the directory that this code is being called
     to the desired directory or directories.
       
     Parameters
@@ -399,13 +399,13 @@ def copy_files_byExts_fromCodeCallDir(extensions,
             shutil.copy(file, f"{destination_directories}/{file_name_nopath}")
 
 
-def copy_files_byFS_fromCodeCallDir(file_strings,
-                                    destination_directories,
-                                    recursive_in_depth=True):
+def copy_files_by_globstring_from_exec_code(file_strings,
+                                   			destination_directories,
+                                    		recursive_in_depth=True):
 
     """
     Function that copies files selected by part of the file name,
-    from the directory that this code is called
+    from the directory that this code is being called
     to the desired directory or directories.
     
     Parameters
@@ -512,7 +512,7 @@ def copy_files_byFS_fromCodeCallDir(file_strings,
             shutil.copy(file, f"{destination_directories}/{file_name_nopath}")
             
             
-def remove_files_byExts(extensions,
+def remove_files_by_ext(extensions,
                         destination_directories,
                         find_hidden_files=False,
                         recursive_in_depth=True):
@@ -650,7 +650,7 @@ def remove_files_byExts(extensions,
             os.remove(file)
 
 
-def remove_files_byFS(file_strings,
+def remove_files_by_globstring(file_strings,
                       destination_directories,
                       find_hidden_files=False,
                       recursive_in_depth=True):
@@ -993,8 +993,8 @@ def rename_objects(relative_paths, renaming_relative_paths):
     Function that renames files specified by their absolute paths.
     
     In fact, os.rename can also perform the same tasks as shutil.move does,
-    therefore functions 'move_files_byExts_fromCodeCallDir' and
-    'move_files_byFS_fromCodeCallDir', including the fact that,
+    therefore functions 'move_files_by_ext_from_exec_code' and
+    'move_files_by_globstring_from_exec_code', including the fact that,
     besides moving a directory or file, it includes the option to
     rename thereof at the destination directory, i.e. altering the
     ultimate part of the absolute path.

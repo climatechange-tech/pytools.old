@@ -51,9 +51,9 @@ from string_handler import find_substring_index
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
-find_allDirectories = file_and_directory_paths.find_allDirectories
-find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
+find_all_file_extensions = file_and_directory_paths.find_allfile_extensions
+find_all_directories = file_and_directory_paths.find_all_directories
+find_files_by_ext = file_and_directory_paths.find_ext_file_paths
 
 #-----------------------------#
 # Get this laptop user's name #
@@ -105,17 +105,17 @@ def modify_obj_permissions(path,
             arg_tuple_mod_perms3 = ("permissions", "files", path)
             print_format_string(permModProgressInfoStr, arg_tuple_mod_perms3)
             
-        file_extension_list = find_allfile_extensions(extensions2skip, 
+        file_extension_list = find_all_file_extensions(extensions2skip, 
                                                       path, 
                                                       top_path_only=True)
-        obj_path_list = find_ext_file_paths(file_extension_list,
+        obj_path_list = find_files_by_ext(file_extension_list,
                                             path, 
                                             top_path_only=True)
             
     elif obj_type == basic_object_types[1]:
         arg_tuple_mod_perms4 = ("permissions", "directories", path)
         print_format_string(permModProgressInfoStr, arg_tuple_mod_perms4)
-        obj_path_list = find_allDirectories(path)
+        obj_path_list = find_all_directories(path)
         
 
     for obj_path in obj_path_list:
@@ -167,17 +167,17 @@ def modify_obj_owner(path,
             arg_tuple_mod_perms6 = ("owner", "files", path)
             print_format_string(permModProgressInfoStr, arg_tuple_mod_perms6)
             
-        file_extension_list = find_allfile_extensions(extensions2skip, 
+        file_extension_list = find_all_file_extensions(extensions2skip, 
                                                       path, 
                                                       top_path_only=True)
-        obj_path_list = find_ext_file_paths(file_extension_list,
+        obj_path_list = find_files_by_ext(file_extension_list,
                                             path, 
                                             top_path_only=True)
         
     elif obj_type == basic_object_types[1]:
         arg_tuple_mod_perms7 = ("permissions", "directories", path)
         print_format_string(permModProgressInfoStr, arg_tuple_mod_perms7)
-        obj_path_list = find_allDirectories(path)
+        obj_path_list = find_all_directories(path)
     
     for obj_path in obj_path_list:
         if module == "os":

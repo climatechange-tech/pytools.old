@@ -4,7 +4,7 @@
 """
 **Note**
 
-This program is an application of the main module 'bulk_numRename_main.py',
+This program is an application of the main module 'bulk_rename_index_main.py',
 and it uses the 'reorder_objs' attributes and/or functions.
 PLEASE DO NOT REDISTRIBUTE this program along any other directory,
 as the module is designed to work with absolute paths.
@@ -41,17 +41,17 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-import bulk_numRename_main
+import bulk_rename_index_main
 
 #----------------------------------------------------#
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-reorder_objs = bulk_numRename_main.reorder_objs
+reorder_objs = bulk_rename_index_main.reorder_objs
 
-#-------------------------#
-# Define input parameters #
-#-------------------------#
+#-------------------#
+# Define parameters #
+#-------------------#
 
 path = "/home/jonander/Pictures/2023/Tenerife_test_rename_pytools"
 obj_type = "file"

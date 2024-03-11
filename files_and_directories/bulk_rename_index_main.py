@@ -52,12 +52,12 @@ import string_handler
 # Define imported modules' function call shortcuts #
 #--------------------------------------------------#
 
-find_allfile_extensions = file_and_directory_paths.find_allfile_extensions
-find_ext_file_paths = file_and_directory_paths.find_ext_file_paths
-find_fileString_paths = file_and_directory_paths.find_fileString_paths
+find_all_file_extensions = file_and_directory_paths.find_allfile_extensions
+find_files_by_ext = file_and_directory_paths.find_ext_file_paths
+find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
 
-find_allDirectories = file_and_directory_paths.find_allDirectories
-find_fileString_directories = file_and_directory_paths.find_fileString_directories
+find_all_directories = file_and_directory_paths.find_all_directories
+find_file_containing_dirs_by_globstring = file_and_directory_paths.find_fileString_directories
 
 find_substring_index = string_handler.find_substring_index
 obj_path_specs = string_handler.obj_path_specs
@@ -164,7 +164,7 @@ def reorder_objs(path,
                  zero_padding="default",
                  splitchar=None):
     
-    # Quality control of the input parameters #
+    # Quality control of the parameters #
     arg_names = reorder_objs.__code__.co_varnames
     defaults = reorder_objs.__defaults__
         
@@ -188,11 +188,11 @@ def reorder_objs(path,
         raise TypeError("Index range format must be of range(min, max).")
     
     if obj_type == basic_object_types[0]:
-        ext_list = find_allfile_extensions(extensions2skip, path, top_path_only=True)
-        objList_uneven = find_ext_file_paths(ext_list, path, top_path_only=True)
+        ext_list = find_all_file_extensions(extensions2skip, path, top_path_only=True)
+        objList_uneven = find_files_by_ext(ext_list, path, top_path_only=True)
     
     elif obj_type == basic_object_types[1]:
-        objList_uneven = find_allDirectories(path, 
+        objList_uneven = find_all_directories(path, 
                                              top_path_only=True,
                                              include_root=True)
         
@@ -253,13 +253,13 @@ def reorder_objs(path,
         #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
-            conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR2).stem}*",
+            conflicting_objs = [find_files_by_globstring(f"*{Path(nff_dR2).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR2 in num_formatted_objs_dryRun_2]
             
         elif obj_type == basic_object_types[1]:
-            conflicting_objs = [find_fileString_directories(f"*{Path(nff_dR2).stem}*",
+            conflicting_objs = [find_file_containing_dirs_by_globstring(f"*{Path(nff_dR2).stem}*",
                                                             path,
                                                             top_path_only=True)
                                 for nff_dR2 in num_formatted_objs_dryRun_2]
@@ -371,13 +371,13 @@ def reorder_objs(path,
         #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
-            conflicting_objs = [find_fileString_paths(f"*{Path(nff_dR).stem}*",
+            conflicting_objs = [find_files_by_globstring(f"*{Path(nff_dR).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR in num_formatted_objs_dryRun]
         
         elif obj_type == basic_object_types[1]:
-            conflicting_objs = [find_fileString_directories(f"*{Path(nff_dR).stem}*",
+            conflicting_objs = [find_file_containing_dirs_by_globstring(f"*{Path(nff_dR).stem}*",
                                                             path,
                                                             top_path_only=True)
                                 for nff_dR in num_formatted_objs_dryRun]

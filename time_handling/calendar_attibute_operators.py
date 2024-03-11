@@ -318,7 +318,8 @@ def week_range(date):
     where a given calendar day lies on.
     In Europe weeks start on Monday and end on Sunday.
     
-    Isocalendar calculates the year, week of the year, and day of the week ('dow').
+    Isocalendar calculates the year, week of the year, 
+    and day of the week ('dow' === 'day of week'), where
     'dow' is Mon = 1, ... , Sat = 6, Sun = 7
     
     Parameters
@@ -348,7 +349,7 @@ def week_range(date):
         # Now, add 6 for the last day of the week (i.e., count up to Sunday) #
         #--------------------------------------------------------------------#
         
-        end_date = start_date + datetime.timedelta(6)
+        end_date = start_date + datetime.timedelta(days=6)
 
         return (start_date, end_date)
         
