@@ -89,7 +89,7 @@ def move_files_by_ext_from_exec_code(extensions, destination_directories):
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
         else:
             for ext, dd in zip(extensions, destination_directories):
                 extension_allfiles = cwd.glob(f"*.{ext}")
@@ -127,7 +127,7 @@ def move_files_by_ext_from_exec_code(extensions, destination_directories):
             shutil.move(file, f"{destination_directories}/{file_name_nopath}")
 
 
-def move_files_by_globstring_from_exec_code(file_strings, destination_directories):
+def move_files_by_globstr_from_exec_code(file_strings, destination_directories):
 
     """
     Function that moves files selected by part of the file name,
@@ -185,7 +185,7 @@ def move_files_by_globstring_from_exec_code(file_strings, destination_directorie
         len_dds = len(destination_directories)
         
         if len_fs != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_FS_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_globstr_dirs))
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
@@ -361,7 +361,7 @@ def copy_files_by_ext_from_exec_code(extensions,
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
         else:
             for ext, dd in zip(extensions, destination_directories):
                 extension_allfiles = cwd.glob(f"*.{ext}")   
@@ -399,9 +399,9 @@ def copy_files_by_ext_from_exec_code(extensions,
             shutil.copy(file, f"{destination_directories}/{file_name_nopath}")
 
 
-def copy_files_by_globstring_from_exec_code(file_strings,
-                                   			destination_directories,
-                                    		recursive_in_depth=True):
+def copy_files_by_globstr_from_exec_code(file_strings,
+                                   		destination_directories,
+                                         recursive_in_depth=True):
 
     """
     Function that copies files selected by part of the file name,
@@ -466,7 +466,7 @@ def copy_files_by_globstring_from_exec_code(file_strings,
         len_dds = len(destination_directories)
         
         if len_fs != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
         else:
             for fs, dd in zip(file_strings, destination_directories):
                 string_allfiles = [file
@@ -596,7 +596,7 @@ def remove_files_by_ext(extensions,
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
         else:
             for fs, dd in zip(extensions, destination_directories):
                 
@@ -650,10 +650,10 @@ def remove_files_by_ext(extensions,
             os.remove(file)
 
 
-def remove_files_by_globstring(file_strings,
-                      destination_directories,
-                      find_hidden_files=False,
-                      recursive_in_depth=True):
+def remove_files_by_globstr(file_strings,
+                            destination_directories,
+                            find_hidden_files=False,
+                            recursive_in_depth=True):
     
     """
     Function that removes files selected by part of the file name
@@ -738,7 +738,7 @@ def remove_files_by_globstring(file_strings,
             len_dds = len(destination_directories)
             
             if len_fs != len_dds:
-                raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_FS_dirs))
+                raise ValueError(format_string(not_equal_length_error_str, arg_tuple_globstr_dirs))
             else:
                 for fs, dd in zip(file_strings, destination_directories):
                     
@@ -877,7 +877,7 @@ def move_entire_directories(directories, destination_directories):
         len_dds = len(destination_directories)
         
         if len_exts != len_dds:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
         else:
             for dirc, dd in zip(directories, destination_directories):
                 shutil.move(dirc,
@@ -927,7 +927,7 @@ def copy_entire_directories(directories,
             len_dds = len(destination_directories)
             
             if len_exts != len_dds:
-                raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_exts_dirs))
+                raise ValueError(format_string(not_equal_length_error_str, arg_tuple_exts_dirs))
             else:
                 for dirc, dd in zip(directories, destination_directories):
                     shutil.copytree(dirc, dd, dirs_exist_ok=True)
@@ -994,7 +994,7 @@ def rename_objects(relative_paths, renaming_relative_paths):
     
     In fact, os.rename can also perform the same tasks as shutil.move does,
     therefore functions 'move_files_by_ext_from_exec_code' and
-    'move_files_by_globstring_from_exec_code', including the fact that,
+    'move_files_by_globstr_from_exec_code', including the fact that,
     besides moving a directory or file, it includes the option to
     rename thereof at the destination directory, i.e. altering the
     ultimate part of the absolute path.
@@ -1032,7 +1032,7 @@ def rename_objects(relative_paths, renaming_relative_paths):
         len_rf = len(renaming_relative_paths)
         
         if len_files != len_rf:
-            raise ValueError(format_string(notEqualLengthErrorStr, arg_tuple_rename_objs))
+            raise ValueError(format_string(not_equal_length_error_str, arg_tuple_rename_objs))
         else:
             for rp, rrp in zip(relative_paths, renaming_relative_paths):
                 os.rename(rp, rrp)
@@ -1043,7 +1043,7 @@ def rename_objects(relative_paths, renaming_relative_paths):
         os.rename(relative_paths, renaming_relative_paths)
                 
     else:
-        raise TypeError(objTypeErrorStr)
+        raise TypeError(objtype_error_str)
                          
 #--------------------------#
 # Parameters and constants #
@@ -1055,15 +1055,15 @@ alldoc_dirpath = Path(fixed_path).parent
 
 # Tuples to pass in into preformatted strings #
 arg_tuple_exts_dirs = ("Extension", "destination directory")
-arg_tuple_FS_dirs = ("File string", "destination directory")
+arg_tuple_globstr_dirs = ("File string", "destination directory")
 arg_tuple_rename_objs = ("Files", "renaming file")
 
 # Preformatted strings #
 #----------------------#
 
 cp_command_str = """cp -rv {}/* {}""" # TODO: 'bash' agindua saihes daiteke?
-notEqualLengthErrorStr = """{} and {} lists are not of the same length."""
-objTypeErrorStr = "Both input arguments must either be strings or lists simultaneously."
+not_equal_length_error_str = """{} and {} lists are not of the same length."""
+objtype_error_str = "Both input arguments must either be strings or lists simultaneously."
 
 # 'rsync' command switch-case dictionary #
 rsync_command_dict = {

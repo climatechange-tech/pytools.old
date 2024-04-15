@@ -57,37 +57,37 @@ from time_formatters import time_format_tweaker
 # Define functions #
 #------------------#
 
-def get_current_time(Type="datetime", time_fmt_str=None):
+def get_current_time(dtype="datetime", time_fmt_str=None):
     arg_names = get_current_time.__code__.co_varnames
         
-    type_arg_pos = find_substring_index("Type", 
+    type_arg_pos = find_substring_index("dtype", 
                                         arg_names,
                                         advanced_search=True,
                                         find_whole_words=True)
     
-    if Type not in current_time_type_options:
+    if dtype not in current_time_type_options:
         arg_tuple_current_time = (arg_names[type_arg_pos], current_time_type_options)
         raise ValueError(format_string(ChoiceErrorStr, arg_tuple_current_time))
     
     else:
-        current_datetime = current_datetime_dict.get(Type)
+        current_datetime = current_datetime_dict.get(dtype)
     
-    if Type == "str" and time_fmt_str is not None:
+    if dtype == "str" and time_fmt_str is not None:
         raise TypeError("Current time is already a string type.")
         
         current_datetime_str\
         = time_format_tweaker(current_datetime, time_fmt_str)
         return current_datetime_str    
     
-    elif Type == "str" and time_fmt_str is None:
+    elif dtype == "str" and time_fmt_str is None:
         return current_datetime
     
 
-def get_obj_operation_datetime(objList,
+def get_obj_operation_datetime(obj_list,
                                attr="modification", 
                                time_fmt_str=None):
     
-    attr_options = list(structTime_attr_dict.keys())
+    attr_options = list(struct_time_attr_dict.keys())
     arg_names = get_obj_operation_datetime.__code__.co_varnames
     
     attr_arg_pos = find_substring_index(arg_names,
@@ -97,16 +97,16 @@ def get_obj_operation_datetime(objList,
     
     if attr not in attr_options:
         arg_tuple_operation_datetime = (attr_arg_pos, attr_options)
-        raise AttributeError(format_string(AttributeErrorStr, 
+        raise AttributeError(format_string(attribute_error_str, 
                                            arg_tuple_operation_datetime))
         
-    if isinstance(objList, str):
-        objList = [objList]
+    if isinstance(obj_list, str):
+        obj_list = [obj_list]
     
     obj_timestamp_arr = []
     
-    for obj in objList:    
-        structTime_attr_obj = structTime_attr_dict.get(attr) 
+    for obj in obj_list:    
+        structTime_attr_obj = struct_time_attr_dict.get(attr) 
         
         timestamp_str_attr_obj\
         = time_format_tweaker(structTime_attr_obj, time_fmt_str)
@@ -156,13 +156,13 @@ def datetime_range_operator(df1, df2,
     if not isinstance(df1, pd.DataFrame):
         arg_tuple_dt_range_op2 = (arg_names[df1_arg_pos], df1_arg_pos,
                                   'pandas.DataFrame', 'pandas.Series')
-        raise TypeError(format_string(TypeErrorStr2, arg_tuple_dt_range_op2))
+        raise TypeError(format_string(type_error_str2, arg_tuple_dt_range_op2))
         
     if not isinstance(df2, pd.DataFrame)\
     and not isinstance(df2, pd.Series):
         arg_tuple_dt_range_op3 = (arg_names[df2_arg_pos], df2_arg_pos,
                                   'pandas.DataFrame', 'pandas.Series')
-        raise TypeError(format_string(TypeErrorStr2, arg_tuple_dt_range_op3))
+        raise TypeError(format_string(type_error_str2, arg_tuple_dt_range_op3))
         
         
     elif isinstance(df2, pd.Series):
@@ -170,13 +170,13 @@ def datetime_range_operator(df1, df2,
             arg_tuple_dt_range_op4 = (arg_names[df2_arg_pos],
                                       'pandas.Series',
                                       arg_names[df2_arg_pos])
-            raise AttributeError(format_string(AttributeErrorStr, 
+            raise AttributeError(format_string(non_existent_attr_error_str,
                                                arg_tuple_dt_range_op4))
             
     # Operations #
     #------------#
     
-    std_date_colName = "Date"
+    std_date_colname = "Date"
     
     # Check whether both objects have a standard date and time (column) name #
     try:
@@ -187,7 +187,7 @@ def datetime_range_operator(df1, df2,
               "Setting default name 'Date' to column number 0.")
         
         df1_cols = list(df1.columns)
-        df1_cols[0] = std_date_colName
+        df1_cols[0] = std_date_colname
         df1.columns = df1_cols
         
     try:
@@ -198,7 +198,7 @@ def datetime_range_operator(df1, df2,
               "Setting default name 'Date' to column number 0.")
         
         df2_cols = list(df2.columns)
-        df2_cols[0] = std_date_colName
+        df2_cols[0] = std_date_colname
         df2.columns = df2_cols
         
     # Perform the merge #
@@ -208,7 +208,7 @@ def datetime_range_operator(df1, df2,
     try:
         res_dts = res_dts.sort_values(by=dt_colname)
     except:
-        res_dts = res_dts.sort_values(by=std_date_colName)
+        res_dts = res_dts.sort_values(by=std_date_colname)
     
     # Choose whether to customize times' format #
     if time_fmt_str is not None:
@@ -235,7 +235,7 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
     if not isinstance(months_shift, int):
         arg_tuple_natural_year1 = (arg_names[shift_mon_arg_pos], 
                                    shift_mon_arg_pos, 'int')
-        raise ValueError(format_string(TypeErrorStr1, arg_tuple_natural_year1))
+        raise ValueError(format_string(type_error_str1, arg_tuple_natural_year1))
     
     # Case study #
     #------------#
@@ -294,7 +294,7 @@ def natural_year(dt_start, dt_end, time_fmt_str=None,
         print_format_string(natural_year_range_table, arg_tuple_natural_year2)
     
     else:
-        return dt_start_natural, dt_end_natural
+        return (dt_start_natural, dt_end_natural)
   
 #%%
 
@@ -311,19 +311,19 @@ current_time_type_options = ["datetime", "str", "timestamp"]
 
 # Error strings #
 ChoiceErrorStr = """Wrong '{}' option. Options are {}."""
-TypeErrorStr1 = """Argument '{}' at position {} must be of type '{}'."""
-TypeErrorStr2 = """Argument '{}' at position {} must be of type '{}' or ´{}´."""
+type_error_str1 = """Argument '{}' at position {} must be of type '{}'."""
+type_error_str2 = """Argument '{}' at position {} must be of type '{}' or ´{}´."""
 
-AttributeErrorStr =\
+non_existent_attr_error_str = \
 """Argument '{}' is of type '{}' but it is unnamed. 
 Please set a name using {}.name attribute."""
 
-AttributeErrorStr = """Wrong attribute option at position {}. Options are {}. """
+attribute_error_str = "Wrong attribute option at position {}. Options are {}. "
 
 # Switch dictionaries #
 #---------------------#
 
-structTime_attr_dict = {
+struct_time_attr_dict = {
     "creation"     : "time.gmtime(os.path.getctime(obj))",
     "modification" : "time.gmtime(os.path.getmtime(obj))",
     "access"       : "time.gmtime(os.path.getatime(obj))"

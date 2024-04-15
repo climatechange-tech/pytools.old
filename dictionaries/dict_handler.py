@@ -42,7 +42,7 @@ from string_handler import aux_ext_adder, get_obj_specs
 # Define custom functions #
 #-------------------------#
 
-def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
+def dict2json(dictionary, json_indent=4, out_file_path=None):
     
     """
     Function that converts a dictionary (not only its content, 
@@ -52,7 +52,7 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
     ----------
     dictionary : dict
             The original dictionary, no matter what structure is composed of.
-    JSON_indent : int
+    json_indent : int
             Determines the space to be used expressing the dictionary 
             as a string. Default value is that used widely, 
             a tab, equivalent to 4 whitespaces.
@@ -66,7 +66,7 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
     """
     
     # Convert dictionary  to string #
-    dict_str = json.dumps(dictionary, indent=JSON_indent)
+    dict_str = json.dumps(dictionary, indent=json_indent)
     
     # Write the string directly and at once to the given path #
     #---------------------------------------------------------#
@@ -91,22 +91,22 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
         
         # Get the file name's parent and the name without the relative path #        
         out_file_parent = get_obj_specs(out_file_path, obj_spec_key="parent")
-        out_file_noRelPath = get_obj_specs(out_file_path, obj_spec_key="name")
+        out_file_no_rel_path = get_obj_specs(out_file_path, obj_spec_key="name")
         
         # Find already existing file #
-        fileAlreadyExists = (len(find_files_by_globstring(f"*{out_file_path}*", ".")) > 0)
+        file_already_exists = (len(find_files_by_globstring(f"*{out_file_path}*", ".")) > 0)
         
-        if fileAlreadyExists:
-            overWriteStdIn\
-            = input(f"Warning: file '{out_file_noRelPath}' "
+        if file_already_exists:
+            overwrite_stdin\
+            = input(f"Warning: file '{out_file_no_rel_path}' "
                     f"at directory '{out_file_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
-            while (overWriteStdIn != "y" and overWriteStdIn != "n"):
-                overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+            while (overwrite_stdin != "y" and overwrite_stdin != "n"):
+                overwrite_stdin = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
             else:    
-                if overWriteStdIn == "y":
+                if overwrite_stdin == "y":
                     out_file.close()
                 else:
                     pass
@@ -114,7 +114,7 @@ def dict2JSON(dictionary, JSON_indent=4, out_file_path=None):
     
     
     
-def JSON2dict(in_file_path):
+def json2dict(in_file_path):
     """
     Function that converts a dictionary (not only its content, 
     but as a whole) to a string and writes the latter to a JSON file.

@@ -47,29 +47,29 @@ from time_formatters import time_format_tweaker
 # Define functions #
 #------------------#
 
-def program_exec_timer(mode, library="time", return_days=False):
+def program_exec_timer(mode, module="time", return_days=False):
     
     global ti
     
-    if library not in library_list:
-        raise ValueError(format_string(wrongLibraryChoiceStr, library_list))
+    if module not in module_list:
+        raise ValueError(format_string(wrong_module_choice_str, module_list))
         
     else:
         if mode == "start":  
-            if library == "os":
+            if module == "os":
                 import os
                 ti = os.times()[-1]
-            elif library == "time":
+            elif module == "time":
                 ti = time.time()
-            elif library == "timeit":
+            elif module == "timeit":
                 ti = timeit.default_timer()
             
         elif mode == "stop":
-            if library == "os":
+            if module == "os":
                 tf = os.times()[-1]
-            elif library == "time":
+            elif module == "time":
                 tf = time.time()
-            elif library == "timeit":
+            elif module == "timeit":
                 tf = timeit.default_timer()
                 
             elapsed_time = abs(ti-tf)
@@ -106,7 +106,7 @@ def snippet_exec_timer(snippet_str,
         
         if roundoff is not None:
             if not isinstance(roundoff, int):
-                raise TypeError(format_string(typeErrorStr, '{arg_names[roundoff_arg_pos]}'))
+                raise TypeError(format_string(type_error_str, '{arg_names[roundoff_arg_pos]}'))
             else:
                 exec_time_norep = np.round(exec_time_norep, roundoff)
         
@@ -130,7 +130,7 @@ def snippet_exec_timer(snippet_str,
         
         if roundoff is not None:
             if not isinstance(roundoff, int):
-                raise TypeError(format_string(typeErrorStr, '{arg_names[roundoff_arg_pos]}'))
+                raise TypeError(format_string(type_error_str, '{arg_names[roundoff_arg_pos]}'))
             else:
                 exec_time_rep = np.round(exec_time_rep, roundoff)
                 time_unit_str = sec_time_unit_str
@@ -160,7 +160,7 @@ def snippet_exec_timer(snippet_str,
 #--------------------------#
 
 # List of libraries containing methods for code execution timing #
-library_list = ["os", "time", "timeit"]
+module_list = ["os", "time", "timeit"]
 
 # Time units #
 sec_time_unit_str = 's'
@@ -180,5 +180,5 @@ rep_exec_time_info_best_str = \
 """{}\nBest: {}"""
 
 # Error messages #
-typeErrorStr = """Argument '{}' must be of type 'int'."""
-wrongLibraryChoiceStr = """Wrong library chosen. Options are {}."""
+type_error_str = """Argument '{}' must be of type 'int'."""
+wrong_module_choice_str = """Wrong module chosen. Options are {}."""

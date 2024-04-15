@@ -62,7 +62,7 @@ extensions2skip = ""
 starting_number = "default"
 index_range = "all"
 
-splitchar = None
+splitdelim = None
 
 #------------------#
 # Perform the task #
@@ -74,4 +74,4 @@ reorder_objs(path,
              index_range,
              starting_number,
              ZERO_PADDING,
-             splitchar=splitchar)
+             splitdelim=splitdelim)

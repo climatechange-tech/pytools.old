@@ -22,9 +22,9 @@ the directories inside "pytools" directory.
 
 basic_time_format_strs = dict(
     H           = "%Y-%m-%d %H:%M:%S",
-    H_noDateSep = "%Y%m%d %H:%M:%S",
+    H_NODATESEP = "%Y%m%d %H:%M:%S",
     D           = "%Y-%m-%d",
-    D_noDateSep = "%Y%m%d",
+    D_NODATESEP = "%Y%m%d",
     M           = "%Y-%m",
     Y           = "%Y"
 )
@@ -38,10 +38,10 @@ non_std_time_format_strs = dict(
 # TODO: gehitu beste batzuk
 
 custom_time_format_strs = dict(
-    CT_Excel_Spanish_H       = "%d/%m/%y %H:%M:%S",
-    CT_Excel_Spanish_noBar_H = "%d%m%y %H:%M:%S",
-    CT_Excel_Spanish_D       = "%d/%m/%y",
-    CT_Excel_Spanish_noBar_D = "%d%m%y"
+    CT_EXCEL_SPANISH_H       = "%d/%m/%y %H:%M:%S",
+    CT_EXCEL_SPANISH_NOBAR_H = "%d%m%y %H:%M:%S",
+    CT_EXCEL_SPANISH_D       = "%d/%m/%y",
+    CT_EXCEL_SPANISH_NOBAR_D = "%d%m%y"
 )
 
 month_number_dict = {
@@ -78,7 +78,7 @@ MATHEMATICAL_YEAR_DAYS = 360
 
 time_frequencies_complete = ["year", "season", "month", "day", "hour", "minute", "second"]
 time_frequencies_short_1 = ["yearly", "seasonal", "monthly", "daily", "hourly"]
-time_frequencies_shorter_1 = ['year', 'seas', 'mon', 'day', 'hour']
+time_frequencies_shorter_1 = ["year", "seas", "mon", "day", "hour"]
 
 #%% MATHEMATICAL CONCEPTS
  
@@ -100,13 +100,13 @@ basic_object_types = ["file", "directory"]
 # Widely used regular expressions #
 #---------------------------------# 
 
-regex_passwords = '^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$'
+regex_passwords = r"^(?=.{8,})(?=.*[a-z\s])(?=.*[A-Z\s])(?=.*\d)(?=.*[_\W]).+$"
 
 #---------# 
 # Strings #
 #---------#
 
-common_splitchar_list = ['_', '-', ';', ',', '\n', '\t']
+common_splitdelim_list = ["_", "-", ";", ",", "\n", "\t"]
 
 
 #%% SOCIO-ECONOMICAL CONCEPTS

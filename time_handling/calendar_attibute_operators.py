@@ -163,7 +163,7 @@ def standardize_calendar(obj,
         if not isinstance(file_path, list) and not isinstance(file_path, np.ndarray):
             file_path = [file_path]
             
-        obj_stdCalendar = []
+        obj_std_calendar = []
         len_objects = len(obj)
             
         # Check whether all objects passed in a list are of the same type #
@@ -245,7 +245,7 @@ def standardize_calendar(obj,
                             = obj.iloc[:, 1:].interpolate(method=interpolation_method,
                                                           order=order)
                             
-                    obj_stdCalendar.append(obj)
+                    obj_std_calendar.append(obj)
         
                     # Save the object either as Excel or CSV document #
                     if save_as_new_obj:
@@ -291,7 +291,7 @@ def standardize_calendar(obj,
                                              "Options for a Pandas data frame "
                                              "are {'csv', 'xlsx'}.")
                             
-        return obj_stdCalendar
+        return obj_std_calendar
     
     elif obj_type == "xarray":
         
@@ -359,7 +359,7 @@ def week_range(date):
         
 def nearest_leap_year(year):
     
-    year_isleap = leapYearDetector(year, year)
+    year_isleap = leap_year_detector(year, year)
     
     if not year_isleap:
         year_list = list(range(year-4, year+4))
@@ -367,7 +367,7 @@ def nearest_leap_year(year):
         
         nearest_leap_year_idx = [i
                                  for i in range(lyl) 
-                                 if leapYearDetector(year_list[i], year_list[i])]
+                                 if leap_year_detector(year_list[i], year_list[i])]
         
         min_idx = nearest_leap_year_idx[0]
         max_idx = nearest_leap_year_idx[1]
@@ -388,7 +388,7 @@ def nearest_leap_year(year):
     return nearest_lp_year
 
 
-def leapYearDetector(start_year, end_year, return_days=False):
+def leap_year_detector(start_year, end_year, return_days=False):
     
     if isinstance(start_year, str):
         start_year = int(start_year)
@@ -411,10 +411,10 @@ def leapYearDetector(start_year, end_year, return_days=False):
         
     else:
         if start_year == end_year:
-            isLeapYear = calendar.isleap(start_year)
-            return isLeapYear
+            is_leap_year = calendar.isleap(start_year)
+            return is_leap_year
         
         else:
-            isLeapYear_arr = [calendar.isleap(year)
-                              for year in range(start_year, end_year+1)]
-            return isLeapYear_arr
+            is_leap_year_arr = [calendar.isleap(year)
+                                for year in range(start_year, end_year+1)]
+            return is_leap_year_arr

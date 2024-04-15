@@ -33,12 +33,12 @@ def find_substring_index(string,
 
     if (isinstance(string, str) and isinstance(substring, str)):
         if advanced_search:
-            substrLowestIdx = string_VS_string_search(string, substring, 
+            substr_lowest_idx = string_vs_string_search(string, substring, 
                                                       find_whole_words,
                                                       case_sensitive,
                                                       all_matches)
         else:
-            substrLowestIdx = np.char.find(string,
+            substr_lowest_idx = np.char.find(string,
                                            substring,
                                            start=0,
                                            end=None)
@@ -57,12 +57,12 @@ def find_substring_index(string,
         
         if not advanced_search:
             if isinstance(substring, str):
-                substrLowestIdxNoFilt = np.char.find(string, 
+                substr_lowest_idx_no_filter = np.char.find(string, 
                                                      substring, 
                                                      start=0,
                                                      end=None)
 
-                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
+                substr_lowest_idx = np.where(substr_lowest_idx_no_filter!=-1)[0].tolist()
            
             elif isinstance(substring, list)\
             or isinstance(substring, tuple)\
@@ -71,22 +71,22 @@ def find_substring_index(string,
                 if isinstance(substring, tuple):
                     substring = list(substring)
                 
-                substrLowestIdx\
-                = stringList_VS_stringList_search_wholeWords(string,
-                                                             substring, 
-                                                             start=0,
-                                                             end=None)
+                substr_lowest_idx\
+                = strlist_vs_strlist_search_whole_words(string,
+                                                        substring, 
+                                                        start=0,
+                                                        end=None)
                 
         else:
             if isinstance(substring, str):
-                substrLowestIdxNoFilt\
-                = np.array([string_VS_string_search(s_el, substring,
+                substr_lowest_idx_no_filter\
+                = np.array([string_vs_string_search(s_el, substring,
                                                     find_whole_words,
                                                     case_sensitive, 
                                                     all_matches)
                             for s_el in string])
                 
-                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[0].tolist()
+                substr_lowest_idx = np.where(substr_lowest_idx_no_filter!=-1)[0].tolist()
                 
                 
             elif isinstance(substring, list)\
@@ -96,41 +96,41 @@ def find_substring_index(string,
                 if isinstance(substring, tuple):
                     substring = list(substring)
                 
-                substrLowestIdx\
-                = stringList_VS_stringList_search_wholeWords(string, 
-                                                             substring,
-                                                             start=0, 
-                                                             end=None)
+                substr_lowest_idx\
+                = strlist_vs_strlist_search_whole_words(string, 
+                                                        substring,
+                                                        start=0, 
+                                                        end=None)
              
-                substrLowestIdxNoFilt\
-                = np.array([[string_VS_string_search(s_el, sb_el,
+                substr_lowest_idx_no_filter\
+                = np.array([[string_vs_string_search(s_el, sb_el,
                                                      find_whole_words,
                                                      case_sensitive,
                                                      all_matches)
                              for s_el in string]
                             for sb_el in substring])
                 
-                substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
+                substr_lowest_idx = np.where(substr_lowest_idx_no_filter!=-1)[-1].tolist()
                 
             
-    elif isinstance(string, pd.DataFrame) or isinstance(string, pd.Series):
+    elif isinstance(string, (pd.DataFrame, pd.Series)):
         try:
-            substrLowestIdxNoFilt = string.str.contains[substring].index
+            substr_lowest_idx_no_filter = string.str.contains[substring].index
         except:
-            substrLowestIdxNoFilt = string.iloc[:,0].str.contains[substring].index
+            substr_lowest_idx_no_filter = string.iloc[:,0].str.contains[substring].index
         
-        substrLowestIdx = substrLowestIdxNoFilt[substrLowestIdxNoFilt]
+        substr_lowest_idx = substr_lowest_idx_no_filter[substr_lowest_idx_no_filter]
        
     
-    if isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 0:
+    if isinstance(substr_lowest_idx, list) and len(substr_lowest_idx) == 0:
         return -1
-    elif isinstance(substrLowestIdx, list) and len(substrLowestIdx) == 1:
-        return substrLowestIdx[0]
+    elif isinstance(substr_lowest_idx, list) and len(substr_lowest_idx) == 1:
+        return substr_lowest_idx[0]
     else:
-        return substrLowestIdx
+        return substr_lowest_idx
             
     
-def string_VS_string_search(string,
+def string_vs_string_search(string,
                             substring,
                             find_whole_words,
                             case_sensitive,
@@ -140,43 +140,43 @@ def string_VS_string_search(string,
     #--------------------#
     
     if not case_sensitive and not all_matches and not find_whole_words:
-        firstOnlyMatch = re.search(substring, string, re.IGNORECASE)
+        first_only_match = re.search(substring, string, re.IGNORECASE)
         try:
-            substrLowestIdx = firstOnlyMatch.start(0)
+            substr_lowest_idx = first_only_match.start(0)
         except:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
         
     # One option selected #
     #---------------------#
         
     elif case_sensitive and not all_matches and not find_whole_words:
-        firstOnlyMatch = re.search(substring, string)
+        first_only_match = re.search(substring, string)
         try:
-            substrLowestIdx = firstOnlyMatch.start(0)
+            substr_lowest_idx = first_only_match.start(0)
         except:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
         
     elif not case_sensitive and all_matches and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string, re.IGNORECASE)
         try:
-            substrLowestIdx = [m.start(0) for m in allMatchesIterator]
+            substr_lowest_idx = [m.start(0) for m in allMatchesIterator]
         except:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
         
     elif not case_sensitive and not all_matches and find_whole_words:
         exactMatch = re.fullmatch(substring, string, re.IGNORECASE)
         try:
-            substrLowestIdx = exactMatch.start(0)
+            substr_lowest_idx = exactMatch.start(0)
         except:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
 
     # Two options selected #
     #----------------------# 
@@ -184,31 +184,31 @@ def string_VS_string_search(string,
     elif case_sensitive and all_matches and not find_whole_words:
         allMatchesIterator = re.finditer(substring, string)
         try:
-            substrLowestIdx = [m.start(0) for m in allMatchesIterator]
-            return substrLowestIdx
+            substr_lowest_idx = [m.start(0) for m in allMatchesIterator]
+            return substr_lowest_idx
         except:
             return -1
         
     elif case_sensitive and not all_matches and find_whole_words:
         exactMatch = re.fullmatch(substring, string)
         try:
-            substrLowestIdx = exactMatch.start(0)
+            substr_lowest_idx = exactMatch.start(0)
         except:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
     
 
-def stringList_VS_stringList_search_wholeWords(strList, 
-                                               substrList, 
-                                               method="default",
-                                               start=0, 
-                                               end=None):
-    
+def strlist_vs_strlist_search_whole_words(strList, 
+                                          substrList, 
+                                          method="default",
+                                          start=0, 
+                                          end=None):
+ 
     # Proper argument selection control #
     #-----------------------------------#
     
-    arg_names = stringList_VS_stringList_search_wholeWords.__code__.co_varnames
+    arg_names = strlist_vs_strlist_search_whole_words.__code__.co_varnames
     method_arg_pos = find_substring_index(arg_names, 
                                           "method",
                                           advanced_search=True,
@@ -224,27 +224,27 @@ def stringList_VS_stringList_search_wholeWords(strList,
     
     if method == "default":
         try:
-            substrLowestIdx = strList.index(substrList)
+            substr_lowest_idx = strList.index(substrList)
         except:
             return -1    
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
 
     
     elif method == "numpy":
-        substrLowestIdxNoFilt\
+        substr_lowest_idx_no_filter\
         = np.array([np.char.find(strList, substr_el, start=0, end=None)
                     for substr_el in substrList])
         
-        substrLowestIdx = np.where(substrLowestIdxNoFilt!=-1)[-1].tolist()
-        if len(substrLowestIdx) == 0:
+        substr_lowest_idx = np.where(substr_lowest_idx_no_filter!=-1)[-1].tolist()
+        if len(substr_lowest_idx) == 0:
             return -1
         else:
-            return substrLowestIdx
+            return substr_lowest_idx
         
    
     
-def obj_path_specs(obj_path, splitchar=None):
+def obj_path_specs(obj_path, splitdelim=None):
     
     obj_PATH = Path(obj_path)
     
@@ -260,8 +260,8 @@ def obj_path_specs(obj_path, splitchar=None):
         objSpecsKeys[4] : obj_path_ext
         }
     
-    if splitchar is not None:
-        obj_path_name_noext_parts = obj_path_name_noext.split(splitchar)
+    if splitdelim is not None:
+        obj_path_name_noext_parts = obj_path_name_noext.split(splitdelim)
         addItemDict = {objSpecsKeys[3] : obj_path_name_noext_parts}
         obj_specs_dict.update(addItemDict)
         
@@ -270,7 +270,7 @@ def obj_path_specs(obj_path, splitchar=None):
 
 def get_obj_specs(obj_path,
                   obj_spec_key=None,
-                  splitchar=None):
+                  splitdelim=None):
     
     # Proper argument selection control #
     arg_names = get_obj_specs.__code__.co_varnames
@@ -285,9 +285,9 @@ def get_obj_specs(obj_path,
         
     # Get the object specification name #
     if not isinstance(obj_path, dict):
-        obj_specs_dict = obj_path_specs(obj_path, splitchar)
+        obj_specs_dict = obj_path_specs(obj_path, splitdelim)
     
-    if obj_spec_key == objSpecsKeys[3] and splitchar is None:
+    if obj_spec_key == objSpecsKeys[3] and splitdelim is None:
         raise ValueError("You must specify a string-splitting character "
                          f"if '{arg_names[osk_arg_pos]}' == '{obj_spec_key}'.")
     else:
@@ -351,7 +351,7 @@ def modify_obj_specs(target_path_obj,
     return new_obj_path_joint
 
 
-def aux_path_strAdd(path2tweak, str2add):
+def add_str_to_aux_path(path2tweak, str2add):
     obj2change = "name_noext"
     output_path_aux = modify_obj_specs(path2tweak, obj2change, str2add=str2add)
     return output_path_aux
@@ -384,10 +384,10 @@ def join_obj_path_specs(obj_specs_dict):
     return joint_obj_path
 
 
-def fileList2String(obj_list):    
+def file_list_to_str(obj_list):    
     method_name = inspect.currentframe().f_code.co_name
     
-    if not (isinstance(obj_list, list) or isinstance(obj_list, np.ndarray)):
+    if not (isinstance(obj_list, (list, np.ndarray))):
         raise TypeError(f"{method_name} method only works for lists and Numpy arrays.")
         
     else:        
@@ -417,7 +417,7 @@ def substring_replacer(string, string2find, string2replace, count_std=-1,
         if isinstance(string, str):
             string_replaced = string.replace(string2find, string2replace, count_std)
             
-        elif isinstance(string, list) or isinstance(string, np.ndarray):
+        elif isinstance(string, (list, np.ndarray)):
             if isinstance(string, list):
                 string = np.array(string)
             string_replaced = np.char.replace(string, string2find, string2replace)

@@ -12,7 +12,7 @@ import pandas as pd
 # Define functions # 
 #------------------#
 
-def detect_subArray_in_array(obj, test_obj, 
+def detect_subarray_in_array(obj, test_obj, 
                              preferent_conv_method="numpy",
                              reverse_arg_order=False,
                              return_all=False):
@@ -58,14 +58,14 @@ def detect_subArray_in_array(obj, test_obj,
             
     Returns
     -------
-    isTestObjIn_arr : np.ndarray or pd.Series
+    is_test_obj_contained : np.ndarray or pd.Series
             Returns a multi-dimension object if 'return_all' is set to True.
     areAllTestElementsIn_bool : bool
             Returns a multi-dimension object if 'return_all' is set to False.
     """
     
     # Adapt the input argument if not of type 'numpy.ndarray' or 'pandas.Series' #
-    if (isinstance(obj, list) or isinstance(obj, range)):
+    if (isinstance(obj, (list, range))):
         if preferent_conv_method == "numpy":
             obj = np.array(obj)
         elif preferent_conv_method == "pandas":
@@ -79,31 +79,31 @@ def detect_subArray_in_array(obj, test_obj,
     if isinstance(obj, np.ndarray):   
         
         if not reverse_arg_order:
-            isTestObjIn_arr = np.isin(obj, test_obj)
+            is_test_obj_contained = np.isin(obj, test_obj)
         else:
-            isTestObjIn_arr = np.isin(test_obj, obj)
+            is_test_obj_contained = np.isin(test_obj, obj)
         
         if return_all:
-            areAllTestElementsIn_bool = np.all(isTestObjIn_arr)
+            areAllTestElementsIn_bool = np.all(is_test_obj_contained)
             return areAllTestElementsIn_bool
         
         else:
 
-            return isTestObjIn_arr
+            return is_test_obj_contained
             
         
     elif isinstance(obj, pd.Series):
         
         if not reverse_arg_order:
-            isTestObjIn_arr = obj.isin(test_obj)
+            is_test_obj_contained = obj.isin(test_obj)
         else:
-            isTestObjIn_arr = test_obj.isin(obj)
+            is_test_obj_contained = test_obj.isin(obj)
         
         if return_all:
-            areAllTestElementsIn_bool = isTestObjIn_arr.all()
+            areAllTestElementsIn_bool = is_test_obj_contained.all()
             return areAllTestElementsIn_bool
         else:
-            return isTestObjIn_arr
+            return is_test_obj_contained
         
     else:
         raise TypeError("Input argument type must either be of type "
@@ -173,9 +173,9 @@ def extend_array(obj, obj2extend, np_axis=None):
     return obj_extended
 
 
-def arrayOfList_to_array(arrayList):
+def list_array_to_std_array(array_of_lists):
     
-    dimList = np.unique([len(arr.shape) for arr in arrayList])
+    dimList = np.unique([len(arr.shape) for arr in array_of_lists])
     ld = len(dimList)
     
     # If all lists in the object are of the same dimension #
@@ -183,16 +183,16 @@ def arrayOfList_to_array(arrayList):
         dims = dimList[0]
         
         if dims == 2:
-            array = np.vstack(arrayList)
+            array = np.vstack(array_of_lists)
         elif dims == 3:
-            array = np.stack(arrayList)
+            array = np.stack(array_of_lists)
         else:
             raise Exception("Cannot handle lists containing D > 3 arrays.")
             
     # If the lists are multi-dimensional #
     else:
-        array = extend_array(array, arrayList)
-        # array = np.hstack(arrayList) (EQUIVALENT for 'np.concatenate')
+        array = extend_array(array, array_of_lists)
+        # array = np.hstack(array_of_lists) (EQUIVALENT for 'np.concatenate')
         
     return array
 
@@ -520,14 +520,14 @@ def approach_value_in_array(array, given_value):
             
         value_approach = select_array_elements(array, value_approach_idx)
             
-    return value_approach, value_approach_idx
+    return (value_approach, value_approach_idx)
 
 
-def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
+def basic_value_data_type_converter(obj_data, old_type, new_type, colname=None):
 
     """
-    Function that converts an object's values from the original dtype
-    to the desired one.
+    Function that converts the original data type of the values contained 
+    in an object to the desired one.
     If the data's dtype is not the same as the original (old) one
     (e.g, if the original dtype is given mistakenly),
     the function simply returns the object unchanged,
@@ -555,7 +555,7 @@ def basicObjectValueTypeConverter(obj_data, old_type, new_type, colname=None):
 
     """  
     
-    arg_names = basicObjectValueTypeConverter.__code__.co_varnames
+    arg_names = basic_value_data_type_converter.__code__.co_varnames
     
     type_option_list = ["O", "U", "d"]
     
@@ -672,7 +672,7 @@ def sort_values_externally(array, key=None, reverse=False,
     return sorted_values
 
 
-def sort_1D_arr_python_std(obj, reverse=False):
+def sort_1D_arr_rudimentary(obj, reverse=False):
 
     """
     Function that sorts a list, only using simple maths and standard Python 
@@ -718,7 +718,7 @@ def pos_swapper(A, x, y):
 
 #%%
 
-def find_item_python_std(obj, obj2find):
+def find_item_rudimentary(obj, obj2find):
     
     """
     Function that finds a given element in an array.
@@ -730,7 +730,7 @@ def find_item_python_std(obj, obj2find):
     instances, without importing any external library.
     In order the latter to be effective, the input object must already be sorted,
     and since the mathematics are simple, that task is also going to be
-    accomplished using the simple 'sort_1D_arr_python_std' function.
+    accomplished using the simple 'sort_1D_arr_rudimentary' function.
     
     Parameters
     ----------
@@ -748,7 +748,7 @@ def find_item_python_std(obj, obj2find):
     """
     
     length = len(obj)
-    sorted_obj = sort_1D_arr_python_std(obj)
+    sorted_obj = sort_1D_arr_rudimentary(obj)
     
     i = 0
     start = 0
@@ -790,7 +790,7 @@ def count_unique_type_objects(list_of_objects):
     unique_type_list = np.unique([str(type(element)) for element in list_of_objects])
     lutl = len(unique_type_list)
     
-    return unique_type_list, lutl    
+    return (unique_type_list, lutl)   
         
 
 def select_array_elements(array, idx2access):

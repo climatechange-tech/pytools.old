@@ -49,7 +49,7 @@ from data_frame_handler import save2csv
 from file_and_directory_paths import find_file_containing_dirs_by_ext, find_files_by_ext
 from file_and_directory_handler import move_files_by_globstring_from_exec_code
 from information_output_formatters import format_string, print_format_string
-from global_parameters import common_splitchar_list
+from global_parameters import common_splitdelim_list
 from os_operations import exec_shell_command
 import string_handler
 
@@ -57,7 +57,7 @@ import string_handler
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-fileList2String = string_handler.fileList2String
+file_list_to_str = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
 get_obj_specs = string_handler.get_obj_specs
 modify_obj_specs = string_handler.modify_obj_specs
@@ -147,7 +147,7 @@ def netcdf_file_scanner(path_to_walk_into,
             # Create faulty netCDF file report #
             #----------------------------------#
             
-            ofile_name = f"{codeCallDir}/{report_fn_noext}.txt"
+            ofile_name = f"{code_call_dir}/{report_fn_noext}.txt"
             ofile = open(ofile_name, "w")
             
             arg_tuple_file_scan3 = (ptwi,
@@ -185,13 +185,13 @@ def create_ds_component(var_name,
     return DataArray_dict
 
 
-def saveDataAsNETCDF_standard(file_name,
-                              vardim_names_for_ds,
-                              data_arrays,
-                              dimlists,
-                              dim_dictlist,
-                              attrs_dictlist,
-                              global_attrs_dict):
+def save_data_as_netcdf_std(file_name,
+                            vardim_names_for_ds,
+                            data_arrays,
+                            dimlists,
+                            dim_dictlist,
+                            attrs_dictlist,
+                            global_attrs_dict):
 
     ds = xr.Dataset()
     
@@ -216,9 +216,9 @@ def saveDataAsNETCDF_standard(file_name,
     print(f"{file_name} file successfully created")
     
     
-def saveXarrayDSAsNetCDF(xarray_ds,
-                         file_name,
-                         attrs_dict=None):
+def save_xarray_dataset_as_netcdf(xarray_ds,
+                                 file_name,
+                                 attrs_dict=None):
     
     """
     Function that writes a xarray data set directly into a netCDF,
@@ -250,7 +250,7 @@ def saveXarrayDSAsNetCDF(xarray_ds,
     print(f"{file_name} has been successfully created")
     
     
-def netCDF_regridder(ds_in, ds_image, method="bilinear"):
+def netcdf_regridder(ds_in, ds_image, method="bilinear"):
     
     
     import xesmf as xe
@@ -285,16 +285,16 @@ def netCDF_regridder(ds_in, ds_image, method="bilinear"):
         return ds_out
     
 
-def saveNCdataAsCSV(nc_file, 
-                    columns_to_drop,
-                    separator,
-                    save_index,
-                    save_header,
-                    csv_file_name="default",
-                    date_format=None,
-                    approximate_coords=False,
-                    latitude_point=None,
-                    longitude_point=None):
+def save_nc_data_as_csv(nc_file, 
+                        columns_to_drop,
+                        separator,
+                        save_index,
+                        save_header,
+                        csv_file_name="default",
+                        date_format=None,
+                        approximate_coords=False,
+                        latitude_point=None,
+                        longitude_point=None):
     
     """
     Function that saves netCDF data into a CSV file AS IT IS, where data variables
@@ -465,19 +465,19 @@ def saveNCdataAsCSV(nc_file,
                  date_format)
     
     
-def saveDataArrayAsCSV(data_array, 
-                       separator,
-                       save_index,
-                       save_header,
-                       csv_file_name=None,
-                       new_columns="default",
-                       date_format=None):
+def save_data_array_as_csv(data_array, 
+                           separator,
+                           save_index,
+                           save_header,
+                           csv_file_name=None,
+                           new_columns="default",
+                           date_format=None):
     
     """
     Function that saves a xr.DataArray object into a CSV file AS IT IS,
     where data variables may originally be 3D, 
     usually dependent on (time, latitude, longitude).
-    This function works exactly as 'saveNCdataAsCSV' function does,
+    This function works exactly as 'save_nc_data_as_csv' function does,
     so the docstrings also apply.
     Parameters
     ----------
@@ -569,8 +569,8 @@ def infer_full_period_of_time(nc_file):
 def get_netcdf_fileList(path_to_walk_into):
     
     netcdf_files = find_files_by_ext(extensions[0], 
-                                       path_to_walk_into, 
-                                       top_path_only=True)
+                                     path_to_walk_into, 
+                                     top_path_only=True)
     
     return netcdf_files
 
@@ -588,7 +588,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
     # Open each file, extract coordinate dimension data and save to txt file #
     #------------------------------------------------------------------------#
     
-    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
+    netcdf_files_dirs = get_netcdf_file_dirList(code_call_dir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
@@ -608,7 +608,7 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                 if faulty_file_trial == 0:
                     
                     coord_varlist\
-                    = find_coordinate_variables_raiseNone(ncf_name)
+                    = find_coordinate_variables_raise_none(ncf_name)
                             
                     if not coord_varlist:
                         ofile.write(f"No 'latitude' or 'longitude' coordinates "
@@ -679,7 +679,7 @@ def extract_and_store_period_bounds():
     # Open each file and extract time array format data #
     #---------------------------------------------------#
  
-    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
+    netcdf_files_dirs = get_netcdf_file_dirList(code_call_dir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
@@ -698,7 +698,7 @@ def extract_and_store_period_bounds():
                 
                 if faulty_file_trial == 0:
                 
-                    time_var = find_time_dimension_raiseNone(ncf_name)
+                    time_var = find_time_dimension_raise_none(ncf_name)
                     
                     if not time_var :
                         ofile.write(f"No 'time' dimension found in file {ncf_name}\n")
@@ -734,7 +734,7 @@ def extract_and_store_time_formats():
     
     ofile_name = "time_formats.txt"
 
-    netcdf_files_dirs = get_netcdf_file_dirList(codeCallDir)
+    netcdf_files_dirs = get_netcdf_file_dirList(code_call_dir)
     lncfd = len(netcdf_files_dirs)
     
     for ncf_dir_num, ncf_dir_name in enumerate(netcdf_files_dirs, start=1):
@@ -753,7 +753,7 @@ def extract_and_store_time_formats():
                 
                 if faulty_file_trial == 0:
 
-                    time_var = find_time_dimension_raiseNone(ncf_name)
+                    time_var = find_time_dimension_raise_none(ncf_name)
                     
                     if not time_var:
                         ofile.write(f"No 'time' dimension found in file {ncf_name}\n")
@@ -851,7 +851,7 @@ def find_time_dimension(nc_file_name):
     ds.close()
             
             
-def find_time_dimension_raiseNone(nc_file_name):
+def find_time_dimension_raise_none(nc_file_name):
     
     """
     Function that searches for time dimension names.
@@ -984,7 +984,7 @@ def find_coordinate_variables(nc_file_name):
     ds.close()
     
             
-def find_coordinate_variables_raiseNone(nc_file_name):
+def find_coordinate_variables_raise_none(nc_file_name):
     
     """
     Function that searches for coordinate variable names.
@@ -1079,11 +1079,11 @@ def get_model_list(path_list, split_pos):
     
     grib_file_list = [path.name
                  if len(fwd_slash_containing_files) > 0
-                 and splitchar in path
+                 and splitdelim in path
                  else path
                  for path in path_list]
     
-    unique_model_list = np.unique([f.split(splitchar)[split_pos]
+    unique_model_list = np.unique([f.split(splitdelim)[split_pos]
                                    for f in grib_file_list
                                    if len(grib_file_list) > 0])
     
@@ -1219,7 +1219,7 @@ def get_latlon_bounds(netcdf_file,
     
     ds.close()
         
-    return lat_values, lon_values
+    return (lat_values, lon_values)
 
 
 def get_latlon_deltas(lat_values,
@@ -1229,7 +1229,7 @@ def get_latlon_deltas(lat_values,
     lat_delta = f"{abs(lat_values[0]-lat_values[1]):.{delta_roundoff}f}"
     lon_delta = f"{abs(lon_values[0]-lon_values[1]):.{delta_roundoff}f}"
     
-    return lat_delta, lon_delta    
+    return (lat_delta, lon_delta)
         
     
 def get_times(netcdf_file,
@@ -1272,7 +1272,7 @@ def find_nearest_coordinates(nc_file_name, lats_obs, lons_obs):
     nearest_lats = np.round(nearest_lats, 3)
     nearest_lons = np.round(nearest_lons, 3)
         
-    return nearest_lats, nearest_lons
+    return (nearest_lats, nearest_lons)
 
         
 def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
@@ -1282,7 +1282,7 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
             nc_file_new = modify_obj_specs(grib_file_list, "ext", extensions[0])
             
         else:
-            grib_allfile_info_str = fileList2String(grib_file_list)
+            grib_allfile_info_str = file_list_to_str(grib_file_list)
             nc_file_new_noext = input("Please introduce a name "
                                       "for the netCDF file, "
                                       "WITHOUT THE EXTENSION: ")
@@ -1319,14 +1319,14 @@ def grib2netcdf(grib_file_list, on_shell=False, option_str=None):
         for grib_file in grib_file_list:
             grib_file_noext = get_obj_specs(grib_file, "name_noext", extensions[0])
             ds = xr.open_dataset(grib_file, engine="cfgrib")
-            saveXarrayDSAsNetCDF(ds, grib_file_noext)
+            save_xarray_dataset_as_netcdf(ds, grib_file_noext)
                 
 #--------------------------#
 # Parameters and constants #
 #--------------------------#
 
 # Directory from where this code is being called #
-codeCallDir = Path.cwd()
+code_call_dir = Path.cwd()
 
 # File extensions #
 extensions = ["nc", "csv"]
@@ -1336,10 +1336,10 @@ latlon_bound_ofile_name = "latlon_bounds.txt"
 period_bound_ofile_name = "period_bounds.txt"
 
 # String splitting character #
-splitchar = common_splitchar_list[0]
+splitdelim = common_splitdelim_list[0]
 
 # RegEx control for GRIB-to-netCDF single file name #
-regex_grib2nc = "^[a-zA-Z0-9\._-]$"
+regex_grib2nc = r"^[a-zA-Z0-9\._-]$"
 
 # Regridding method options #
 method_list = [

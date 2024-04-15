@@ -56,11 +56,11 @@ import string_handler
 # Define imported modules' function call shortcuts #
 #--------------------------------------------------#
 
-basicObjectValueTypeConverter = array_handler.basicObjectValueTypeConverter
+basic_value_data_type_converter = array_handler.basicObjectValueTypeConverter
 select_array_elements = array_handler.select_array_elements
 remove_elements_from_array = array_handler.remove_elements_from_array
 
-fileList2String = string_handler.fileList2String
+file_list_to_str = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
 
 find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
@@ -73,7 +73,7 @@ rename_objects = file_and_directory_handler.rename_objects
 # Parametroak definitu #
 #----------------------#
 
-docPath = Path(fixed_dirpath).parent
+docpath = Path(fixed_dirpath).parent
 exts = ["jpg", "pdf", "zip"]
 keyWord = "kopiatu"
 
@@ -92,7 +92,7 @@ compress_copied_and_renamed_files = True
 # Jatorrizko izenak #
 #-------------------#
 
-fileListOrig = [
+file_list_orig = [
     f"2023_garbiago.{exts[0]}",
     f"Jon_Ander_Gabantxo_betea.{exts[1]}",
     f"NAN_aurrealdea.{exts[0]}",
@@ -111,7 +111,7 @@ fileListOrig = [
 # Berrizendaketak (hizkuntza edo testua soilik) #
 #-----------------------------------------------#
 
-fileListRename = [
+file_list_2rename = [
     f"2023.{exts[0]}",
     f"CV_betea.{exts[1]}",
     f"NAN_aurrealdea.{exts[0]}",
@@ -133,25 +133,25 @@ fileListRename = [
 print("Direktorio honetako fitxategiak batzuk izan ezik ezabatzen...")
 
 # Artxiboak zerrendatu #
-fileListCWD = os.listdir()
+file_list_cwd = os.listdir()
 
 # Zerrendatik programa batzuk ezabatu #
-delFileObj = find_substring_index(fileListCWD, kw_del_list)
+delFileObj = find_substring_index(file_list_cwd, kw_del_list)
 
 if isinstance(delFileObj, dict):
-    delFileIdx = [key 
+    del_file_idx = [key 
                   for key in delFileObj
                   if len(delFileObj[key]) > 0]
     
 elif isinstance(delFileObj, list):
-    delFileIdx = delFileObj.copy()
+    del_file_idx = delFileObj.copy()
     
 else:
-    delFileIdx = delFileObj
+    del_file_idx = delFileObj
 
 
-files2delete = remove_elements_from_array(fileListCWD, delFileIdx)
-files2delete = list(basicObjectValueTypeConverter(files2delete, 'U', 'O'))
+files2delete = remove_elements_from_array(file_list_cwd, del_file_idx)
+files2delete = list(basic_value_data_type_converter(files2delete, 'U', 'O'))
 
 # Ezabatu zerrenda erresultantean ageri diren artxiboak #
 
@@ -161,21 +161,21 @@ remove_files_by_globstring(files2delete, ".")
 #----------------------------------------#
 
 print("Jatorrizko programak bilatzen...")
-pathListOrig = find_files_by_globstring(fileListOrig, docPath)
+path_list_orig = find_files_by_globstring(file_list_orig, docpath)
 
 # Kopiatu bilatutako artxiboak direktorio hona #
 #----------------------------------------------#
 
 print("Bilatutako programak direktorio honetara bertara kopiatzen...")
 
-copy_files(pathListOrig, ".")
+copy_files(path_list_orig, ".")
 
 # Kopiatutako artxiboak berrizendatu #
 #------------------------------------#
 
 print("Kopiatutako programak berrizendatzen...")
 
-rename_objects(fileListOrig, fileListRename)
+rename_objects(file_list_orig, file_list_2rename)
 
 # Berrizendatutako artxiboak karpeta konprimatu batean gorde #
 #------------------------------------------------------------#
@@ -185,11 +185,11 @@ if compress_copied_and_renamed_files:
     print("Berrizendatutako programak karpeta konprimatu batean gordetzen...")
     time.sleep(0.5)
     
-    outputZipFile = f"Jon_Ander_Gabantxo.{exts[-1]}"
+    output_zip_file = f"Jon_Ander_Gabantxo.{exts[-1]}"
     
-    fileListRenameStr = fileList2String(fileListRename)
-    files2ExcludeFromZipping\
-    = fileList2String(select_array_elements(fileListCWD, delFileIdx))
+    file_list_2rename_str = file_list_to_str(file_list_2rename)
+    files_excluded_from_zipping\
+    = file_list_to_str(select_array_elements(file_list_cwd, del_file_idx))
     
-    zip_command = f"zip {outputZipFile} {fileListRenameStr} -x {files2ExcludeFromZipping}"
+    zip_command = f"zip {output_zip_file} {file_list_2rename_str} -x {files_excluded_from_zipping}"
     os.system(zip_command)

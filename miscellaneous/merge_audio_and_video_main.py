@@ -89,11 +89,11 @@ def merge_audio_and_video_files(input_video_file_list,
             
         # Perform the operations #
         else:
-            for in_video_fn, in_audio_fn, out_video_fn in zip(input_audio_file_list,
-                                                              input_audio_file_list,
+            for in_audio_fn, in_video_fn, out_video_fn in zip(input_audio_file_list,
+                                                              input_video_file_list,
                                                               output_file_name_list):
                 
-                arg_tuple = (in_video_fn, in_audio_fn, out_video_fn)
+                arg_tuple = (in_audio_fn, in_video_fn, out_video_fn)
                 merge_command = format_string(ffmpeg_merge_syntax, arg_tuple)
                 os.system(merge_command)
                 

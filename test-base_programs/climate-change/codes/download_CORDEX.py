@@ -89,7 +89,7 @@ def return_rcp_std(rcp):
             return rcp
         
     else:
-        if not (isinstance(rcp_num, float) or isinstance(rcp_num,str)):
+        if not (isinstance(rcp_num, (float, str))):
             raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
         else:
             rcp_mod = substring_replacer(rcp, charSplitDelim1, charSplitDelim2)  

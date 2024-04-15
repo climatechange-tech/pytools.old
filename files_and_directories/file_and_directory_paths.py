@@ -227,43 +227,43 @@ def find_all_directories(source_directory,
     if top_path_only:
         sd_path = posixpath_converter(source_directory, glob_bool=False)   
         
-        dirfilelist = [dirc
-                       for dirc in sd_path.iterdir()
-                       if dirc.is_dir()]        
+        dir_list = [dirc
+                    for dirc in sd_path.iterdir()
+                    if dirc.is_dir()]        
         
         if not include_root:
-            dirfilelist_noRoot = [dp.name
-                                  for dp in dirfilelist]  
+            dir_list_no_root = [dp.name
+                                for dp in dir_list]  
             
-            list_udn = list(np.unique(dirfilelist_noRoot))
+            list_udn = list(np.unique(dir_list_no_root))
             return list_udn
             
         else:
-            list_ud = list(np.unique(dirfilelist))
+            list_ud = list(np.unique(dir_list))
             return list_ud
             
             
     else:
         sd_path = posixpath_converter(source_directory) 
-        dirfilelist = [dirc
-                       for dirc in sd_path
-                       if dirc.is_dir()]
+        dir_list = [dirc
+                    for dirc in sd_path
+                    if dirc.is_dir()]
     
         if not include_root:
-            dirfilelist_noRoot = [dp.name
-                                  for dp in dirfilelist] 
+            dir_list_no_root = [dp.name
+                                for dp in dir_list] 
             
-            list_udn = list(np.unique(dirfilelist_noRoot))
+            list_udn = list(np.unique(dir_list_no_root))
             return list_udn
             
         else:
-            list_ud = list(np.unique(dirfilelist))
+            list_ud = list(np.unique(dir_list))
             return list_ud
         
 
 def find_file_containing_dirs_by_ext(extensions,
-                            		 path_to_walk_into,
-		                             top_path_only=False):
+                                     path_to_walk_into,
+                                     top_path_only=False):
     
     """
     Function that searches for directories containing the

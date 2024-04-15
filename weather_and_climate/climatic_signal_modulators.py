@@ -191,11 +191,11 @@ def polynomial_fitting(y, poly_ord, fix_edges=False,
         new_y = poly_func(x,*popt)
         
     if fix_edges:
-        new_y_fixedEdges = new_y.copy()
-        new_y_fixedEdges[0] = y[0]
-        new_y_fixedEdges[-1] = y[-1]
+        new_y_fixed_edges = new_y.copy()
+        new_y_fixed_edges[0] = y[0]
+        new_y_fixed_edges[-1] = y[-1]
         
-        return new_y_fixedEdges
+        return new_y_fixed_edges
     
     else:
         return new_y

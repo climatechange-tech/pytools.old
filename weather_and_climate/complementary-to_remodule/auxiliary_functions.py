@@ -28,7 +28,7 @@ def read_single_data(fname, variable = "tas"):
     dates = num2date(time, units, calendar)
     nc.close()
     
-    return dates, lat, lon, data
+    return (dates, lat, lon, data)
     
 def create_lineplot(xlabel = "year", ylabel = "Temperature"):
     from matplotlib import pyplot 
@@ -36,7 +36,7 @@ def create_lineplot(xlabel = "year", ylabel = "Temperature"):
     ax  = fig.add_subplot(1,1,1)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    return fig, ax
+    return (fig, ax)
 
 def save_plot(fig, fname_out):
     from matplotlib import pyplot
@@ -60,7 +60,7 @@ def create_mapplot():
 
     ax.set_extent([116,127,6,19])
     
-    return fig, ax
+    return (fig, ax)
 
 def get_yindex(years, year_start = 1979, year_stop = 2000):
     return [year >= year_start and year <= year_stop for year in years]
@@ -78,7 +78,7 @@ def read_example_data():
     obs_data_select = obs_data[obs_yindex,ilat,ilon] - 273.15
     sim_data_select = sim_data[sim_yindex,ilat,ilon] - 273.15
     
-    return obs_data_select, sim_data_select
+    return (obs_data_select, sim_data_select)
 
 def plot_histogram(obs, sim, fname_out):
     import numpy as np

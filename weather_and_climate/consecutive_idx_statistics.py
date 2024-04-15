@@ -69,7 +69,7 @@ def get_1hour_time_step_data(array, zero_threshold, zeros_dtype='d'):
     
     Returns
     -------
-    hour_TS_delEdges : numpy.ndarray
+    hour_TS_del_edges : numpy.ndarray
           Multi dimensional array containing
           1-hour time step cumulative data,
           with the problem of the edges solved.
@@ -81,19 +81,18 @@ def get_1hour_time_step_data(array, zero_threshold, zeros_dtype='d'):
     hour_TS_array = decompose_24h_cumulative_data(array)
     unmet_case_values = np.zeros(array_shape, dtype=zeros_dtype)
     
-    hour_TS_delEdges\
+    hour_TS_del_edges\
     = np.array([hour_TS_array[t]
                 if np.all(~np.isnan(hour_TS_array[t]) < zero_threshold)
                 else unmet_case_values
                 for t in range(records)])
     
-    return hour_TS_delEdges
+    return hour_TS_del_edges
 
 
-def count_consecutive_days_maxdata(
-        array, max_threshold,
-        min_consec_days=None,
-        calculate_max_consecutive_days=False):
+def count_consecutive_days_maxdata(array, max_threshold,
+                                   min_consec_days=None,
+                                   calculate_max_consecutive_days=False):
     
     """
     Function that counts the number of days in which the daily maximum
@@ -154,11 +153,10 @@ def count_consecutive_days_maxdata(
             return 0
     
     
-def count_consecutive_days_mindata(
-        array, min_threshold,
-        threshold_mode="below",
-        min_consec_days=None,
-        calculate_min_consecutive_days=False):
+def count_consecutive_days_mindata(array, min_threshold,
+                                   threshold_mode="below",
+                                   min_consec_days=None,
+                                   calculate_min_consecutive_days=False):
     
     """
     Function that counts the number of days in which the daily minimum

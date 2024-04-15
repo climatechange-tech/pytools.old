@@ -41,7 +41,7 @@ sys.path.append(custom_mod_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-from file_format_tweaker import pdf_file_tweaker
+from file_format_tweaker import pdf_file_tweaker # It is used, in a case-switch dictionary!
 
 #-------------------#
 # Define parameters #
@@ -137,10 +137,10 @@ cat_out_str = f"{cat_str}; {output_path_str}"
 
 path_str = "/home/jonander/Documents/sample_1.pdf"
 
-output_pathlist = ["output_path_1",
-                   "output_path_2",
-                   "output_path_3",
-                   "output_path_4"]
+output_path_list = ["output_path_1",
+                    "output_path_2",
+                    "output_path_3",
+                    "output_path_4"]
 
 cat_str_list = ["1-25 34-end",
                 "27-30 78 79 84 76-77west",
@@ -148,7 +148,7 @@ cat_str_list = ["1-25 34-end",
                 "2-endnorth"]
 
 cat_out_dict = {out_path : cat_str 
-                for out_path, cat_str in zip(output_pathlist, cat_str_list)}
+                for out_path, cat_str in zip(output_path_list, cat_str_list)}
 
 # 3rd case usage #
 #----------------#
@@ -158,7 +158,7 @@ cat_out_dict = {out_path : cat_str
 path_list = ["/home/jonander/Documents/sample_1.pdf",
              "Hizkuntzak/sample_2.pdf"]
 
-output_pathlists = [
+output_path_lists = [
     ["output_path_1",
      "output_path_2",
      "output_path_3",
@@ -185,8 +185,8 @@ cat_str_lists = [
 
 cat_out_dictList\
 = [{out_path : cat_str 
-    for out_path, cat_str in zip(output_pathlist, cat_str_list)
-    for output_pathlist, cat_str_list in zip(output_pathlists, cat_str_list)}]
+    for out_path, cat_str in zip(output_path_list, cat_str_list)
+    for output_path_list, cat_str_list in zip(output_path_lists, cat_str_list)}]
 
 #------------------------------------------------------------------#
 # Cut the provided files according to the catenation string object #

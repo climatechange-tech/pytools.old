@@ -44,7 +44,7 @@ sys.path.append(custom_mod3_path)
 
 from file_and_directory_handler import remove_files_by_globstring
 from file_and_directory_paths import find_files_by_globstring
-from global_parameters import basic_time_format_strs, common_splitchar_list
+from global_parameters import basic_time_format_strs, common_splitdelim_list
 from string_handler import get_obj_specs, find_substring_index
 
 #------------------#
@@ -55,7 +55,7 @@ def infer_time_frequency(df_or_index):
     
     """
     Infer the most likely frequency given the input index,
-    using pandas's infer_freq method.
+    using pandas's 'infer_freq' method.
     If the frequency is uncertain, a warning will be printed.
     
     Parameters
@@ -138,8 +138,7 @@ def find_date_key(df):
 
 
 def read_table(file_name,
-               separator=None,
-               delim_whitespace=False,
+               separator="\s+",
                dtype=None,
                engine=None,
                encoding=None,
@@ -166,14 +165,9 @@ def read_table(file_name,
           the separator, but the Python parsing engine can, meaning the latter will
           be used and automatically detect the separator by Python's builtin sniffer
           tool, ``csv.Sniffer``. In addition, separators longer than 1 character and
-          different from ``'\s+'`` will be interpreted as regular expressions and
+          different from ``\s+`` will be interpreted as regular expressions and
           will also force the use of the Python parsing engine. Note that regex
-          delimiters are prone to ignoring quoted data. Regex example: ``'\r\t'``.
-    delim_whitespace : bool, default False
-          Specifies whether or not whitespace (e.g. ``' '`` or ``'    '``) will be
-          used as the sep. Equivalent to setting ``sep='\s+'``. If this option
-          is set to True, nothing should be passed in for the ``delimiter``
-          parameter.
+          delimiters are prone to ignoring quoted data. Regex example: '\r\t'.
     dtype : Type name or dict of column -> type, optional
           Data type for data or columns. E.g. {'a': np.float64, 'b': np.int32,
           'c': 'Int64'}
@@ -223,7 +217,7 @@ def read_table(file_name,
                        engine=engine,
                        encoding=encoding,
                        header=header,
-                       delim_whitespace=delim_whitespace,
+                       sep=separator,
                        dtype=dtype)
     return df
 
@@ -315,11 +309,11 @@ def save2excel(file_name,
     if lne == 0:
         file_name += f".{extensions[1]}"
     
-    file_name_noRelPath = get_obj_specs(file_name, obj_spec_key="name")
+    file_name_no_rel_path = get_obj_specs(file_name, obj_spec_key="name")
     fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
     
-    fileAlreadyExists\
-    = bool(len(find_files_by_globstring(file_name_noRelPath, 
+    file_already_exists\
+    = bool(len(find_files_by_globstring(file_name_no_rel_path, 
                                      fn_parent,
                                      top_path_only=True)))
     
@@ -332,17 +326,17 @@ def save2excel(file_name,
                            index=save_index,
                            header=save_header)
             
-        if fileAlreadyExists:
-            overWriteStdIn\
+        if file_already_exists:
+            overwrite_stdin\
             = input(f"Warning: file '{file_name}' "
                     f"at directory '{fn_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
-            while (overWriteStdIn != "y" and overWriteStdIn != "n"):
-                overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+            while (overwrite_stdin != "y" and overwrite_stdin != "n"):
+                overwrite_stdin = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
             else:    
-                if overWriteStdIn == "y":
+                if overwrite_stdin == "y":
                     writer.close() 
                 else:
                     pass
@@ -353,17 +347,17 @@ def save2excel(file_name,
 
     elif isinstance(frame_obj, pd.DataFrame):
         
-        if fileAlreadyExists:
-            overWriteStdIn\
-            = input(f"Warning: file '{file_name_noRelPath}' "
+        if file_already_exists:
+            overwrite_stdin\
+            = input(f"Warning: file '{file_name_no_rel_path}' "
                     f"at directory '{fn_parent}' already exists.\n"
                     "Do you want to overwrite it? (y/n) ")
             
-            while (overWriteStdIn != "y" and overWriteStdIn != "n"):
-                overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+            while (overwrite_stdin != "y" and overwrite_stdin != "n"):
+                overwrite_stdin = input("\nPlease select 'y' for 'yes' "
                                        "or 'n' for 'no': ")
             else:
-                if overWriteStdIn == "y":
+                if overwrite_stdin == "y":
                     remove_files_by_globstring(file_name, fn_parent)
                     frame_obj.to_excel(file_name, 
                                        sheet_name=indiv_sheet_name,
@@ -504,27 +498,27 @@ def save2csv(file_name,
         if lne == 0:
             file_name += f".{extensions[0]}"
         
-        file_name_noRelPath = get_obj_specs(file_name, obj_spec_key="name")
+        file_name_no_rel_path = get_obj_specs(file_name, obj_spec_key="name")
         fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
         
-        fileAlreadyExists\
-        = bool(len(find_files_by_globstring(file_name_noRelPath, 
+        file_already_exists\
+        = bool(len(find_files_by_globstring(file_name_no_rel_path, 
                                          fn_parent,
                                          top_path_only=True)))
         
         if not date_format:
             
-            if fileAlreadyExists:
-                overWriteStdIn\
-                = input(f"Warning: file '{file_name_noRelPath}' "
+            if file_already_exists:
+                overwrite_stdin\
+                = input(f"Warning: file '{file_name_no_rel_path}' "
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
-                while (overWriteStdIn != "y" and overWriteStdIn != "n"):
-                    overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                while (overwrite_stdin != "y" and overwrite_stdin != "n"):
+                    overwrite_stdin = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
                 else:
-                    if overWriteStdIn == "y":
+                    if overwrite_stdin == "y":
                         remove_files_by_globstring(file_name, fn_parent)
                         data_frame.to_csv(file_name,
                                           sep=separator,
@@ -544,17 +538,17 @@ def save2csv(file_name,
                 
             
         else:
-            if fileAlreadyExists:
-                overWriteStdIn\
-                = input(f"Warning: file '{file_name_noRelPath}' "
+            if file_already_exists:
+                overwrite_stdin\
+                = input(f"Warning: file '{file_name_no_rel_path}' "
                         f"at directory '{fn_parent}' already exists.\n"
                         "Do you want to overwrite it? (y/n) ")
                 
-                while (overWriteStdIn != "y" and overWriteStdIn != "n"):
-                    overWriteStdIn = input("\nPlease select 'y' for 'yes' "
+                while (overwrite_stdin != "y" and overwrite_stdin != "n"):
+                    overwrite_stdin = input("\nPlease select 'y' for 'yes' "
                                             "or 'n' for 'no': ")
                 else:
-                    if overWriteStdIn == "y":
+                    if overwrite_stdin == "y":
                         remove_files_by_globstring(file_name, fn_parent)
                         data_frame.to_csv(file_name,
                                           sep=separator,
@@ -915,7 +909,7 @@ def sort_df_values(df,
 def reindex_df(df, col_to_replace=None, vals_to_replace=None):
     
     """
-    Further function than df.reset_index method,
+    Further function than df.reset_index attribute,
     for resetting the index of the given pandas data frame,
     using any specified column and then resetting the latter.
     This method applies only for one-leveled objects
@@ -969,19 +963,19 @@ def reindex_df(df, col_to_replace=None, vals_to_replace=None):
     return df_reidx_dropCol
 
 
-def create_pivot_table(df, df_values, df_index, funcToApplyOnValues):
+def create_pivot_table(df, df_values, df_index, func_apply_on_values):
     
     pivot_table = pd.pivot_table(df,
                                  values=df_values, 
                                  index=df_index,
-                                 aggfunc=funcToApplyOnValues)
+                                 aggfunc=func_apply_on_values)
     
     return pivot_table
 
 
 def countDataByConcept(df, df_cols):
-    dataCount = df.groupby(df_cols).count()
-    return dataCount    
+    data_count = df.groupby(df_cols).count()
+    return data_count    
 
 
 #--------------------------#
@@ -992,4 +986,4 @@ def countDataByConcept(df, df_cols):
 extensions = ["csv", "xlsx"]
 
 # String splitting character #
-splitchar = common_splitchar_list[4]
+splitdelim = common_splitdelim_list[4]

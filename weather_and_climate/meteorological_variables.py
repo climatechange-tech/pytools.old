@@ -56,8 +56,8 @@ def meteorological_wind_direction(u, v):
           described as in the first paragraph.
     """
     
-    if isinstance(u, int) or isinstance(v, int)\
-        or isinstance(u, float) or isinstance(v, float):
+    if (isinstance(u, int) or isinstance(v, int))\
+        or (isinstance(u, float) or isinstance(v, float)):
         u = [u]
         v = [v]
             

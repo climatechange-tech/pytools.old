@@ -45,7 +45,10 @@ def base2hex(n, method="format_string", zero_pad=4):
     method_checker(method)
 
     if method == "default":
-        n_hex = hex(n)
+        if isinstance(n, float):
+            n_hex = n.hex()
+        else:
+            n_hex = hex(n)
     elif method == "format_string":
         n_hex = f"{n:0{zero_pad}h}"
     return n_hex
@@ -78,13 +81,13 @@ def hex2dec(n_hex):
 #----------------------------------------------#
     
 # From arbitrary base to decimal #
-def arbBase2Dec(x, base=10):
+def arbitrary_base_to_dec(x, base=10):
     x = check_input_number_format(x)
     n = int(x, base=base)
     return n
     
 # Conversions among arbitrary bases #
-def conv_arbBases(x, base):
+def convert_among_arbitrary_bases(x, base):
     x = check_input_number_format(x)
     y = int(x, base=base)
     return y

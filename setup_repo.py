@@ -58,7 +58,7 @@ else:
     
     # Define custom path with the directory as the current, default one #
     default_dir = default_path.stem
-    customPathWithDefaultDir = f"{custom_path}/{default_dir}" 
+    custom_path_with_default_dir = f"{custom_path}/{default_dir}" 
     
     """
     On Windows there is a problem when copying directories,
@@ -66,7 +66,7 @@ else:
     forward slashes mixed, which is not practical to correct.
     Instead, copy the entire directory and then delete the default one.
     """
-    shutil.copytree(default_path, customPathWithDefaultDir, dirs_exist_ok=True)
+    shutil.copytree(default_path, custom_path_with_default_dir, dirs_exist_ok=True)
     
     print(f"Path changed from '{default_path}' to '{custom_path}'.")
     

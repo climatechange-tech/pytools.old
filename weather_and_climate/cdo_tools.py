@@ -51,17 +51,17 @@ import string_handler
 #----------------------------------------------------#
 
 basic_four_rules = global_parameters.basic_four_rules
-common_splitchar_list = global_parameters.common_splitchar_list
+common_splitdelim_list = global_parameters.common_splitdelim_list
 freq_abbrs = global_parameters.time_frequencies_shorter_1
 time_freqs = global_parameters.time_frequencies_short_1
 
 get_file_variables = netcdf_handler.get_file_variables
-find_time_dimension_raiseNone = netcdf_handler.find_time_dimension_raiseNone
+find_time_dimension_raise_none = netcdf_handler.find_time_dimension_raiseNone
 get_times = netcdf_handler.get_times
 
-aux_path_strAdd = string_handler.aux_path_strAdd
+add_str_to_aux_path = string_handler.aux_path_strAdd
 find_substring_index = string_handler.find_substring_index
-fileList2String = string_handler.fileList2String
+file_list_to_str = string_handler.fileList2String
 obj_path_specs = string_handler.get_file_spec
 modify_obj_specs = string_handler.modify_obj_specs
 
@@ -72,15 +72,15 @@ modify_obj_specs = string_handler.modify_obj_specs
 # Character string processing #
 #-----------------------------#
                     
-def get_variable_name_inFileStr(file,
-                                return_std_varname=False,
-                                varlist_original=None,
-                                varlist_standardized=None):
+def get_variable_name_in_file_name(file,
+                                   return_std_varname=False,
+                                   varlist_original=None,
+                                   varlist_standardized=None):
         
     fsk = "name_noext_parts"
     file_path_name_noext_parts = obj_path_specs(file,
-                                               file_spec_key=fsk,
-                                               splitchar=splitchar1)
+                                                file_spec_key=fsk,
+                                                splitdelim=splitdelim1)
                                 
     # Usually the first part of the file name is precisely the variable name #
     var_file = file_path_name_noext_parts[0]
@@ -110,14 +110,14 @@ def change_file_names_byvar(file_list,
     
     for file in file_list:
         
-        var_std = get_variable_name_inFileStr(file,
+        var_std = get_variable_name_in_file_name(file,
                                               True,
                                               varlist_original, 
                                               varlist_standardized)
         
         file_path_name_parts = obj_path_specs(file, 
                                              file_spec_key=obj2change,
-                                             splitchar=splitchar1)
+                                             splitdelim=splitdelim1)
         
         fpnp_changes_tuple = (file_path_name_parts[0], var_std)
         varname_changed_file_path_name = modify_obj_specs(file, 
@@ -133,7 +133,7 @@ def standardize_file_name(variable,
                           time_freq,
                           model,
                           experiment,
-                          calculationMethod,
+                          calculation_method,
                           period,
                           region,
                           extension):
@@ -142,7 +142,7 @@ def standardize_file_name(variable,
                     f"{time_freq}_"\
                     f"{model}_"\
                     f"{experiment}_"\
-                    f"{calculationMethod}_"\
+                    f"{calculation_method}_"\
                     f"{region}_"\
                     f"{period}.{extension}"
                     
@@ -154,14 +154,14 @@ def cdo_sellonlatbox(file_list,
                      time_freq,
                      model,
                      experiment,
-                     calculationMethod,
+                     calculation_method,
                      region,
                      extension):
 
     for file in file_list:                 
-        variable = get_variable_name_inFileStr(file)
+        variable = get_variable_name_in_file_name(file)
             
-        time_var = find_time_dimension_raiseNone(file)
+        time_var = find_time_dimension_raise_none(file)
         times = get_times(file, time_var)
             
         start_year = f"{times.dt.year.values[0]}"
@@ -173,7 +173,7 @@ def cdo_sellonlatbox(file_list,
                                                               time_freq,
                                                               model,
                                                               experiment,
-                                                              calculationMethod,
+                                                              calculation_method,
                                                               period,
                                                               region,
                                                               extension)
@@ -188,7 +188,7 @@ def cdo_mergetime(file_list,
                   time_freq,
                   model,
                   experiment,
-                  calculationMethod,
+                  calculation_method,
                   period,
                   region,
                   extension):
@@ -197,27 +197,27 @@ def cdo_mergetime(file_list,
                                                           time_freq,
                                                           model,
                                                           experiment,
-                                                          calculationMethod,
+                                                          calculation_method,
                                                           period,
                                                           region,
                                                           extension)
     
-    start_year = f"{period.split(splitchar2)[0]}"
-    end_year = f"{period.split(splitchar2)[-1]}"
+    start_year = f"{period.split(splitdelim2)[0]}"
+    end_year = f"{period.split(splitdelim2)[-1]}"
     
     fsk = "name_noext_parts"
     
     file_list_selyear\
     = [file
        for file in file_list
-       if (year := obj_path_specs(file, fsk, splitchar1)[-1])
+       if (year := obj_path_specs(file, fsk, splitdelim1)[-1])
        >= start_year
        and year
        <= end_year]
     
     
     
-    allfiles_string = fileList2String(file_list_selyear)
+    allfiles_string = file_list_to_str(file_list_selyear)
     mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                         f"{standardized_output_file_name}"
     exec_shell_command(mergetime_command)
@@ -227,13 +227,13 @@ def custom_cdo_mergetime(file_list,
                          custom_output_file_name,
                          create_temporal_file=False):
     
-    allfiles_string = fileList2String(file_list)
+    allfiles_string = file_list_to_str(file_list)
     
     if not create_temporal_file:
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{custom_output_file_name}"
     else:
-        temp_file = aux_path_strAdd(file_list[0])
+        temp_file = add_str_to_aux_path(file_list[0])
         mergetime_command = f"cdo -b F64 -f nc4 mergetime '{allfiles_string}' "\
                             f"{temp_file}"
                      
@@ -245,15 +245,15 @@ def cdo_selyear(file_list,
                 time_freq,
                 model,
                 experiment,
-                calculationMethod,
+                calculation_method,
                 region,
                 extension):
     
     
     fsk = "name_noext_parts"
     selyear_string_split = obj_path_specs(selyear_string, 
-                                         file_spec_key=fsk,
-                                         splitchar=splitchar2)
+                                          file_spec_key=fsk,
+                                          splitdelim=splitdelim2)
     
     start_year = f"{selyear_string_split[0]}"
     end_year = f"{selyear_string_split[-1]}"
@@ -262,13 +262,13 @@ def cdo_selyear(file_list,
     period_selyear = f"{start_year}-{end_year}"    
     
     for file in file_list:
-        variable = get_variable_name_inFileStr(file)
+        variable = get_variable_name_in_file_name(file)
         
         standardized_output_file_name = standardize_file_name(variable,
                                                               time_freq,
                                                               model,
                                                               experiment,
-                                                              calculationMethod,
+                                                              calculation_method,
                                                               period_selyear,
                                                               region,
                                                               extension)
@@ -284,7 +284,7 @@ def cdo_anomalies(input_file_full_time,
                   time_freq,
                   model,
                   experiment,
-                  calculationMethod,
+                  calculation_method,
                   period,
                   region,
                   extension):
@@ -293,7 +293,7 @@ def cdo_anomalies(input_file_full_time,
                                                           time_freq,
                                                           model,
                                                           experiment,
-                                                          calculationMethod,
+                                                          calculation_method,
                                                           period,
                                                           region,
                                                           extension)
@@ -308,7 +308,7 @@ def cdo_shifttime(file_list,
                        
     for file in file_list:
         
-        temp_file = aux_path_strAdd(file)
+        temp_file = add_str_to_aux_path(file)
         
         shifttime_command = f"cdo shifttime,{shift_value} '{file}' '{temp_file}'"
         exec_shell_command(shifttime_command)
@@ -327,7 +327,7 @@ def cdo_inttime(file_list,
     
     for file in file_list:
         
-        temp_file = aux_path_strAdd(file)
+        temp_file = add_str_to_aux_path(file)
         star_date_format = f"{year0}-{month0}-{day0} "\
                            f"{hour0:2d}:{minute0:2d}:{second0:2d}"
         
@@ -350,7 +350,7 @@ def cdo_rename(file_list,
         var_file = get_file_variables(file_name)
         
         # Find the standardized variable, provided the std variable list #        
-        var_std = get_variable_name_inFileStr(file_name,
+        var_std = get_variable_name_in_file_name(file_name,
                                               True,
                                               varlist_original,
                                               varlist_standardized)
@@ -358,8 +358,8 @@ def cdo_rename(file_list,
         print(f"Renaming original variable '{var_file}' to '{var_std}' "
               f"on file {file_num} out of {lfl}...")
     
-        file_name_chname = aux_path_strAdd(file_name, 
-                                                     splitchar1)
+        file_name_chname = add_str_to_aux_path(file_name, 
+                                                     splitdelim1)
         chname_command = f"cdo chname,{var_file},{var_std} "\
                          f"'{file_name}' '{file_name_chname}'"
         exec_shell_command(chname_command)
@@ -375,7 +375,7 @@ def cdo_time_mean(input_file,
                   time_freq,
                   model,
                   experiment,
-                  calculationMethod,
+                  calculation_method,
                   period,
                   region,
                   extension):
@@ -384,12 +384,12 @@ def cdo_time_mean(input_file,
                                                           time_freq,
                                                           model,
                                                           experiment,
-                                                          calculationMethod,
+                                                          calculation_method,
                                                           period,
                                                           region,
                                                           extension)
  
-    time_mean_command = f"cdo -{calculationMethod} '{input_file}' "\
+    time_mean_command = f"cdo -{calculation_method} '{input_file}' "\
                         f"{standardized_output_file_name}"
     exec_shell_command(time_mean_command)
     
@@ -400,7 +400,7 @@ def cdo_remap(file_list,
               time_freq,
               model,
               experiment,
-              calculationMethod,
+              calculation_method,
               period,
               region,
               extension,
@@ -410,14 +410,14 @@ def cdo_remap(file_list,
                                                           time_freq,
                                                           model,
                                                           experiment,
-                                                          calculationMethod,
+                                                          calculation_method,
                                                           period,
                                                           region,
                                                           extension)
     
     if remap_method not in cdo_remap_options:
         arg_tuple_remap = ("remapping option", cdo_remap_options)
-        raise ValueError(choiceErrorStr, arg_tuple_remap)
+        raise ValueError(choice_error_str, arg_tuple_remap)
          
     else:
         remap_method_cdo = cdo_remap_option_dict.get(remap_method_str)
@@ -492,14 +492,14 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
     
     # Quality control #
     if statistic not in statistics:
-        raise ValueError(format_string(choiceErrorStr, statistics))
+        raise ValueError(format_string(choice_error_str, statistics))
         
     # Identify the abbreviature for the selected time frequency #
     period_abbr_idx = find_substring_index(time_freqs, freq)
   
     if period_abbr_idx == -1:
         arg_tuple_period_stats = ("time-frequency", time_freqs)
-        raise ValueError(choiceErrorStr, arg_tuple_period_stats)
+        raise ValueError(choice_error_str, arg_tuple_period_stats)
     else:
         period_abbr = freq_abbrs[period_abbr_idx]
         
@@ -515,17 +515,17 @@ def cdo_periodic_statistics(nc_file_name, statistic, isclimatic, freq, season_st
             
     # Get the file name for string manipulation #
     file_path_name\
-    = aux_path_strAdd(nc_file_name, return_file_name_noext=True)
+    = add_str_to_aux_path(nc_file_name, return_file_name_noext=True)
     
     """Special case for seasonal time frequency"""
     if season_str is not None:
-        statname_seas = f"{statname.split()[0]}_{statname[-3:]}"
-        string2add = f"{splitchar1}{statname_seas}"
-        file_path_name_longer = aux_path_strAdd(file_path_name, string2add)
+        statname_season = f"{statname.split()[0]}_{statname[-3:]}"
+        string2add = f"{splitdelim1}{statname_season}"
+        file_path_name_longer = add_str_to_aux_path(file_path_name, string2add)
         
     else:
-        string2add = f"{splitchar1}{statname}"
-        file_path_name_longer = aux_path_strAdd(file_path_name, string2add)
+        string2add = f"{splitdelim1}{statname}"
+        file_path_name_longer = add_str_to_aux_path(file_path_name, string2add)
         
     # Define the output file name based on the configuration chosen #
     obj2change = "name_noext"
@@ -544,8 +544,8 @@ def calculate_periodic_deltas(projected_ncfile,
                               proj_model=None):
     
     period_abbr_idx = find_substring_index(time_freqs_delta, delta_period) 
-    deltaCalc_fn = aux_path_strAdd(historical_ncfile, 
-                                      return_file_name_noext=True)
+    delta_calc_filename = add_str_to_aux_path(historical_ncfile, 
+                                              return_file_name_noext=True)
 
     if proj_model is None:
         raise ValueError("The model name's position contained on the file name "\
@@ -555,7 +555,7 @@ def calculate_periodic_deltas(projected_ncfile,
                          "for projections.")
 
     if period_abbr_idx == -1:
-        raise ValueError(format_string(choiceErrorStr, arg_tuple_delta1))
+        raise ValueError(format_string(choice_error_str, arg_tuple_delta1))
     else:
         period_abbr = freq_abbrs_delta[period_abbr_idx]
     
@@ -563,19 +563,19 @@ def calculate_periodic_deltas(projected_ncfile,
     proj_mean_command = f"-y{period_abbr}mean {projected_ncfile}"
 
     string2add = f"{period_abbr}Deltas_{proj_model}.nc"
-    deltaCalc_fn_longer = aux_path_strAdd(deltaCalc_fn, string2add)
+    delta_calc_filename_longer = add_str_to_aux_path(delta_calc_filename, string2add)
     
     if operator not in basic_four_rules:
-        raise ValueError(format_string(choiceErrorStr, arg_tuple_delta2))
+        raise ValueError(format_string(choice_error_str, arg_tuple_delta2))
     else:  
         cdo_operator_str = cdo_operator_str_dict.get(operator)
-        arg_tuple_deltaCalc = (cdo_operator_str,
+        arg_tuple_delta_calc = (cdo_operator_str,
                                hist_mean_command, proj_mean_command,
-                               deltaCalc_fn_longer)
+                               delta_calc_filename_longer)
                                            
-        deltaCalc_command = format_string(deltaCalc_command_dict.get(operator),
-                                           arg_tuple_deltaCalc)
-        exec_shell_command(deltaCalc_command)
+        delta_calc_command = format_string(deltaCalc_command_dict.get(operator),
+                                           arg_tuple_delta_calc)
+        exec_shell_command(delta_calc_command)
     
 
 def apply_periodic_deltas(projected_ncfile,
@@ -586,7 +586,7 @@ def apply_periodic_deltas(projected_ncfile,
     
     
     period_abbr_idx = find_substring_index(time_freqs_delta, delta_period)
-    deltaApply_fn = aux_path_strAdd(historical_ncfile, 
+    delta_apply_fn = add_str_to_aux_path(historical_ncfile, 
                                       return_file_name_noext=True)
     
     if proj_model is None:
@@ -598,27 +598,27 @@ def apply_periodic_deltas(projected_ncfile,
 
     if period_abbr_idx == -1:
         arg_tuple_periodic_delta1 = ("time-frequency", time_freqs_delta)
-        raise ValueError(format_string(choiceErrorStr, arg_tuple_periodic_delta1))
+        raise ValueError(format_string(choice_error_str, arg_tuple_periodic_delta1))
     else:
         period_abbr = freq_abbrs_delta[period_abbr_idx]
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
-    deltaApply_fn_longer = aux_path_strAdd(deltaApply_fn, string2add)
+    delta_apply_fn_longer = add_str_to_aux_path(deltaApply_fn, string2add)
     
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     
     if operator not in basic_four_rules:
         arg_tuple_periodic_delta2 = ("basic operator", basic_four_rules)
-        raise ValueError(format_string(choiceErrorStr, arg_tuple_periodic_delta2))
+        raise ValueError(format_string(choice_error_str, arg_tuple_periodic_delta2))
     else:   
         cdo_operator_str = cdo_operator_str_dict.get(operator)
-        arg_tuple_deltaApply = (period_abbr, cdo_operator_str,
+        arg_tuple_delta_apply = (period_abbr, cdo_operator_str,
                                 projected_ncfile, hist_mean_command,
-                                deltaApply_fn_longer)
+                                delta_apply_fn_longer)
                                            
-        deltaApply_command = format_string(deltaApply_command_dict.get(operator),
-                                           arg_tuple_deltaApply)
-        exec_shell_command(deltaApply_command)
+        delta_apply_command = format_string(deltaApply_command_dict.get(operator),
+                                           arg_tuple_delta_apply)
+        exec_shell_command(delta_apply_command)
         
     
 #--------------------------#
@@ -628,9 +628,9 @@ def apply_periodic_deltas(projected_ncfile,
 # Strings #
 #---------#
 
-# String-splitting characters #
-splitchar1 = common_splitchar_list[0]
-splitchar2 = common_splitchar_list[1]
+# String-splitting delimiters #
+splitdelim1 = common_splitdelim_list[0]
+splitdelim2 = common_splitdelim_list[1]
 
 # Grid header file function key list #
 keylist = ['total_columns', 'total_lines', 'xmin', 'xres', 'ymin', 'yres']
@@ -683,11 +683,11 @@ cdo_operator_str_dict = {
 # Preformatted strings #
 #----------------------#
 
-choiceErrorStr = "Wrong {}. Options are {}."
+choice_error_str = "Wrong {}. Options are {}."
 
 cdo_operator_syntax = """cdo {} {} {} {}"""
 cdo_delta_syntax = """cdo y{}{} {} {} {}"""
 
 # Dictionaries constructed from some preformatted strings (fromkeys) #
-deltaCalc_command_dict = dict.fromkeys(basic_four_rules, cdo_operator_syntax)
-deltaApply_command_dict = dict.fromkeys(basic_four_rules, cdo_delta_syntax)
+delta_calc_command_dict = dict.fromkeys(basic_four_rules, cdo_operator_syntax)
+delta_apply_command_dict = dict.fromkeys(basic_four_rules, cdo_delta_syntax)

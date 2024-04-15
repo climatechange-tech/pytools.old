@@ -40,7 +40,7 @@ sys.path.append(custom_mod4_path)
 #----------------------------------------------#
 
 from file_and_directory_handler import rename_objects
-from file_format_tweaker import aux_path_strAdd
+from file_format_tweaker import add_str_to_aux_path
 from global_parameters import basic_four_rules
 from information_output_formatters import format_string, print_format_string
 from os_operations import exec_shell_command
@@ -60,7 +60,7 @@ def modify_variable_units_and_values(file_list,
     lfl = len(file_list)    
         
     for file_num, file_name in enumerate(file_list, start=1): 
-        temp_file = aux_path_strAdd(file_name, str2add=file_name)
+        temp_file = add_str_to_aux_path(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         isactuallyfloat_int = int(isactuallyfloat)
@@ -95,19 +95,19 @@ def modify_variable_units_and_values(file_list,
             rename_objects(temp_file, file_name)
                                                  
 
-def modify_coordinate_values_byThreshold(file_list,
-                                         dimension_name,
-                                         threshold,
-                                         operator,
-                                         value,
-                                         threshold_mode="max"):
+def modify_coordinate_values_by_threshold(file_list,
+                                          dimension_name,
+                                          threshold,
+                                          operator,
+                                          value,
+                                          threshold_mode="max"):
     
     if not isinstance(file_list, list):
         file_list = [file_list]
     lfl = len(file_list) 
     
     for file_num, file_name in enumerate(file_list, start=1):
-        temp_file = aux_path_strAdd(file_name, str2add=file_name)
+        temp_file = add_str_to_aux_path(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         isactuallyfloat_int = int(isactuallyfloat)
@@ -147,19 +147,19 @@ def modify_coordinate_values_byThreshold(file_list,
                 rename_objects(temp_file, file_name)
             
 
-def modify_coordinate_allValues(file_list,
-                                dimension_name,
-                                threshold,
-                                operator,
-                                value,
-                                threshold_mode="max"):
+def modify_coordinate_all_values(file_list,
+                                 dimension_name,
+                                 threshold,
+                                 operator,
+                                 value,
+                                 threshold_mode="max"):
     
     if not isinstance(file_list, list):
         file_list = [file_list]
     lfl = len(file_list) 
     
     for file_num, file_name in enumerate(file_list, start=1): 
-        temp_file = aux_path_strAdd(file_name, str2add=file_name)
+        temp_file = add_str_to_aux_path(file_name, str2add=file_name)
         
         isactuallyfloat = (abs(value-int(value)) == 0)
         isactuallyfloat_int = int(isactuallyfloat)

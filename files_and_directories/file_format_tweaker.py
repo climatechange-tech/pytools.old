@@ -40,7 +40,7 @@ sys.path.append(custom_mod4_path)
 
 from file_and_directory_handler import remove_files_by_ext
 from file_and_directory_paths import find_files_by_ext, find_files_by_globstring
-from global_parameters import common_splitchar_list
+from global_parameters import common_splitdelim_list
 from information_output_formatters import format_string
 import os_operations
 import string_handler
@@ -53,10 +53,10 @@ catch_shell_prompt_output = os_operations.catch_shell_prompt_output
 exec_shell_command = os_operations.exec_shell_command
 
 aux_ext_adder = string_handler.aux_ext_adder
-aux_path_strAdd = string_handler.aux_path_strAdd
+add_str_to_aux_path = string_handler.aux_path_strAdd
 get_obj_specs = string_handler.get_obj_specs
 obj_path_specs = string_handler.obj_path_specs
-fileList2String = string_handler.fileList2String
+file_list_to_str = string_handler.fileList2String
 find_substring_index = string_handler.find_substring_index
 modify_obj_specs = string_handler.modify_obj_specs
 
@@ -71,11 +71,11 @@ def tweak_pages(file, cat_str, output_path="default"):
     
     if output_path == default_arg:
         str2add_1 = f"_{cat_str}"
-        output_path_aux_1 = aux_path_strAdd(output_path, str2add_1)
+        output_path_aux_1 = add_str_to_aux_path(output_path, str2add_1)
         
         if len(output_path_aux_1) > 60:
             str2add_2 = "_lotsOfPagesTweaked"
-            output_path_aux_2 = aux_path_strAdd(output_path, str2add_2)
+            output_path_aux_2 = add_str_to_aux_path(output_path, str2add_2)
             output_path = output_path_aux_2
             
         else:
@@ -95,7 +95,7 @@ def pdf_file_tweaker(path, cat_out_obj):
     when printing a document.
     
     For that it uses 'pdftk' tool, together with 'cat' and the
-    os.system shell emulator attribute.
+    os.system shell emulator method.
     
     For the sake of gathering simplicity and practicity,
     the structure of the default output file name will be the following:
@@ -197,15 +197,15 @@ def pdf_file_tweaker(path, cat_out_obj):
     """
     
     arg_names = pdf_file_tweaker.__code__.co_varnames
-    splitchar = common_splitchar_list[2]
+    splitdelim = common_splitdelim_list[2]
     
     if isinstance(path, str) and isinstance(cat_out_obj, str):
         
-        if splitchar not in cat_out_obj:
-            raise SyntaxError(syntaxErrorStr)
+        if splitdelim not in cat_out_obj:
+            raise SyntaxError(syntax_error_str)
             
-        cat_str = cat_out_obj.split(splitchar)[0]
-        output_path_aux = cat_out_obj.split(splitchar)[1]
+        cat_str = cat_out_obj.split(splitdelim)[0]
+        output_path_aux = cat_out_obj.split(splitdelim)[1]
         
         output_path = aux_ext_adder(output_path_aux, extensions[0])        
         tweak_pages(path, cat_str, output_path)
@@ -231,12 +231,12 @@ def pdf_file_tweaker(path, cat_out_obj):
         
     else:
         arg_tuple_pdftweaker = (arg_names[0], arg_names[1])
-        raise TypeError(format_string(typeErrorStr_complete_1, arg_tuple_pdftweaker))
+        raise TypeError(format_string(type_error_str_complete_1, arg_tuple_pdftweaker))
 
 
 def merge_pdf_files(in_path_list, out_path=None):
     
-    all_in_paths_string = fileList2String(in_path_list)
+    all_in_paths_string = file_list_to_str(in_path_list)
     
     if out_path is None:
         out_path_noext = "merged_doc"
@@ -253,7 +253,7 @@ def pdf_file_compressor(in_path, out_path=None):
     """
     Function that compresses pdf files with an imperceptible loss of quality.
     For that it uses the 'ps2pdf' tool, 
-    together with os.system shell emulator attribute.
+    together with os.system shell emulator method.
     
     Parameters
     ----------
@@ -299,7 +299,7 @@ def pdf_file_compressor(in_path, out_path=None):
         or (isinstance(in_path, list) and isinstance(out_path, list))):
         
         arg_tuple_pdfcompress = (arg_names[0], arg_names[1])
-        raise TypeError(format_string(typeErrorStr_complete_2, arg_tuple_pdfcompress))
+        raise TypeError(format_string(type_error_str_complete_2, arg_tuple_pdfcompress))
         
     else:
         if isinstance(in_path, str):
@@ -320,7 +320,7 @@ def pdf_file_compressor(in_path, out_path=None):
         exec_shell_command(ps2pdf_command)
     
   
-def checkEssentialProgsInstallation():
+def check_essential_prog_installation():
     
     """
     This function checks whether every essential program which
@@ -331,21 +331,21 @@ def checkEssentialProgsInstallation():
     'which in turn will be 'grepped with 'lc' line counter.
     """
     
-    notInstalledProgs = []
+    non_installed_prog_list = []
     
     for ess_prog in essential_program_list:
         apt_cache_command = f"dpkg -l | grep -i {ess_prog} | wc -l"
         
-        numProgCoincidence = catch_shell_prompt_output(apt_cache_command)
-        isProgInstalled = int(numProgCoincidence.strip()) >= 1
+        coincident_prog_num = catch_shell_prompt_output(apt_cache_command)
+        is_prog_installed = int(coincident_prog_num.strip()) >= 1
         
-        if not isProgInstalled:
-            notInstalledProgs.append(ess_prog)
+        if not is_prog_installed:
+            non_installed_prog_list.append(ess_prog)
             
-    lnip = len(notInstalledProgs)
+    lnip = len(non_installed_prog_list)
     if lnip > 0:    
-        raise ModuleNotFoundError(format_string(essentialProgNotInstalledError,
-                                                notInstalledProgs))   
+        raise ModuleNotFoundError(format_string(essential_prog_not_installed_error,
+                                                non_installed_prog_list))   
 
 
 
@@ -425,8 +425,8 @@ def msg2pdf(path_to_walk_into,
     
     extension = extensions[2]
     msg_files = find_files_by_ext(extension,
-                                    path_to_walk_into,
-                                    top_path_only=True)
+                                  path_to_walk_into,
+                                  top_path_only=True)
     
     # Convert microsoft outlook message (.msg) to email (.eml) #
     for msgf in msg_files:
@@ -476,32 +476,32 @@ essential_command_list = [
 #----------------------#
 
 # Error strings #
-syntaxErrorStr = """
+syntax_error_str = """
 Please write a semicolon (';') to separate
 the page cat string from the output path, 
 i.e. '{cat_str}; {output_path}'
 """
 
-typeErrorStr_basic = """
+type_error_str_basic = """
 '{}' and '{}' must match one of these cases:                
 · type(in_path) == str and type(out_path) == str
 · type(in_path) == list and type(out_path) == list
 """
 
-typeErrorStr_complete_1 = """
+type_error_str_complete_1 = """
 '{}' and '{}' must match one of these cases:             
 · type(path) == str and type(cat_out_obj) == str
 · type(path) == str and type(cat_out_obj) == dict
 · type(path) == list and type(cat_out_obj) == list
 """
 
-typeErrorStr_complete_2 = """
+type_error_str_complete_2 = """
 '{}' and '{}' must match one of these cases:             
 · type(in_path) == str and (type(out_path) == str or type(out_path) == NoneType)
 · type(in_path) == list and type(out_path) == list
 """
 
-essentialProgNotInstalledError = """
+essential_prog_not_installed_error = """
 In order to use this module, the remaining programs to be installed are:\n{}"""
 
 # Command strings #
@@ -514,4 +514,4 @@ pdfunite_command_prefmt = """pdfunite {} {}"""
 #------------------#
 
 # Check whether essential programs are installed #
-checkEssentialProgsInstallation()
+check_essential_prog_installation()

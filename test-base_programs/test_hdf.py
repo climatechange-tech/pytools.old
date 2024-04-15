@@ -44,9 +44,9 @@ def process_data():
     wind_10min_file = f"{input_data_dir}/Ryman_Sodar_1A_Perfilado_159,00 m_Config 1_10M.csv" 
     
     df_10min = pd.read_csv(wind_10min_file, 
-                            sep = sepchar, 
-                            decimal = decimal_char,
-                            parse_dates = parse_dates)
+                           sep = sepchar, 
+                           decimal = decimal_char,
+                           parse_dates = parse_dates)
     
     """Convert column 4 data to date and time"""
     time_col = "Fecha"
@@ -71,7 +71,6 @@ def recover_hdf5():
     data_store.close()
     
     return df
-
     
 
 

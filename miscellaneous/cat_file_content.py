@@ -36,7 +36,7 @@ def cat(path):
             print(line_no_extra_whitespaces)
         file.close()
         
-        #-------------------#
+#-------------------#
 # Call the function #
 #-------------------#
         

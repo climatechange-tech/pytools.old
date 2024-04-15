@@ -36,7 +36,7 @@ sys.path.append(custom_mod3_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-from global_parameters import common_splitchar_list
+from global_parameters import common_splitdelim_list
 from os_operations import exec_shell_command
 import string_handler
 
@@ -45,7 +45,7 @@ import string_handler
 #----------------------------------------------------#
 
 obj_path_specs = string_handler.obj_path_specs
-fileList2String = string_handler.fileList2String
+file_list_to_str = string_handler.fileList2String
 obj_path_specs = string_handler.get_file_spec
 modify_obj_specs = string_handler.modify_obj_specs
 
@@ -53,7 +53,7 @@ modify_obj_specs = string_handler.modify_obj_specs
 # Define custom functions #
 #-------------------------#
 
-def netCDF2raster(nc_file_list,
+def netcdf2raster(nc_file_list,
                   output_file_format,
                   raster_extension,
                   raster_resolution,
@@ -120,7 +120,7 @@ def merge_independent_rasters(raster_files_dict,
             
             file_path_name_parts = obj_path_specs(raster_file_list[0],
                                                  file_spec_key=obj2change,
-                                                 splitchar=splitchar)
+                                                 splitdelim=splitdelim)
             
             fpnp_changes_tuple = (file_path_name_parts[-2], joint_region_name)
 
@@ -129,10 +129,10 @@ def merge_independent_rasters(raster_files_dict,
             """
             
             output_file_name = modify_obj_specs(raster_file_list[0],
-                                                 obj2change,
-                                                 fpnp_changes_tuple)           
+                                                obj2change,
+                                                fpnp_changes_tuple)           
             
-            zsh_allfile_string = fileList2String(raster_file_list)
+            zsh_allfile_string = file_list_to_str(raster_file_list)
             
             if nodata_value: 
                 zsh_raster_merge = f"gdal_merge.py "\
@@ -153,4 +153,4 @@ def merge_independent_rasters(raster_files_dict,
 # Parameters and constants #
 #--------------------------#
     
-splitchar = common_splitchar_list[0]
+splitdelim = common_splitdelim_list[0]

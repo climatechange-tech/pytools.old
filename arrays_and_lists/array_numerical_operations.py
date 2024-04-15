@@ -74,7 +74,7 @@ def count_consecutive(array, calculate_max_consec=False):
             return None
 
 
-def calcAllUniquePairs(array_like, method="python-default"):
+def calc_all_unique_pairs(array_like, method="python-default"):
     
     """
     Function to calculate all possible pairs, irrespective of the order,
@@ -127,11 +127,11 @@ def calcAllUniquePairs(array_like, method="python-default"):
             
     Returns
     -------
-    allPairComboArr : list or array of tuples
+    all_pair_combo_arr : list or array of tuples
           The resulting list or array (depending the method used) of tuples.    
     """
     
-    # Input parameter correctness checkings #
+    # arameter correctness checkings #
     #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
     
     # Input array #
@@ -155,8 +155,8 @@ def calcAllUniquePairs(array_like, method="python-default"):
     # Number pair computations #
     #-#-#-#-#-#-#-#-#-#-#-#-#-#-
     
-    allPairComboArr = eval(return_pairs_opt_dict.get(method))
-    return allPairComboArr
+    all_pair_combo_arr = eval(return_pairs_opt_dict.get(method))
+    return all_pair_combo_arr
     
 
 # Time arrays #

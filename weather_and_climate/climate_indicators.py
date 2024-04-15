@@ -46,10 +46,10 @@ sys.path.append(custom_mod4_path)
 
 import array_handler
 from array_numerical_operations import count_consecutive
-from climate_statistics import periodic_statistics, windowSum
+from climate_statistics import periodic_statistics, window_sum
 from climatic_signal_modulators import evaluate_polynomial, polynomial_fitting_coefficients
 import consecutive_idx_statistics
-from global_parameters import common_splitchar_list
+from global_parameters import common_splitdelim_list
 from meteorological_variables import meteorological_wind_direction
 from string_handler import find_substring_index
 
@@ -70,7 +70,7 @@ count_consecutive_days_mindata\
 # Define  custom functions #
 #--------------------------#
 
-# TODO: ea hau hobeago jar daitekeen
+# TODO: ea hau linguistikoki hobeto aton daitekeen
 def calculate_biovars(tmax_monthly_climat, 
                       tmin_monthly_climat, 
                       prec_monthly_climat):
@@ -137,7 +137,7 @@ def calculate_biovars(tmax_monthly_climat,
     bioclim_var_array[14,:,:] = ss.variation(prec_monthly_climat+1, axis=0) * 100
     
     # precipitation by quarters (window of 3 months)
-    wet = windowSum(prec_monthly_climat, N=3)
+    wet = window_sum(prec_monthly_climat, N=3)
     
     # P16. Precipitation of Wettest Quarter
     bioclim_var_array[15,:,:] = np.max(wet, axis=0)
@@ -146,7 +146,7 @@ def calculate_biovars(tmax_monthly_climat,
     bioclim_var_array[16,:,:] = np.min(wet, axis=0)
       
     # temperature by quarters (window of 3 months)
-    tmp_qrt = windowSum(tavg, N=3) / 3
+    tmp_qrt = window_sum(tavg, N=3) / 3
       
     # P8. Mean Temperature of Wettest Quarter
     wet_qrt = np.argmax(wet, axis=0)
@@ -383,7 +383,7 @@ def calculate_HWD(tmax_array, tmin_array,
     Each heat wave is assocciated with the following:
     
     -Heat wave intensity : maximum temperature registered during the heat wave,
-                            i.e. that event satisfying the conditions aforementioned.
+                           i.e. that event satisfying the conditions aforementioned.
     -Heat wave duration : number of consecutive days of the heat wave.
     -Heat wave global intensity : sum of the maximum temperatures registered
                                   during the heat wave,
@@ -456,14 +456,13 @@ def calculate_HWD(tmax_array, tmin_array,
             block_consecutive_idx = np.delete(block_consecutive_idx,
                                               idx_to_delete)
 
-        return HWD_characteristics, HWD
+        return (HWD_characteristics, HWD)
         
     else:
         HWD_characteristics = (0, None, None, None)
-        return HWD_characteristics, 0
+        return (HWD_characteristics, 0)
 
 # TODO: indexazioa azkar liteke?
-
 def calculate_HDY(hourly_df,
                   varlist,
                   varlist_primary,
@@ -479,7 +478,7 @@ def calculate_HDY(hourly_df,
     # Define the HDY dataframe #
     #--------------------------#
 
-    HDY_df = pd.DataFrame(columns = varlist)
+    hdy_df = pd.DataFrame(columns = varlist)
 
     # Define input HDY parameters #
     #-----------------------------#
@@ -500,7 +499,7 @@ def calculate_HDY(hourly_df,
     lowest_total_rank_year_list = []
      
     # Define the HDY dataframe #
-    HDY_df = pd.DataFrame(columns = varlist)
+    hdy_df = pd.DataFrame(columns = varlist)
      
     # Perform ISO 15927-4 2005 (E) standard steps #
     #---------------------------------------------#
@@ -693,7 +692,7 @@ def calculate_HDY(hourly_df,
         Fs_sum_df_sorted_total_rank.columns = ['Year','total_rank_sorted']
      
         """
-         Method to choose the HDY_df
+         Method to choose the hdy_df
          ------------------------
         
         ·Original method is to calculate the monthly mean wind speed of each month
@@ -711,17 +710,17 @@ def calculate_HDY(hourly_df,
         hourly_data_sel = hourly_df[(hourly_df.date.dt.year == lowest_total_rank_year)
                                     &(hourly_df.date.dt.month == m)]
         
-        HDY_df = pd.concat([HDY_df,hourly_data_sel], axis = 0)
+        hdy_df = pd.concat([hdy_df,hourly_data_sel], axis = 0)
        
-    HDY_df = HDY_df.reset_index(drop=drop_new_idx_col)    
-    HDY_years = lowest_total_rank_year_list.copy()
-    return HDY_df, HDY_years
+    hdy_df = hdy_df.reset_index(drop=drop_new_idx_col)    
+    hdy_years = lowest_total_rank_year_list.copy()
+    return (hdy_df, hdy_years)
 
 
 # TODO: behekoa ez da behin betikoa, aldagai bakoitzeko interpolaketa-metodoen
 # iradokizun asko baitago
-def HDY_interpolation(HDY_df,
-                      HDY_years,
+def hdy_interpolation(hdy_df,
+                      hdy_years,
                       previous_month_last_time_range,
                       next_month_first_time_range,
                       varlist_to_interpolate,
@@ -778,10 +777,10 @@ def HDY_interpolation(HDY_df,
     after the interpolation of u10 and v10 arrays.
     """
     
-    HDY_interp = HDY_df.copy()
+    hdy_interp = hdy_df.copy()
     
-    HDY_months = pd.unique(HDY_interp.date.dt.month)
-    lhdy_m = len(HDY_months) # == len(HDY_years), by definition
+    hdy_months = pd.unique(hdy_interp.date.dt.month)
+    lhdy_m = len(hdy_months) # == len(hdy_years), by definition
     
     # Remove 'ws10' variable from the list of variables to be interpolated #
     ws10_idx = find_substring_index(varlist_to_interpolate, "ws10")
@@ -791,41 +790,41 @@ def HDY_interpolation(HDY_df,
     for i in range(lhdy_m-1):
     
         days_slice_prev\
-        = pd.unique(HDY_interp[(HDY_interp.date.dt.year == HDY_years[i])
-                        &(HDY_interp.date.dt.month == HDY_months[i])].date.dt.day)
+        = pd.unique(hdy_interp[(hdy_interp.date.dt.year == hdy_years[i])
+                        &(hdy_interp.date.dt.month == hdy_months[i])].date.dt.day)
         
         days_slice_next\
-        = pd.unique(HDY_interp[(HDY_interp.date.dt.year == HDY_years[i+1])
-                        &(HDY_interp.date.dt.month == HDY_months[i+1])].date.dt.day)
+        = pd.unique(hdy_interp[(hdy_interp.date.dt.year == hdy_years[i+1])
+                        &(hdy_interp.date.dt.month == hdy_months[i+1])].date.dt.day)
         
-        pmltr = np.array(previous_month_last_time_range.split(splitchar), "i")
+        pmltr = np.array(previous_month_last_time_range.split(splitdelim), "i")
         pmltr1 = pmltr[0]
         pmltr2 = pmltr[-1]
         
-        nmftr = np.array(next_month_first_time_range.split(splitchar), "i")
+        nmftr = np.array(next_month_first_time_range.split(splitdelim), "i")
         nmftr1 = nmftr[0]
         nmftr2 = nmftr[-1]
     
         ymdh_first1\
-        = f"{HDY_years[i]:04d}-{HDY_months[i]:02d}-{days_slice_prev[-1]:02d} "\
+        = f"{hdy_years[i]:04d}-{hdy_months[i]:02d}-{days_slice_prev[-1]:02d} "\
           f"T{pmltr1:02d}"
           
         ymdh_last1\
-        = f"{HDY_years[i]:04d}-{HDY_months[i]:02d}-{days_slice_prev[-1]:02d} "\
+        = f"{hdy_years[i]:04d}-{hdy_months[i]:02d}-{days_slice_prev[-1]:02d} "\
           f"T{pmltr2:02d}"
           
         ymdh_first2\
-        = f"{HDY_years[i+1]:04d}-{HDY_months[i+1]:02d}-{days_slice_next[0]:02d} "\
+        = f"{hdy_years[i+1]:04d}-{hdy_months[i+1]:02d}-{days_slice_next[0]:02d} "\
           f"T{nmftr1:02d}"
           
         ymdh_last2\
-        = f"{HDY_years[i+1]:04d}-{HDY_months[i+1]:02d}-{days_slice_next[0]:02d} "\
+        = f"{hdy_years[i+1]:04d}-{hdy_months[i+1]:02d}-{days_slice_next[0]:02d} "\
           f"T{nmftr2:02d}"
         
-        df_slice1 = HDY_interp[(HDY_interp.date >= ymdh_first1)&
-                               (HDY_interp.date <= ymdh_last1)]
-        df_slice2 = HDY_interp[(HDY_interp.date >= ymdh_first2)&
-                               (HDY_interp.date <= ymdh_last2)]
+        df_slice1 = hdy_interp[(hdy_interp.date >= ymdh_first1)&
+                               (hdy_interp.date <= ymdh_last1)]
+        df_slice2 = hdy_interp[(hdy_interp.date >= ymdh_first2)&
+                               (hdy_interp.date <= ymdh_last2)]
     
         df_slice_to_fit_reidx\
         = pd.concat([df_slice1, df_slice2],axis=0).reset_index(drop=drop_date_idx_col)
@@ -846,7 +845,7 @@ def HDY_interpolation(HDY_df,
                 idx_for_hdy = df_slice_to_fit_reidx.loc[df_slice_fit_indices[ix],"index"]
                 df_slice_to_fit_reidx.loc[df_slice_to_fit_reidx["index"] == idx_for_hdy,var]\
                 = var_eval            
-                HDY_interp.loc[idx_for_hdy,var] = var_eval
+                hdy_interp.loc[idx_for_hdy,var] = var_eval
                     
                 
     # Calculate the 10m wind speed direction and modulus #
@@ -866,18 +865,18 @@ def HDY_interpolation(HDY_df,
      The zero-degree angle is set 90º further than the
      default unit cyrcle, so that 0º means wind blowing from the North. 
     """    
-    HDY_interp.loc[:,"ws10"]\
-    = np.sqrt(HDY_interp.u10 ** 2 + HDY_interp.v10 ** 2)
+    hdy_interp.loc[:,"ws10"]\
+    = np.sqrt(hdy_interp.u10 ** 2 + hdy_interp.v10 ** 2)
     
     print("\nCalculating the wind direction from the meteorological point of view...")
     
-    wind_dir_meteo_interp = meteorological_wind_direction(HDY_interp.u10.values,  
-                                                               HDY_interp.v10.values)
+    wind_dir_meteo_interp = meteorological_wind_direction(hdy_interp.u10.values,  
+                                                          hdy_interp.v10.values)
 
-    return HDY_interp, wind_dir_meteo_interp
+    return (hdy_interp, wind_dir_meteo_interp)
     
 #--------------------------#
 # Parameters and constants #
 #--------------------------#
 
-splitchar = common_splitchar_list[1]
+splitdelim = common_splitdelim_list[1]

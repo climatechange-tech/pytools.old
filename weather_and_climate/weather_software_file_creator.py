@@ -83,8 +83,8 @@ def temperature_typical_extreme_period(hdy_df_t2m):
     
     # Average temperature #
     HDY_winter_avg = np.mean(hdy_df_t2m_winter.t2m)
-    iaprox_winter_avg = array_handler.approach_value_in_array(hdy_df_t2m_winter.t2m,
-                                                              HDY_winter_avg)[1]
+    iaprox_winter_avg = approach_value_in_array(hdy_df_t2m_winter.t2m,
+                                                HDY_winter_avg)[1]
     
     winter_date_aprox_avg = hdy_df_t2m_winter.date.loc[iaprox_winter_avg]
     winter_week_range_avg = week_range(winter_date_aprox_avg)
@@ -109,8 +109,8 @@ def temperature_typical_extreme_period(hdy_df_t2m):
     
     # Average temperature only #
     HDY_spring_avg = np.mean(hdy_df_t2m_spring.t2m)
-    iaprox_spring_avg = array_handler.approach_value_in_array(hdy_df_t2m_spring.t2m,
-                                                              HDY_spring_avg)[1]
+    iaprox_spring_avg = approach_value_in_array(hdy_df_t2m_spring.t2m,
+                                                HDY_spring_avg)[1]
     
     spring_date_aprox_avg = hdy_df_t2m_spring.date.loc[iaprox_spring_avg]
     spring_week_range_avg = week_range(spring_date_aprox_avg)
@@ -154,8 +154,8 @@ def temperature_typical_extreme_period(hdy_df_t2m):
     
     # Average temperature #
     HDY_summer_avg = np.mean(hdy_df_t2m_summer.t2m)
-    iaprox_summer_avg = array_handler.approach_value_in_array(hdy_df_t2m_summer.t2m,
-                                                              HDY_summer_avg)[1]
+    iaprox_summer_avg = approach_value_in_array(hdy_df_t2m_summer.t2m,
+                                                HDY_summer_avg)[1]
     
     summer_date_aprox_avg = hdy_df_t2m_summer.date.loc[iaprox_summer_avg]
     summer_week_range_avg = week_range(summer_date_aprox_avg)
@@ -180,8 +180,8 @@ def temperature_typical_extreme_period(hdy_df_t2m):
       
     # Average temperature only #
     HDY_fall_avg = np.mean(hdy_df_t2m_fall.t2m)
-    iaprox_fall_avg = array_handler.approach_value_in_array(hdy_df_t2m_fall.t2m,
-                                                            HDY_fall_avg)[1]
+    iaprox_fall_avg = approach_value_in_array(hdy_df_t2m_fall.t2m,
+                                              HDY_fall_avg)[1]
     
     fall_date_aprox_avg = hdy_df_t2m_fall.date.loc[iaprox_fall_avg]
     fall_week_range_avg = week_range(fall_date_aprox_avg)
