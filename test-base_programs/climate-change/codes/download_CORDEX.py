@@ -92,7 +92,7 @@ def return_rcp_std(rcp):
         if not (isinstance(rcp_num, (float, str))):
             raise ValueError(f"Wrong RCP scenario. Options are '{available_rcps}'.")
         else:
-            rcp_mod = substring_replacer(rcp, charSplitDelim1, charSplitDelim2)  
+            rcp_mod = substring_replacer(rcp, char_split_delim1, char_split_delim2)  
             rcp_std = f"rcp_{rcp_mod}"
             
             if rcp_std not in available_rcps:
@@ -137,8 +137,8 @@ def return_horizontal_std_resolution(h_resolution):
         raise ValueError(f"Wrong horizontal resolution. Options are {available_h_resolutions}")
     else:
         h_resolution1 = substring_replacer(h_resolution,
-                                           charSplitDelim1,
-                                           charSplitDelim2)
+                                           char_split_delim1,
+                                           char_split_delim2)
         
         h_resolution_std = f"{h_resolution1}_x_{h_resolution1}_degree"
         return h_resolution_std
@@ -221,8 +221,8 @@ sel_rcp_end_ys = return_rcp_std(rcp)[1]
 #------------------#
 
 # Character splitting delimiters #
-charSplitDelim1 = "."
-charSplitDelim2 = "_"
+char_split_delim1 = "."
+char_split_delim2 = "_"
 
 # Main directories #
 #------------------#

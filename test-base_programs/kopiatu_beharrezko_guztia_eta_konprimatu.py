@@ -56,7 +56,7 @@ import string_handler
 # Define imported modules' function call shortcuts #
 #--------------------------------------------------#
 
-basic_value_data_type_converter = array_handler.basicObjectValueTypeConverter
+basic_value_data_type_converter = array_handler.basic_value_data_type_converter
 select_array_elements = array_handler.select_array_elements
 remove_elements_from_array = array_handler.remove_elements_from_array
 

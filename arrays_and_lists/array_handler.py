@@ -564,7 +564,7 @@ def basic_value_data_type_converter(obj_data, old_type, new_type, colname=None):
                          f"(argument '{arg_names[1]}').\n"
                          f"Options are {type_option_list}.")
     
-    
+    # Pandas data frames
     if isinstance(obj_data, pd.DataFrame):
 
         data_type = obj_data.loc[:,colname].dtype
@@ -590,9 +590,13 @@ def basic_value_data_type_converter(obj_data, old_type, new_type, colname=None):
                 print("Returning object with its values' type unchanged.")
                 return obj_data
 
+    # Lists or Numpy arrays
     else:
-        
-        data_type = obj_data.dtype
+        try:
+            data_type = obj_data.dtype
+        except AttributeError:
+            obj_data = np.array(obj_data)
+            data_type = obj_data.dtype
 
         if colname is not None:
             raise ValueError(f"Please set the argument '{arg_names[3]}' "

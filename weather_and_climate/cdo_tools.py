@@ -573,7 +573,7 @@ def calculate_periodic_deltas(projected_ncfile,
                                hist_mean_command, proj_mean_command,
                                delta_calc_filename_longer)
                                            
-        delta_calc_command = format_string(deltaCalc_command_dict.get(operator),
+        delta_calc_command = format_string(delta_calc_command_dict.get(operator),
                                            arg_tuple_delta_calc)
         exec_shell_command(delta_calc_command)
     
@@ -603,7 +603,7 @@ def apply_periodic_deltas(projected_ncfile,
         period_abbr = freq_abbrs_delta[period_abbr_idx]
         
     string2add = f"{period_abbr}DeltaApplied_{proj_model}.nc"
-    delta_apply_fn_longer = add_str_to_aux_path(deltaApply_fn, string2add)
+    delta_apply_fn_longer = add_str_to_aux_path(delta_apply_fn, string2add)
     
     hist_mean_command = f"-y{period_abbr}mean {historical_ncfile}"
     
@@ -616,7 +616,7 @@ def apply_periodic_deltas(projected_ncfile,
                                 projected_ncfile, hist_mean_command,
                                 delta_apply_fn_longer)
                                            
-        delta_apply_command = format_string(deltaApply_command_dict.get(operator),
+        delta_apply_command = format_string(delta_apply_command_dict.get(operator),
                                            arg_tuple_delta_apply)
         exec_shell_command(delta_apply_command)
         
