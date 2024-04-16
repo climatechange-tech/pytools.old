@@ -59,9 +59,9 @@ get_file_variables = netcdf_handler.get_file_variables
 find_time_dimension_raise_none = netcdf_handler.find_time_dimension_raiseNone
 get_times = netcdf_handler.get_times
 
-add_str_to_aux_path = string_handler.aux_path_strAdd
+add_str_to_aux_path = string_handler.add_str_to_aux_path
 find_substring_index = string_handler.find_substring_index
-file_list_to_str = string_handler.fileList2String
+file_list_to_str = string_handler.file_list_to_str
 obj_path_specs = string_handler.get_file_spec
 modify_obj_specs = string_handler.modify_obj_specs
 

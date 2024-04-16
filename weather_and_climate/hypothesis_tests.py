@@ -52,7 +52,7 @@ spec2.loader.exec_module(array_numerical_operations)
 # obj_path_specs = string_handler.obj_path_specs
 # join_obj_path_specs = string_handler.join_obj_path_specs
 
-# move_files_by_globstring_from_exec_code = file_and_directory_handler.move_files_byFS_fromCodeCallDir
+# move_files_by_globstr_from_exec_code = file_and_directory_handler.move_files_byFS_fromCodeCallDir
 
 # find_files_by_ext = file_and_directory_paths.find_files_by_ext
 # find_file_containing_dirs_by_ext = file_and_directory_paths.find_file_containing_dirs_by_ext

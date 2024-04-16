@@ -110,7 +110,7 @@ def find_files_by_ext(extensions, path_to_walk_into, top_path_only=False):
     return unique_filelist
     
 
-def find_files_by_globstring(file_string, path_to_walk_into, top_path_only=False):
+def find_files_by_globstr(file_string, path_to_walk_into, top_path_only=False):
     
     """
     Function that searches for absolute paths given a part of
@@ -310,7 +310,7 @@ def find_file_containing_dirs_by_ext(extensions,
     return unique_dirlist
 
 
-def find_file_containing_dirs_by_globstring(file_string,
+def find_file_containing_dirs_by_globstr(file_string,
                                             path_to_walk_into,
                                             top_path_only=False):
     

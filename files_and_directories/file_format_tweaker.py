@@ -39,7 +39,7 @@ sys.path.append(custom_mod4_path)
 #----------------------------------------------#
 
 from file_and_directory_handler import remove_files_by_ext
-from file_and_directory_paths import find_files_by_ext, find_files_by_globstring
+from file_and_directory_paths import find_files_by_ext, find_files_by_globstr
 from global_parameters import common_splitdelim_list
 from information_output_formatters import format_string
 import os_operations
@@ -53,10 +53,10 @@ catch_shell_prompt_output = os_operations.catch_shell_prompt_output
 exec_shell_command = os_operations.exec_shell_command
 
 aux_ext_adder = string_handler.aux_ext_adder
-add_str_to_aux_path = string_handler.aux_path_strAdd
+add_str_to_aux_path = string_handler.add_str_to_aux_path
 get_obj_specs = string_handler.get_obj_specs
 obj_path_specs = string_handler.obj_path_specs
-file_list_to_str = string_handler.fileList2String
+file_list_to_str = string_handler.file_list_to_str
 find_substring_index = string_handler.find_substring_index
 modify_obj_specs = string_handler.modify_obj_specs
 
@@ -377,7 +377,7 @@ def eml2pdf(path_to_walk_into, delete_eml_files=False):
                                     top_path_only=True)
    
     str2find = f"*emailconverter*.{extensions[-1]}"    
-    converter_tool_path = find_files_by_globstring(str2find, alldoc_dirpath)
+    converter_tool_path = find_files_by_globstr(str2find, alldoc_dirpath)
 
     # Convert each email to PDF #        
     for emlf in eml_files:

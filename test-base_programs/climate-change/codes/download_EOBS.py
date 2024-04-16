@@ -57,7 +57,7 @@ download_data = cds_tools.download_data
 make_parent_directories = file_and_directory_handler.make_parent_directories
 move_files_by_ext_from_exec_code = file_and_directory_handler.move_files_byExts_fromCodeCallDir
 
-find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
+find_files_by_globstr = file_and_directory_paths.find_files_by_globstr
 
 netcdf_file_scanner = netcdf_handler.netcdf_file_scanner
 
@@ -244,7 +244,7 @@ for p in periods:
     Test whether the file is already downloaded
     (current or downloaded data directory)
     """
-    ofn_list = find_files_by_globstring(f"*{output_file_name}*",
+    ofn_list = find_files_by_globstr(f"*{output_file_name}*",
                                      path_to_walk_into=project_dir)
     
     lofnl = len(ofn_list)

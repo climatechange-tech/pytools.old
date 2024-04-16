@@ -1,15 +1,17 @@
 **NOTICE**
 
-* As of Mon Apr 15 2024 this project has been discontinued.
+* As of Mon Apr 16 2024 this project has been discontinued.
   
 * The reason is that the project was in need of major improvements:
   - Automatic module importations, eliminating:
     - Need of creating a program to set the repository's local directory up.    
-      This program created another one at the specified directory when asking for it,
-      which contains a function that returns thereof.
+      This program created another one at the specified directory when 
+      asking for it, which contains a function that returns thereof. 
+      It is currently stored at the same directory where this README 
+      is located at.
     - As a consequence of the previous point, need of implementing a snippet
-      based on 'Path' and 'sys' modules in order to register the repository's local directory
-      in every single module.
+      based on 'Path' and 'sys' modules in order to register the repository's
+      local directory in every single module.
   - Huge level-up computation performance
   - Unification of case usages
   - Elimination of redundant conditional and instantiation instructions

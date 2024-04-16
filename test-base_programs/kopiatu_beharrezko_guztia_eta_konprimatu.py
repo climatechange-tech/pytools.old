@@ -60,13 +60,13 @@ basic_value_data_type_converter = array_handler.basicObjectValueTypeConverter
 select_array_elements = array_handler.select_array_elements
 remove_elements_from_array = array_handler.remove_elements_from_array
 
-file_list_to_str = string_handler.fileList2String
+file_list_to_str = string_handler.file_list_to_str
 find_substring_index = string_handler.find_substring_index
 
-find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
+find_files_by_globstr = file_and_directory_paths.find_files_by_globstr
 
 copy_files = file_and_directory_handler.copy_files
-remove_files_by_globstring = file_and_directory_handler.remove_files_by_globstring
+remove_files_by_globstr = file_and_directory_handler.remove_files_by_globstr
 rename_objects = file_and_directory_handler.rename_objects
 
 #----------------------#
@@ -155,13 +155,13 @@ files2delete = list(basic_value_data_type_converter(files2delete, 'U', 'O'))
 
 # Ezabatu zerrenda erresultantean ageri diren artxiboak #
 
-remove_files_by_globstring(files2delete, ".")
+remove_files_by_globstr(files2delete, ".")
 
 # Bilatu euskaraz izendatutako artxiboak #
 #----------------------------------------#
 
 print("Jatorrizko programak bilatzen...")
-path_list_orig = find_files_by_globstring(file_list_orig, docpath)
+path_list_orig = find_files_by_globstr(file_list_orig, docpath)
 
 # Kopiatu bilatutako artxiboak direktorio hona #
 #----------------------------------------------#

@@ -47,7 +47,7 @@ sys.path.append(custom_mod6_path)
 
 from data_frame_handler import save2csv
 from file_and_directory_paths import find_file_containing_dirs_by_ext, find_files_by_ext
-from file_and_directory_handler import move_files_by_globstring_from_exec_code
+from file_and_directory_handler import move_files_by_globstr_from_exec_code
 from information_output_formatters import format_string, print_format_string
 from global_parameters import common_splitdelim_list
 from os_operations import exec_shell_command
@@ -57,7 +57,7 @@ import string_handler
 # Define imported module(s)' function call shortcuts #
 #----------------------------------------------------#
 
-file_list_to_str = string_handler.fileList2String
+file_list_to_str = string_handler.file_list_to_str
 find_substring_index = string_handler.find_substring_index
 get_obj_specs = string_handler.get_obj_specs
 modify_obj_specs = string_handler.modify_obj_specs
@@ -664,13 +664,13 @@ def extract_and_store_latlon_bounds(delta_roundoff, value_roundoff):
                             
                             
             ofile.close()
-            move_files_by_globstring_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")
             ofile.close()
             
-            move_files_by_globstring_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(latlon_bound_ofile_name, ncf_dir_name)
         
 
 def extract_and_store_period_bounds():
@@ -718,12 +718,12 @@ def extract_and_store_period_bounds():
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                 
             ofile.close()
-            move_files_by_globstring_from_exec_code(period_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(period_bound_ofile_name, ncf_dir_name)
                 
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")    
             ofile.close()
-            move_files_by_globstring_from_exec_code(period_bound_ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(period_bound_ofile_name, ncf_dir_name)
 
 
 def extract_and_store_time_formats():
@@ -773,12 +773,12 @@ def extract_and_store_time_formats():
                     ofile.write(f"FAULTY FILE {ncf_name}\n")
                     
             ofile.close()
-            move_files_by_globstring_from_exec_code(ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(ofile_name, ncf_dir_name)
             
         else:
             ofile.write(f"No netCDF files in directory {ncf_dir_name}\n")
             ofile.close()
-            move_files_by_globstring_from_exec_code(ofile_name, ncf_dir_name)
+            move_files_by_globstr_from_exec_code(ofile_name, ncf_dir_name)
 
 
 #--------------------#

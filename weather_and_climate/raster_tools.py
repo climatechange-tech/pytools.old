@@ -45,7 +45,7 @@ import string_handler
 #----------------------------------------------------#
 
 obj_path_specs = string_handler.obj_path_specs
-file_list_to_str = string_handler.fileList2String
+file_list_to_str = string_handler.file_list_to_str
 obj_path_specs = string_handler.get_file_spec
 modify_obj_specs = string_handler.modify_obj_specs
 

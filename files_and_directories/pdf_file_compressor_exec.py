@@ -74,5 +74,5 @@ out_path_list = ["/home/jonander/Documents/compressed_sample1.pdf",
 # Compress the provided files #
 #-----------------------------#
 
-# pdf_file_compressor(in_path__str, out_path_str)
+# pdf_file_compressor(in_path_str, out_path_str)
 pdf_file_compressor(in_path_list, out_path_list)

@@ -54,10 +54,10 @@ import string_handler
 
 find_all_file_extensions = file_and_directory_paths.find_all_file_extensions
 find_files_by_ext = file_and_directory_paths.find_files_by_ext
-find_files_by_globstring = file_and_directory_paths.find_files_by_globstring
+find_files_by_globstr = file_and_directory_paths.find_files_by_globstr
 
 find_all_directories = file_and_directory_paths.find_all_directories
-find_file_containing_dirs_by_globstring = file_and_directory_paths.find_file_containing_dirs_by_globstring
+find_file_containing_dirs_by_globstr = file_and_directory_paths.find_file_containing_dirs_by_globstr
 
 find_substring_index = string_handler.find_substring_index
 obj_path_specs = string_handler.obj_path_specs
@@ -256,13 +256,13 @@ def reorder_objs(path,
         #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
-            conflicting_objs = [find_files_by_globstring(f"*{Path(nff_dR2).stem}*",
+            conflicting_objs = [find_files_by_globstr(f"*{Path(nff_dR2).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR2 in num_formatted_objs_dryRun_2]
             
         elif obj_type == basic_object_types[1]:
-            conflicting_objs = [find_file_containing_dirs_by_globstring(f"*{Path(nff_dR2).stem}*",
+            conflicting_objs = [find_file_containing_dirs_by_globstr(f"*{Path(nff_dR2).stem}*",
                                                             path,
                                                             top_path_only=True)
                                 for nff_dR2 in num_formatted_objs_dryRun_2]
@@ -374,13 +374,13 @@ def reorder_objs(path,
         #----------------------------------------------#
         
         if obj_type == basic_object_types[0]:
-            conflicting_objs = [find_files_by_globstring(f"*{Path(nff_dR).stem}*",
+            conflicting_objs = [find_files_by_globstr(f"*{Path(nff_dR).stem}*",
                                                       path,
                                                       top_path_only=True)
                                 for nff_dR in num_formatted_objs_dryRun]
         
         elif obj_type == basic_object_types[1]:
-            conflicting_objs = [find_file_containing_dirs_by_globstring(f"*{Path(nff_dR).stem}*",
+            conflicting_objs = [find_file_containing_dirs_by_globstr(f"*{Path(nff_dR).stem}*",
                                                             path,
                                                             top_path_only=True)
                                 for nff_dR in num_formatted_objs_dryRun]

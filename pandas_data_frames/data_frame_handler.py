@@ -42,8 +42,8 @@ sys.path.append(custom_mod3_path)
 # Perform whole or partial module importations #
 #----------------------------------------------#
 
-from file_and_directory_handler import remove_files_by_globstring
-from file_and_directory_paths import find_files_by_globstring
+from file_and_directory_handler import remove_files_by_globstr
+from file_and_directory_paths import find_files_by_globstr
 from global_parameters import basic_time_format_strs, common_splitdelim_list
 from string_handler import get_obj_specs, find_substring_index
 
@@ -313,7 +313,7 @@ def save2excel(file_name,
     fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
     
     file_already_exists\
-    = bool(len(find_files_by_globstring(file_name_no_rel_path, 
+    = bool(len(find_files_by_globstr(file_name_no_rel_path, 
                                      fn_parent,
                                      top_path_only=True)))
     
@@ -358,7 +358,7 @@ def save2excel(file_name,
                                        "or 'n' for 'no': ")
             else:
                 if overwrite_stdin == "y":
-                    remove_files_by_globstring(file_name, fn_parent)
+                    remove_files_by_globstr(file_name, fn_parent)
                     frame_obj.to_excel(file_name, 
                                        sheet_name=indiv_sheet_name,
                                        index=save_index,
@@ -502,7 +502,7 @@ def save2csv(file_name,
         fn_parent = get_obj_specs(file_name, obj_spec_key="parent")
         
         file_already_exists\
-        = bool(len(find_files_by_globstring(file_name_no_rel_path, 
+        = bool(len(find_files_by_globstr(file_name_no_rel_path, 
                                          fn_parent,
                                          top_path_only=True)))
         
@@ -519,7 +519,7 @@ def save2csv(file_name,
                                             "or 'n' for 'no': ")
                 else:
                     if overwrite_stdin == "y":
-                        remove_files_by_globstring(file_name, fn_parent)
+                        remove_files_by_globstr(file_name, fn_parent)
                         data_frame.to_csv(file_name,
                                           sep=separator,
                                           decimal=decimal,
@@ -549,7 +549,7 @@ def save2csv(file_name,
                                             "or 'n' for 'no': ")
                 else:
                     if overwrite_stdin == "y":
-                        remove_files_by_globstring(file_name, fn_parent)
+                        remove_files_by_globstr(file_name, fn_parent)
                         data_frame.to_csv(file_name,
                                           sep=separator,
                                           decimal=decimal,
